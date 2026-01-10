@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "name": "sistema-cea-utfpr",
+  "builds": [
+    {
+      "src": "start.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "start.py"
+    }
+  ],
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "utfpr_egresso.settings.production"
+  },
+  "functions": {
+    "start.py": {
+      "maxDuration": 10
+    }
+  }
+}
