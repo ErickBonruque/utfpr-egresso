@@ -19,37 +19,34 @@ git push origin main
 4. Configure as seguintes opções:
 
 **Framework Preset**: Other
-**Build Command**: `bash build.sh`
+**Build Command**: `pip install -r requirements.txt && python manage.py collectstatic --noinput`
 **Output Directory**: (deixe em branco)
 **Install Command**: `pip install -r requirements.txt`
 
 ### 3. Variáveis de Ambiente
 
 No Vercel, adicione as seguintes variáveis de ambiente:
-- `DJANGO_SETTINGS_MODULE`: `utfpr_egresso.settings.production`
+- `DJANGO_SETTINGS_MODULE`: `utfpr_egresso.settings_production`
 
 ### 4. Arquivos de Configuração
 
 O projeto já inclui os arquivos necessários:
 - `vercel.json`: Configuração do Vercel
 - `start.py`: Ponto de entrada WSGI
-- `build.sh`: Script de build
 - `requirements.txt`: Dependências
-- `utfpr_egresso/settings/production.py`: Configurações de produção
+- `utfpr_egresso/settings_production.py`: Configurações de produção
 
 ### 5. Deploy
 
 Após configurar tudo, clique em "Deploy". O Vercel irá:
-1. Instalar as dependências
-2. Executar o script de build
-3. Coletar arquivos estáticos
-4. Rodar as migrações
-5. Fazer o deploy da aplicação
+1. Instalar as dependências Python
+2. Coletar arquivos estáticos
+3. Fazer o deploy da aplicação
 
 ### 6. Acesso
 
 Após o deploy, sua aplicação estará disponível em:
-- URL fornecida pelo Vercel (ex: https://sistema-cea-utfpr.vercel.app)
+- URL fornecida pelo Vercel (ex: https://utfpr-egresso.vercel.app)
 - Login: `[URL]/login/`
 - Dashboard: `[URL]/dashboard/`
 
