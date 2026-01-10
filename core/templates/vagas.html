@@ -1,0 +1,578 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Vagas - Árvore de Carreiras{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #1a1a1a;
+        --secondary-color: #333333;
+        --accent-color: #FFC72C;
+        --utfpr-yellow: #FFC72C;
+        --utfpr-black: #1a1a1a;
+        --light-bg: #f8f9fa;
+        --card-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    body {
+        background-color: var(--light-bg);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .navbar {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        padding: 1rem 0;
+    }
+    
+    .navbar-brand {
+        font-weight: bold;
+        color: var(--primary-color) !important;
+        font-size: 1.5rem;
+    }
+    
+    .nav-link {
+        color: #666 !important;
+        font-weight: 500;
+        margin: 0 10px;
+        transition: color 0.3s;
+        position: relative;
+    }
+    
+    .nav-link:hover {
+        color: var(--primary-color) !important;
+    }
+    
+    .nav-link.active {
+        color: var(--primary-color) !important;
+    }
+    
+    .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary-color);
+        border-radius: 2px;
+    }
+    
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+    
+    .user-level {
+        background: var(--utfpr-yellow);
+        color: var(--utfpr-black);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .main-content {
+        padding: 2rem 0;
+    }
+    
+    .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: var(--card-shadow);
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0,0,0,0.12);
+    }
+    
+    .job-card {
+        border-left: 4px solid var(--accent-color);
+    }
+    
+    .job-type {
+        font-size: 0.85rem;
+        font-weight: 600;
+        padding: 5px 12px;
+        border-radius: 20px;
+    }
+    
+    .job-type.full-time {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .job-type.internship {
+        background-color: #e3f2fd;
+        color: #1565c0;
+    }
+    
+    .job-type.junior {
+        background-color: #fff3e0;
+        color: #e65100;
+    }
+    
+    .salary-badge {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-left: 20px;
+    }
+    
+    .section-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 5px;
+        height: 25px;
+        background: var(--primary-color);
+        border-radius: 3px;
+    }
+    
+    .badge-skill {
+        background-color: #f5f5f5;
+        color: #666;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+    
+    .company-logo {
+        width: 60px;
+        height: 60px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+</style>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light sticky-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'dashboard' %}">
+            <img src="{% static 'img/logo_UTFPR_cor.png' %}" alt="UTFPR" style="height: 50px;">
+            <span class="ms-2">Sistema CEA</span>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' %}">
+                        <i class="bi bi-grid-fill me-1"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'arvore' %}">
+                        <i class="bi bi-tree me-1"></i> Árvore
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'egressos' %}">
+                        <i class="bi bi-people me-1"></i> Egressos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'conquistas' %}">
+                        <i class="bi bi-trophy me-1"></i> Conquistas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'vagas' %}">
+                        <i class="bi bi-briefcase me-1"></i> Vagas
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="user-info">
+                <div class="user-level">
+                    Nível 7 • 1450 XP
+                </div>
+                <div class="user-avatar">
+                    EB
+                </div>
+                <div>
+                    <div class="fw-bold">Alex Silva Demo</div>
+                    <small class="text-muted">4º Período • CRA: 8.2</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container main-content">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-1">Oportunidades de Carreira</h1>
+            <p class="text-muted">Vagas selecionadas especialmente para você</p>
+        </div>
+    </div>
+    
+    <!-- Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Filtrar Vagas</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" placeholder="Buscar por cargo...">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" placeholder="Buscar por empresa...">
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select">
+                                <option>Todos os níveis</option>
+                                <option>Estágio</option>
+                                <option>Júnior</option>
+                                <option>Pleno</option>
+                                <option>Sênior</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <select class="form-select">
+                                <option>Remoto</option>
+                                <option>Híbrido</option>
+                                <option>Presencial</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-primary w-100">
+                                <i class="bi bi-search me-1"></i> Buscar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Featured Jobs -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h5 class="section-title">Vagas em Destaque</h5>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card job-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="company-logo me-3">
+                                TC
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Desenvolvedor Python Júnior</h6>
+                                <p class="text-muted mb-0">Tech Company</p>
+                            </div>
+                        </div>
+                        <span class="job-type full-time">CLT</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="badge-skill">Python</span>
+                        <span class="badge-skill">Django</span>
+                        <span class="badge-skill">PostgreSQL</span>
+                        <span class="badge-skill">Docker</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <i class="bi bi-geo-alt me-1 text-muted"></i>
+                            <small class="text-muted">São Paulo, SP</small>
+                        </div>
+                        <div class="salary-badge">
+                            R$ 4k-6k
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i> Publicada há 2 dias
+                        </small>
+                        <button class="btn btn-sm btn-outline-primary">
+                            Ver detalhes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card job-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="company-logo me-3">
+                                AC
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Estágio em Data Science</h6>
+                                <p class="text-muted mb-0">Analytics Corp</p>
+                            </div>
+                        </div>
+                        <span class="job-type internship">Estágio</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="badge-skill">Python</span>
+                        <span class="badge-skill">Machine Learning</span>
+                        <span class="badge-skill">Pandas</span>
+                        <span class="badge-skill">SQL</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <i class="bi bi-house me-1 text-muted"></i>
+                            <small class="text-muted">Remoto</small>
+                        </div>
+                        <div class="salary-badge">
+                            R$ 1.5k-2k
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i> Publicada há 1 dia
+                        </small>
+                        <button class="btn btn-sm btn-outline-primary">
+                            Ver detalhes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card job-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="company-logo me-3">
+                                ST
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Desenvolvedor Frontend Pleno</h6>
+                                <p class="text-muted mb-0">StartupTech</p>
+                            </div>
+                        </div>
+                        <span class="job-type full-time">CLT</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="badge-skill">React</span>
+                        <span class="badge-skill">TypeScript</span>
+                        <span class="badge-skill">Node.js</span>
+                        <span class="badge-skill">AWS</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <i class="bi bi-laptop me-1 text-muted"></i>
+                            <small class="text-muted">Híbrido - Belo Horizonte, MG</small>
+                        </div>
+                        <div class="salary-badge">
+                            R$ 7k-9k
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i> Publicada há 3 dias
+                        </small>
+                        <button class="btn btn-sm btn-outline-primary">
+                            Ver detalhes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card job-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="company-logo me-3">
+                                IT
+                            </div>
+                            <div>
+                                <h6 class="mb-1">DevOps Engineer Júnior</h6>
+                                <p class="text-muted mb-0">InovaTech</p>
+                            </div>
+                        </div>
+                        <span class="job-type junior">PJ</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="badge-skill">AWS</span>
+                        <span class="badge-skill">Kubernetes</span>
+                        <span class="badge-skill">CI/CD</span>
+                        <span class="badge-skill">Terraform</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <i class="bi bi-building me-1 text-muted"></i>
+                            <small class="text-muted">Florianópolis, SC</small>
+                        </div>
+                        <div class="salary-badge">
+                            R$ 8k-10k
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i> Publicada há 5 dias
+                        </small>
+                        <button class="btn btn-sm btn-outline-primary">
+                            Ver detalhes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recommended for You -->
+    <div class="row">
+        <div class="col-12">
+            <h5 class="section-title">Recomendadas para seu Perfil</h5>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card job-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="company-logo me-3">
+                                DS
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Machine Learning Engineer</h6>
+                                <p class="text-muted mb-0">DataScience Inc</p>
+                            </div>
+                        </div>
+                        <span class="job-type full-time">CLT</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="badge-skill">Python</span>
+                        <span class="badge-skill">TensorFlow</span>
+                        <span class="badge-skill">PyTorch</span>
+                        <span class="badge-skill">Deep Learning</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <i class="bi bi-house me-1 text-muted"></i>
+                            <small class="text-muted">Remoto</small>
+                        </div>
+                        <div class="salary-badge">
+                            R$ 10k-15k
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i> Publicada hoje
+                        </small>
+                        <button class="btn btn-sm btn-primary">
+                            Candidatar-se
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card job-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <div class="d-flex align-items-center">
+                            <div class="company-logo me-3">
+                                BF
+                            </div>
+                            <div>
+                                <h6 class="mb-1">Backend Developer Júnior</h6>
+                                <p class="text-muted mb-0">BigFinance</p>
+                            </div>
+                        </div>
+                        <span class="job-type full-time">CLT</span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <span class="badge-skill">Java</span>
+                        <span class="badge-skill">Spring Boot</span>
+                        <span class="badge-skill">Microservices</span>
+                        <span class="badge-skill">MongoDB</span>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <i class="bi bi-geo-alt me-1 text-muted"></i>
+                            <small class="text-muted">Curitiba, PR</small>
+                        </div>
+                        <div class="salary-badge">
+                            R$ 5k-7k
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="bi bi-clock me-1"></i> Publicada há 4 dias
+                        </small>
+                        <button class="btn btn-sm btn-primary">
+                            Candidatar-se
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,478 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Árvore de Carreiras - Sistema CEA{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #1a1a1a;
+        --secondary-color: #333333;
+        --accent-color: #FFC72C;
+        --utfpr-yellow: #FFC72C;
+        --utfpr-black: #1a1a1a;
+        --light-bg: #f8f9fa;
+        --card-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    }
+    
+    body {
+        background-color: var(--light-bg);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .navbar {
+        background: white;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        padding: 1rem 0;
+    }
+    
+    .navbar-brand {
+        font-weight: bold;
+        color: var(--primary-color) !important;
+        font-size: 1.5rem;
+    }
+    
+    .nav-link {
+        color: #666 !important;
+        font-weight: 500;
+        margin: 0 10px;
+        transition: color 0.3s;
+        position: relative;
+    }
+    
+    .nav-link:hover {
+        color: var(--primary-color) !important;
+    }
+    
+    .nav-link.active {
+        color: var(--primary-color) !important;
+    }
+    
+    .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: var(--primary-color);
+        border-radius: 2px;
+    }
+    
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .user-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+    
+    .user-level {
+        background: var(--utfpr-yellow);
+        color: var(--utfpr-black);
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+    
+    .main-content {
+        padding: 2rem 0;
+    }
+    
+    .tree-container {
+        position: relative;
+        min-height: 600px;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 20px;
+        padding: 2rem;
+        overflow: hidden;
+    }
+    
+    .tree-trunk {
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 200px;
+        background: linear-gradient(to top, #8B4513, #A0522D);
+        border-radius: 10px 10px 0 0;
+    }
+    
+    .branch {
+        position: absolute;
+        background: linear-gradient(to right, #8B4513, #A0522D);
+        height: 20px;
+        border-radius: 10px;
+        transform-origin: left center;
+    }
+    
+    .career-node {
+        position: absolute;
+        width: 180px;
+        padding: 1rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: var(--card-shadow);
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .career-node:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    }
+    
+    .career-node.unlocked {
+        border: 2px solid var(--accent-color);
+    }
+    
+    .career-node.locked {
+        opacity: 0.7;
+        filter: grayscale(0.5);
+    }
+    
+    .career-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .career-node.unlocked .career-icon {
+        color: var(--accent-color);
+    }
+    
+    .career-node.locked .career-icon {
+        color: #999;
+    }
+    
+    .career-title {
+        font-weight: 600;
+        font-size: 1rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .career-progress {
+        height: 6px;
+        background-color: #e0e0e0;
+        border-radius: 5px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+    }
+    
+    .career-progress-bar {
+        height: 100%;
+        background: linear-gradient(90deg, var(--accent-color), #45a049);
+        border-radius: 5px;
+    }
+    
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-left: 20px;
+    }
+    
+    .section-title::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 5px;
+        height: 25px;
+        background: var(--primary-color);
+        border-radius: 3px;
+    }
+    
+    .info-card {
+        background: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        box-shadow: var(--card-shadow);
+        height: 100%;
+    }
+    
+    .path-card {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        border-radius: 15px;
+        padding: 1.5rem;
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+    
+    .path-card:hover {
+        transform: translateY(-5px);
+    }
+</style>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light sticky-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{% url 'dashboard' %}">
+            <img src="{% static 'img/logo_UTFPR_cor.png' %}" alt="UTFPR" style="height: 50px;">
+            <span class="ms-2">Sistema CEA</span>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'dashboard' %}">
+                        <i class="bi bi-grid-fill me-1"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="{% url 'arvore' %}">
+                        <i class="bi bi-tree me-1"></i> Árvore
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'egressos' %}">
+                        <i class="bi bi-people me-1"></i> Egressos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'conquistas' %}">
+                        <i class="bi bi-trophy me-1"></i> Conquistas
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'vagas' %}">
+                        <i class="bi bi-briefcase me-1"></i> Vagas
+                    </a>
+                </li>
+            </ul>
+            
+            <div class="user-info">
+                <div class="user-level">
+                    Nível 7 • 1450 XP
+                </div>
+                <div class="user-avatar">
+                    EB
+                </div>
+                <div>
+                    <div class="fw-bold">Alex Silva Demo</div>
+                    <small class="text-muted">4º Período • CRA: 8.2</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container main-content">
+    <!-- Header Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="h3 mb-1">Sua Árvore de Carreiras</h1>
+            <p class="text-muted">Explore diferentes caminhos profissionais e descubra seu potencial</p>
+        </div>
+    </div>
+    
+    <!-- Tree Visualization -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="tree-container">
+                <!-- Tree Trunk -->
+                <div class="tree-trunk"></div>
+                
+                <!-- Branches -->
+                <div class="branch" style="width: 150px; bottom: 150px; left: 50%; transform: translateX(-100%) rotate(-30deg);"></div>
+                <div class="branch" style="width: 150px; bottom: 150px; left: 50%; transform: rotate(30deg);"></div>
+                <div class="branch" style="width: 120px; bottom: 250px; left: 50%; transform: translateX(-100%) rotate(-45deg);"></div>
+                <div class="branch" style="width: 120px; bottom: 250px; left: 50%; transform: rotate(45deg);"></div>
+                <div class="branch" style="width: 100px; bottom: 320px; left: 50%; transform: translateX(-100%) rotate(-60deg);"></div>
+                <div class="branch" style="width: 100px; bottom: 320px; left: 50%; transform: rotate(60deg);"></div>
+                
+                <!-- Career Nodes -->
+                <div class="career-node unlocked" style="bottom: 180px; left: 20%;">
+                    <i class="bi bi-database career-icon"></i>
+                    <h6 class="career-title">Banco de Dados</h6>
+                    <small class="text-muted">SQL, NoSQL</small>
+                    <div class="career-progress">
+                        <div class="career-progress-bar" style="width: 85%"></div>
+                    </div>
+                </div>
+                
+                <div class="career-node unlocked" style="bottom: 180px; right: 20%;">
+                    <i class="bi bi-code-slash career-icon"></i>
+                    <h6 class="career-title">Desenvolvimento</h6>
+                    <small class="text-muted">Frontend, Backend</small>
+                    <div class="career-progress">
+                        <div class="career-progress-bar" style="width: 75%"></div>
+                    </div>
+                </div>
+                
+                <div class="career-node unlocked" style="bottom: 280px; left: 15%;">
+                    <i class="bi bi-graph-up career-icon"></i>
+                    <h6 class="career-title">Data Science</h6>
+                    <small class="text-muted">ML, IA, Analytics</small>
+                    <div class="career-progress">
+                        <div class="career-progress-bar" style="width: 75%"></div>
+                    </div>
+                </div>
+                
+                <div class="career-node unlocked" style="bottom: 280px; right: 15%;">
+                    <i class="bi bi-cloud career-icon"></i>
+                    <h6 class="career-title">Cloud & DevOps</h6>
+                    <small class="text-muted">AWS, Docker, K8s</small>
+                    <div class="career-progress">
+                        <div class="career-progress-bar" style="width: 60%"></div>
+                    </div>
+                </div>
+                
+                <div class="career-node locked" style="bottom: 350px; left: 10%;">
+                    <i class="bi bi-shield-check career-icon"></i>
+                    <h6 class="career-title">Segurança</h6>
+                    <small class="text-muted">Cybersecurity</small>
+                    <div class="career-progress">
+                        <div class="career-progress-bar" style="width: 30%"></div>
+                    </div>
+                </div>
+                
+                <div class="career-node locked" style="bottom: 350px; right: 10%;">
+                    <i class="bi bi-robot career-icon"></i>
+                    <h6 class="career-title">IA Avançada</h6>
+                    <small class="text-muted">Deep Learning</small>
+                    <div class="career-progress">
+                        <div class="career-progress-bar" style="width: 40%"></div>
+                    </div>
+                </div>
+                
+                <div class="career-node locked" style="bottom: 420px; left: 50%; transform: translateX(-50%);">
+                    <i class="bi bi-stars career-icon"></i>
+                    <h6 class="career-title">Arquiteto de Sistemas</h6>
+                    <small class="text-muted">Nível Avançado</small>
+                    <div class="career-progress">
+                        <div class="career-progress-bar" style="width: 20%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Career Paths -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h5 class="section-title">Caminhos Recomendados</h5>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="path-card">
+                <i class="bi bi-cpu" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <h6>Engenheiro de Machine Learning</h6>
+                <p class="small mb-3">Especialize-se em IA e Machine Learning</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small>85% compatível</small>
+                    <i class="bi bi-arrow-right-circle"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="path-card">
+                <i class="bi bi-server" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <h6>Arquiteto de Cloud</h6>
+                <p class="small mb-3">Domine infraestrutura em nuvem</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small>75% compatível</small>
+                    <i class="bi bi-arrow-right-circle"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="path-card">
+                <i class="bi bi-code-square" style="font-size: 2rem; margin-bottom: 1rem;"></i>
+                <h6>Full Stack Senior</h6>
+                <p class="small mb-3">Torne-se um desenvolvedor completo</p>
+                <div class="d-flex justify-content-between align-items-center">
+                    <small>70% compatível</small>
+                    <i class="bi bi-arrow-right-circle"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Info Cards -->
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <div class="info-card">
+                <h6 class="mb-3">
+                    <i class="bi bi-lightbulb me-2"></i>Como Funciona
+                </h6>
+                <p class="small text-muted mb-2">
+                    A Árvore de Carreiras mostra seu progresso em diferentes áreas da tecnologia.
+                </p>
+                <p class="small text-muted mb-0">
+                    Complete disciplinas, projetos e desafios para desbloquear novos ramos!
+                </p>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="info-card">
+                <h6 class="mb-3">
+                    <i class="bi bi-trophy me-2"></i>Próximos Desafios
+                </h6>
+                <ul class="small mb-0">
+                    <li>Completar projeto de Data Science</li>
+                    <li>Obter certificação AWS</li>
+                    <li>Participar de hackathon</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-3">
+            <div class="info-card">
+                <h6 class="mb-3">
+                    <i class="bi bi-graph-up-arrow me-2"></i>Seu Progresso
+                </h6>
+                <div class="mb-2">
+                    <div class="d-flex justify-content-between small mb-1">
+                        <span>Ramos Explorados</span>
+                        <strong>4/7</strong>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar" style="width: 57%"></div>
+                    </div>
+                </div>
+                <p class="small text-muted mb-0">
+                    Continue explorando para desbloquear todos os caminhos!
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add interactive animations
+document.querySelectorAll('.career-node').forEach(node => {
+    node.addEventListener('click', function() {
+        if (!this.classList.contains('locked')) {
+            alert('Detalhes da carreira: ' + this.querySelector('.career-title').textContent);
+        } else {
+            alert('Este ramo ainda está bloqueado. Complete mais desafios para desbloquear!');
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Sistema CEA{% endblock %}
+
+{% block content %}
+<style>
+    body {
+        background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .login-container {
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        width: 100%;
+        max-width: 900px;
+        min-height: 500px;
+    }
+    .login-left {
+        background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
+        color: white;
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+    }
+    
+    .login-left::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: #FFC72C;
+    }
+    .login-right {
+        padding: 40px;
+    }
+    .brand-logo {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+    .brand-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+    .form-control {
+        border-radius: 10px;
+        padding: 12px 15px;
+        border: 1px solid #e0e0e0;
+        margin-bottom: 15px;
+    }
+    .form-control:focus {
+        box-shadow: 0 0 0 0.2rem rgba(255, 199, 44, 0.25);
+        border-color: #FFC72C;
+    }
+    .btn-login {
+        background: #FFC72C;
+        color: #1a1a1a;
+        border: 2px solid #FFC72C;
+        border-radius: 10px;
+        padding: 12px;
+        font-weight: 600;
+        width: 100%;
+        transition: all 0.3s;
+    }
+    .btn-login:hover {
+        background: #e6b329;
+        border-color: #e6b329;
+        color: #1a1a1a;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 199, 44, 0.4);
+    }
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    .feature-text {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+</style>
+
+<div class="login-container">
+    <div class="row g-0 h-100">
+        <div class="col-md-5 login-left">
+            <div class="mb-4">
+                <i class="bi bi-tree-fill feature-icon"></i>
+                <h1 class="brand-logo">Árvore de Carreiras</h1>
+                <p class="brand-subtitle">Sistema CEA - Conexão Egresso-Aluno</p>
+            </div>
+            
+            <div class="mt-4">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <i class="bi bi-people-fill feature-icon"></i>
+                        <p class="feature-text">Conecte-se com egressos</p>
+                    </div>
+                    <div class="col-4">
+                        <i class="bi bi-trophy-fill feature-icon"></i>
+                        <p class="feature-text">Acompanhe seu progresso</p>
+                    </div>
+                    <div class="col-4">
+                        <i class="bi bi-briefcase-fill feature-icon"></i>
+                        <p class="feature-text">Encontre oportunidades</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-7 login-right d-flex align-items-center">
+            <div class="w-100">
+                <h2 class="mb-4">Bem-vindo de volta!</h2>
+                <p class="text-muted mb-4">Faça login para acessar sua conta</p>
+                
+                <form>
+                    <div class="mb-3">
+                        <label for="ra" class="form-label">RA do Aluno</label>
+                        <input type="text" class="form-control" id="ra" placeholder="Ex: a2587246" maxlength="9">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Senha</label>
+                        <input type="password" class="form-control" id="password" placeholder="Digite sua senha">
+                    </div>
+                    
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="remember">
+                        <label class="form-check-label" for="remember">Lembrar-me</label>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-login mb-4">
+                        Entrar
+                    </button>
+                </form>
+                
+                <hr class="my-4">
+                
+                <div class="text-center">
+                    <p class="mb-0">Ainda não tem uma conta?</p>
+                    <a href="#" class="text-decoration-none fw-bold">Fale com o administrador</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
