@@ -10,3 +10,6 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'utfpr_egresso.settings_producti
 
 # Obter a aplicação WSGI
 application = get_wsgi_application()
+
+# Vercel espera 'app' como handler
+app = application
