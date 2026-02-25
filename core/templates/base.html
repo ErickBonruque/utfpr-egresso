@@ -14,6 +14,14 @@
     <link rel="preload" as="image" href="{% static 'img/logo_UTFPR_cor.png' %}">
     <link rel="preload" as="image" href="{% static 'img/logo_UTFPR_cor_branco.png' %}">
 
+    <!-- Script inline para aplicar tema ANTES do render (previne flash branco) -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('cea-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+
     <style>
         /* =============================================
            TEMA CLARO (Light Mode)
@@ -992,10 +1000,13 @@
                 }
             }
 
-            // Aplicar tema salvo ao carregar
-            applyTheme(savedTheme);
+            // Sincronizar estado do toggle e logo com o tema já aplicado no head
             toggle.checked = savedTheme === 'dark';
+            if (logo) {
+                logo.src = savedTheme === 'dark' ? logo.dataset.dark : logo.dataset.light;
+            }
 
+            // Gerenciar mudança de tema pelo toggle
             toggle.addEventListener('change', function () {
                 const theme = this.checked ? 'dark' : 'light';
                 applyTheme(theme);
