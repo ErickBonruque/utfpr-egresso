@@ -1,578 +1,2028 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Vagas - Árvore de Carreiras{% endblock %}
+{% block title %}Vagas - Sistema CEA{% endblock %}
+{% block nav_vagas %}active{% endblock %}
 
 {% block content %}
 <style>
+    /* ============================================
+       VARIÁVEIS LOCAIS DA PÁGINA
+       ============================================ */
     :root {
-        --primary-color: #1a1a1a;
-        --secondary-color: #333333;
-        --accent-color: #FFC72C;
-        --utfpr-yellow: #FFC72C;
-        --utfpr-black: #1a1a1a;
-        --light-bg: #f8f9fa;
-        --card-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        --glass-bg: rgba(255, 255, 255, 0.85);
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        --border-radius: 16px;
+        --gradient-accent: linear-gradient(135deg, #FFC72C 0%, #FFD966 100%);
+        --gradient-blue: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+        --gradient-green: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        --gradient-purple: linear-gradient(135deg, #8b5cf6 0%, #a78bfa 100%);
+        --gradient-orange: linear-gradient(135deg, #f97316 0%, #fb923c 100%);
     }
-    
+
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
     body {
-        background-color: var(--light-bg);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    
-    .navbar {
-        background: white;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        padding: 1rem 0;
-    }
-    
-    .navbar-brand {
-        font-weight: bold;
-        color: var(--primary-color) !important;
-        font-size: 1.5rem;
-    }
-    
-    .nav-link {
-        color: #666 !important;
-        font-weight: 500;
-        margin: 0 10px;
-        transition: color 0.3s;
+
+    /* ============================================
+       HERO / HEADER DA PÁGINA
+       ============================================ */
+    .vagas-hero {
+        background: var(--gradient-dark);
+        padding: 3rem 0 4.5rem;
         position: relative;
+        overflow: hidden;
     }
-    
-    .nav-link:hover {
-        color: var(--primary-color) !important;
-    }
-    
-    .nav-link.active {
-        color: var(--primary-color) !important;
-    }
-    
-    .nav-link.active::after {
+
+    .vagas-hero::before {
         content: '';
         position: absolute;
-        bottom: -10px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: var(--primary-color);
-        border-radius: 2px;
-    }
-    
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-    
-    .user-avatar {
-        width: 40px;
-        height: 40px;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(255, 199, 44, 0.15) 0%, transparent 70%);
         border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
     }
-    
-    .user-level {
-        background: var(--utfpr-yellow);
-        color: var(--utfpr-black);
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        font-weight: 600;
-    }
-    
-    .main-content {
-        padding: 2rem 0;
-    }
-    
-    .card {
-        border: none;
-        border-radius: 15px;
-        box-shadow: var(--card-shadow);
-        transition: transform 0.3s, box-shadow 0.3s;
-        height: 100%;
-    }
-    
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 20px rgba(0,0,0,0.12);
-    }
-    
-    .job-card {
-        border-left: 4px solid var(--accent-color);
-    }
-    
-    .job-type {
-        font-size: 0.85rem;
-        font-weight: 600;
-        padding: 5px 12px;
-        border-radius: 20px;
-    }
-    
-    .job-type.full-time {
-        background-color: #e8f5e9;
-        color: #2e7d32;
-    }
-    
-    .job-type.internship {
-        background-color: #e3f2fd;
-        color: #1565c0;
-    }
-    
-    .job-type.junior {
-        background-color: #fff3e0;
-        color: #e65100;
-    }
-    
-    .salary-badge {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        color: white;
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        font-weight: 600;
-    }
-    
-    .section-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--primary-color);
-        margin-bottom: 1.5rem;
-        position: relative;
-        padding-left: 20px;
-    }
-    
-    .section-title::before {
+
+    .vagas-hero::after {
         content: '';
         position: absolute;
-        left: 0;
+        bottom: -30%;
+        left: -5%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .vagas-hero h1 {
+        color: white;
+        font-weight: 800;
+        font-size: 2.2rem;
+        letter-spacing: -0.5px;
+    }
+
+    .vagas-hero h1 span {
+        background: var(--gradient-accent);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .vagas-hero p {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.05rem;
+        max-width: 550px;
+    }
+
+    /* ============================================
+       BARRA DE PESQUISA PRINCIPAL
+       ============================================ */
+    .search-container {
+        margin-top: -2.5rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    .search-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem 2rem;
+        border: none;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+    }
+
+    .search-input-wrapper i {
+        position: absolute;
+        left: 16px;
         top: 50%;
         transform: translateY(-50%);
-        width: 5px;
-        height: 25px;
-        background: var(--primary-color);
-        border-radius: 3px;
+        color: #aaa;
+        font-size: 1.1rem;
     }
-    
-    .badge-skill {
-        background-color: #f5f5f5;
-        color: #666;
-        padding: 5px 10px;
-        border-radius: 5px;
+
+    .search-input {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 14px 16px 14px 44px;
+        font-size: 1rem;
+        transition: var(--transition-smooth);
+        background: #fafafa;
+    }
+
+    .search-input:focus {
+        border-color: var(--utfpr-yellow);
+        box-shadow: 0 0 0 4px rgba(255, 199, 44, 0.15);
+        background: white;
+        outline: none;
+    }
+
+    .search-input::placeholder {
+        color: #b0b0b0;
+    }
+
+    /* ============================================
+       FILTROS
+       ============================================ */
+    .filter-select {
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 14px 16px;
+        font-size: 0.95rem;
+        transition: var(--transition-smooth);
+        background: #fafafa;
+        cursor: pointer;
+        appearance: auto;
+    }
+
+    .filter-select:focus {
+        border-color: var(--utfpr-yellow);
+        box-shadow: 0 0 0 4px rgba(255, 199, 44, 0.15);
+        background: white;
+        outline: none;
+    }
+
+    .btn-search {
+        background: var(--gradient-dark);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 14px 32px;
+        font-weight: 600;
+        font-size: 1rem;
+        transition: var(--transition-smooth);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        white-space: nowrap;
+    }
+
+    .btn-search:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+
+    .btn-search:active {
+        transform: translateY(0);
+    }
+
+    .btn-search:disabled {
+        opacity: 0.7;
+        transform: none;
+    }
+
+    /* ============================================
+       AUTOCOMPLETE DE CIDADES
+       ============================================ */
+    .cidade-wrapper {
+        position: relative;
+    }
+
+    .autocomplete-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 2px solid #e9ecef;
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+        max-height: 220px;
+        overflow-y: auto;
+        z-index: 1000;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        display: none;
+    }
+
+    .autocomplete-dropdown.show {
+        display: block;
+    }
+
+    .autocomplete-item {
+        padding: 10px 16px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #444;
+        transition: background 0.15s;
+        border-bottom: 1px solid #f5f5f5;
+    }
+
+    .autocomplete-item:last-child {
+        border-bottom: none;
+    }
+
+    .autocomplete-item:hover,
+    .autocomplete-item.active {
+        background: rgba(255, 199, 44, 0.12);
+        color: var(--primary-color);
+    }
+
+    .autocomplete-item mark {
+        background: rgba(255, 199, 44, 0.35);
+        color: inherit;
+        padding: 0;
+        border-radius: 2px;
+    }
+
+    .autocomplete-loading {
+        padding: 12px 16px;
+        text-align: center;
+        color: #999;
         font-size: 0.85rem;
-        margin-right: 5px;
-        margin-bottom: 5px;
-        display: inline-block;
     }
-    
-    .company-logo {
-        width: 60px;
-        height: 60px;
+
+    /* Chips de filtro rápido */
+    .quick-filters {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+
+    .quick-filter-chip {
+        background: #f5f5f5;
+        border: 2px solid transparent;
+        border-radius: 25px;
+        padding: 8px 18px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #555;
+        cursor: pointer;
+        transition: var(--transition-smooth);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .quick-filter-chip:hover {
+        background: #fff;
+        border-color: var(--utfpr-yellow);
+        color: var(--primary-color);
+    }
+
+    .quick-filter-chip.active {
+        background: var(--utfpr-yellow);
+        color: var(--utfpr-black);
+        border-color: var(--utfpr-yellow);
+        font-weight: 600;
+    }
+
+    .quick-filter-chip i {
+        font-size: 0.9rem;
+    }
+
+    /* ============================================
+       ÁREA DE RESULTADOS
+       ============================================ */
+    .results-area {
+        padding: 2rem 0 3rem;
+    }
+
+    .results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .results-count {
+        font-size: 0.95rem;
+        color: #777;
+    }
+
+    .results-count strong {
+        color: var(--primary-color);
+    }
+
+    .sort-select {
+        border: 1px solid #e0e0e0;
         border-radius: 10px;
-        background: linear-gradient(135deg, #667eea, #764ba2);
+        padding: 8px 14px;
+        font-size: 0.85rem;
+        background: white;
+        cursor: pointer;
+    }
+
+    /* ============================================
+       CARDS DAS VAGAS
+       ============================================ */
+    .job-card {
+        background: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--card-shadow);
+        padding: 1.5rem;
+        transition: var(--transition-smooth);
+        border: 1px solid rgba(0, 0, 0, 0.04);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .job-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 4px;
+        height: 100%;
+        border-radius: 4px 0 0 4px;
+        transition: var(--transition-smooth);
+    }
+
+    .job-card.source-indeed::before {
+        background: var(--gradient-blue);
+    }
+
+    .job-card.source-linkedin::before {
+        background: var(--gradient-green);
+    }
+
+    .job-card.source-google::before {
+        background: var(--gradient-orange);
+    }
+
+    .job-card.source-glassdoor::before {
+        background: var(--gradient-purple);
+    }
+
+    .job-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--card-shadow-hover);
+        border-color: rgba(255, 199, 44, 0.2);
+    }
+
+    /* Header do card */
+    .job-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 1rem;
+    }
+
+    .job-card-header-left {
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .company-logo {
+        width: 52px;
+        height: 52px;
+        min-width: 52px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
-        font-weight: bold;
-        font-size: 1.2rem;
+        font-weight: 700;
+        font-size: 1rem;
+        letter-spacing: -0.5px;
+        background: var(--gradient-dark);
+        overflow: hidden;
+    }
+
+    .company-logo img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+
+    .job-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 3px;
+        line-height: 1.3;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .job-company {
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: 500;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Badges */
+    .badge-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 1rem;
+    }
+
+    .badge-job-type {
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .badge-fulltime {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .badge-internship {
+        background: #e3f2fd;
+        color: #1565c0;
+    }
+
+    .badge-contract {
+        background: #fff3e0;
+        color: #e65100;
+    }
+
+    .badge-parttime {
+        background: #f3e5f5;
+        color: #7b1fa2;
+    }
+
+    .badge-remote {
+        background: #ede9fe;
+        color: #6d28d9;
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 6px;
+    }
+
+    .badge-source {
+        font-size: 0.7rem;
+        font-weight: 600;
+        padding: 3px 8px;
+        border-radius: 5px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .badge-source-indeed {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .badge-source-linkedin {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .badge-source-google {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .badge-source-glassdoor {
+        background: #ede9fe;
+        color: #5b21b6;
+    }
+
+    /* Info da vaga */
+    .job-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-bottom: 1rem;
+        flex: 1;
+    }
+
+    .job-info-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 0.85rem;
+        color: #777;
+    }
+
+    .job-info-item i {
+        font-size: 0.9rem;
+        color: #aaa;
+    }
+
+    /* Salário */
+    .salary-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--gradient-dark);
+        color: white;
+        padding: 5px 14px;
+        border-radius: 8px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    /* Footer do card */
+    .job-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-top: 1rem;
+        border-top: 1px solid #f0f0f0;
+        margin-top: auto;
+    }
+
+    .job-date {
+        font-size: 0.8rem;
+        color: #999;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .btn-apply {
+        background: var(--gradient-dark);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 8px 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: var(--transition-smooth);
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .btn-apply:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        color: white;
+    }
+
+    .btn-details {
+        background: transparent;
+        color: var(--primary-color);
+        border: 2px solid #e0e0e0;
+        border-radius: 10px;
+        padding: 7px 16px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: var(--transition-smooth);
+        cursor: pointer;
+    }
+
+    .btn-details:hover {
+        border-color: var(--utfpr-yellow);
+        background: rgba(255, 199, 44, 0.08);
+    }
+
+    /* ============================================
+       ESTADOS: LOADING, VAZIO, ERRO
+       ============================================ */
+    .state-container {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+
+    .state-container i {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+
+    .state-container h4 {
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .state-container p {
+        color: #888;
+        max-width: 450px;
+        margin: 0 auto;
+    }
+
+    /* Skeleton loading */
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: skeleton-pulse 1.5s ease-in-out infinite;
+        border-radius: 8px;
+    }
+
+    @keyframes skeleton-pulse {
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    .skeleton-card {
+        background: white;
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .skeleton-logo {
+        width: 52px;
+        height: 52px;
+        border-radius: 12px;
+    }
+
+    .skeleton-text {
+        height: 14px;
+        margin-bottom: 8px;
+    }
+
+    .skeleton-text-sm {
+        height: 10px;
+        margin-bottom: 6px;
+    }
+
+    .skeleton-badge {
+        height: 24px;
+        width: 80px;
+        border-radius: 6px;
+    }
+
+    /* Spinner do botão */
+    .btn-spinner {
+        width: 18px;
+        height: 18px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* ============================================
+       MODAL DE DETALHES DA VAGA
+       ============================================ */
+    .modal-job .modal-content {
+        border: none;
+        border-radius: var(--border-radius);
+        overflow: hidden;
+    }
+
+    .modal-job .modal-header {
+        background: var(--gradient-dark);
+        color: white;
+        padding: 1.5rem 2rem;
+        border: none;
+    }
+
+    .modal-job .modal-header .btn-close {
+        filter: invert(1);
+    }
+
+    .modal-job .modal-body {
+        padding: 2rem;
+        max-height: 65vh;
+        overflow-y: auto;
+    }
+
+    .modal-job .modal-footer {
+        border-top: 1px solid #f0f0f0;
+        padding: 1rem 2rem;
+    }
+
+    .modal-job-title {
+        font-weight: 800;
+        font-size: 1.3rem;
+        margin-bottom: 4px;
+    }
+
+    .modal-job-company {
+        opacity: 0.8;
+        font-size: 0.95rem;
+    }
+
+    .modal-description {
+        font-size: 0.95rem;
+        line-height: 1.7;
+        color: #444;
+    }
+
+    .modal-description ul {
+        padding-left: 20px;
+    }
+
+    .modal-description li {
+        margin-bottom: 6px;
+    }
+
+    .modal-info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-info-item {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 1rem;
+    }
+
+    .modal-info-item label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #999;
+        margin-bottom: 4px;
+        display: block;
+    }
+
+    .modal-info-item span {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+
+    /* ============================================
+       STATS RÁPIDAS
+       ============================================ */
+    .stats-row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-mini-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        text-align: center;
+        box-shadow: var(--card-shadow);
+        transition: var(--transition-smooth);
+    }
+
+    .stat-mini-card:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--card-shadow-hover);
+    }
+
+    .stat-mini-card .stat-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 8px;
+        font-size: 1.1rem;
+    }
+
+    .stat-mini-card .stat-value {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--primary-color);
+        line-height: 1;
+    }
+
+    .stat-mini-card .stat-label {
+        font-size: 0.75rem;
+        color: #999;
+        margin-top: 4px;
+    }
+
+    /* ============================================
+       ANIMAÇÕES
+       ============================================ */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .fade-in-up {
+        animation: fadeInUp 0.5s ease forwards;
+    }
+
+    .job-card-animated {
+        opacity: 0;
+        animation: fadeInUp 0.4s ease forwards;
+    }
+
+    /* ============================================
+       RESPONSIVIDADE
+       ============================================ */
+    @media (max-width: 768px) {
+        .vagas-hero {
+            padding: 2rem 0 3.5rem;
+        }
+
+        .vagas-hero h1 {
+            font-size: 1.6rem;
+        }
+
+        .search-card {
+            padding: 1rem 1.25rem;
+        }
+
+        .stats-row {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .results-header {
+            flex-direction: column;
+            gap: 8px;
+            align-items: flex-start;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .stats-row {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    /* ============================================
+       DARK MODE - PÁGINA DE VAGAS
+       ============================================ */
+    [data-theme="dark"] .search-card {
+        background: #1f2233;
+        border: 1px solid #2c3050;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="dark"] .search-input {
+        background: #12141c;
+        border-color: #2c3050;
+        color: #e6e8f0;
+    }
+
+    [data-theme="dark"] .search-input::placeholder {
+        color: #6d748a;
+    }
+
+    [data-theme="dark"] .search-input:focus {
+        background: #12141c;
+        border-color: #FFD04A;
+        color: #e6e8f0;
+    }
+
+    [data-theme="dark"] .search-input-wrapper i {
+        color: #6d748a;
+    }
+
+    [data-theme="dark"] .filter-select {
+        background: #12141c;
+        border-color: #2c3050;
+        color: #e6e8f0;
+    }
+
+    [data-theme="dark"] .filter-select option {
+        background: #12141c;
+        color: #e6e8f0;
+    }
+
+    [data-theme="dark"] .filter-select:focus {
+        background: #12141c;
+        border-color: #FFD04A;
+    }
+
+    [data-theme="dark"] .form-label {
+        color: #a1a7bf !important;
+    }
+
+    [data-theme="dark"] .quick-filter-chip {
+        background: #242840;
+        border-color: #2c3050;
+        color: #a1a7bf;
+    }
+
+    [data-theme="dark"] .quick-filter-chip:hover {
+        background: #2e3254;
+        border-color: #FFD04A;
+        color: #e6e8f0;
+    }
+
+    [data-theme="dark"] .quick-filter-chip.active {
+        background: #FFD04A;
+        color: #12141c;
+        border-color: #FFD04A;
+    }
+
+    [data-theme="dark"] .autocomplete-dropdown {
+        background: #1b1e2b;
+        border-color: #2c3050;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] .autocomplete-item {
+        color: #e6e8f0;
+        border-bottom-color: #2c3050;
+    }
+
+    [data-theme="dark"] .autocomplete-item:hover,
+    [data-theme="dark"] .autocomplete-item.active {
+        background: rgba(255, 208, 74, 0.12);
+        color: #FFD04A;
+    }
+
+    [data-theme="dark"] .stat-mini-card {
+        background: #1f2233;
+        border: 1px solid #2c3050;
+    }
+
+    [data-theme="dark"] .stat-value {
+        color: #e6e8f0 !important;
+    }
+
+    [data-theme="dark"] .stat-label {
+        color: #a1a7bf !important;
+    }
+
+    [data-theme="dark"] .results-count {
+        color: #a1a7bf;
+    }
+
+    [data-theme="dark"] .results-count strong {
+        color: #e6e8f0;
+    }
+
+    [data-theme="dark"] .job-card {
+        background: #1f2233;
+        border-color: #2c3050;
+    }
+
+    [data-theme="dark"] .job-card:hover {
+        border-color: rgba(255, 208, 74, 0.3);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-theme="dark"] .job-title {
+        color: #e6e8f0;
+    }
+
+    [data-theme="dark"] .job-company {
+        color: #a1a7bf;
+    }
+
+    [data-theme="dark"] .job-info-item {
+        color: #a1a7bf;
+    }
+
+    [data-theme="dark"] .job-info-item i {
+        color: #6d748a;
+    }
+
+    [data-theme="dark"] .job-card-footer {
+        border-top-color: #2c3050;
+    }
+
+    [data-theme="dark"] .job-date {
+        color: #6d748a;
+    }
+
+    [data-theme="dark"] .btn-details {
+        color: #e6e8f0;
+        border-color: #2c3050;
+        background: transparent;
+    }
+
+    [data-theme="dark"] .btn-details:hover {
+        border-color: #FFD04A;
+        background: rgba(255, 208, 74, 0.12);
+        color: #FFD04A;
+    }
+
+    [data-theme="dark"] .sort-select {
+        background: #1f2233;
+        border-color: #2c3050;
+        color: #e6e8f0;
+    }
+
+    [data-theme="dark"] .sort-select option {
+        background: #1b1e2b;
+    }
+
+    [data-theme="dark"] .state-container h4 {
+        color: #e6e8f0;
+    }
+
+    [data-theme="dark"] .state-container p {
+        color: #a1a7bf;
+    }
+
+    [data-theme="dark"] .state-container i {
+        color: #2c3050 !important;
+    }
+
+    [data-theme="dark"] .skeleton-card {
+        background: #1f2233;
+        border: 1px solid #2c3050;
+    }
+
+    [data-theme="dark"] .skeleton {
+        background: linear-gradient(90deg, #1b1e2b 25%, #242840 50%, #1b1e2b 75%);
+        background-size: 200% 100%;
+    }
+
+    [data-theme="dark"] .modal-job .modal-content {
+        background: #1b1e2b;
+    }
+
+    [data-theme="dark"] .modal-job .modal-body {
+        background: #1b1e2b;
+    }
+
+    [data-theme="dark"] .modal-job .modal-footer {
+        background: #1f2233;
+        border-top-color: #2c3050;
+    }
+
+    [data-theme="dark"] .modal-description {
+        color: #a1a7bf;
+    }
+
+    [data-theme="dark"] .modal-info-item {
+        background: #242840;
+        border: 1px solid #2c3050;
+    }
+
+    [data-theme="dark"] .modal-info-item label {
+        color: #6d748a;
+    }
+
+    [data-theme="dark"] .modal-info-item span {
+        color: #e6e8f0;
     }
 </style>
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light sticky-top">
+<!-- Hero Section -->
+<section class="vagas-hero">
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="{% url 'dashboard' %}">
-            <img src="{% static 'img/logo_UTFPR_cor.png' %}" alt="UTFPR" style="height: 50px;">
-            <span class="ms-2">Sistema CEA</span>
-        </a>
-        
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'dashboard' %}">
-                        <i class="bi bi-grid-fill me-1"></i> Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'arvore' %}">
-                        <i class="bi bi-tree me-1"></i> Árvore
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'egressos' %}">
-                        <i class="bi bi-people me-1"></i> Egressos
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'conquistas' %}">
-                        <i class="bi bi-trophy me-1"></i> Conquistas
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'vagas' %}">
-                        <i class="bi bi-briefcase me-1"></i> Vagas
-                    </a>
-                </li>
-            </ul>
-            
-            <div class="user-info">
-                <div class="user-level">
-                    Nível 7 • 1450 XP
-                </div>
-                <div class="user-avatar">
-                    EB
-                </div>
-                <div>
-                    <div class="fw-bold">Alex Silva Demo</div>
-                    <small class="text-muted">4º Período • CRA: 8.2</small>
-                </div>
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="mb-3">Encontre sua próxima <span>oportunidade</span></h1>
+                <p>Pesquise vagas de estágio, emprego e oportunidades em tecnologia. Buscamos em múltiplas plataformas
+                    para você encontrar a vaga ideal.</p>
             </div>
         </div>
     </div>
-</nav>
+</section>
 
-<!-- Main Content -->
-<div class="container main-content">
-    <!-- Header Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="h3 mb-1">Oportunidades de Carreira</h1>
-            <p class="text-muted">Vagas selecionadas especialmente para você</p>
+<!-- Barra de Pesquisa -->
+<div class="container search-container">
+    <div class="search-card">
+        <form id="searchForm" onsubmit="buscarVagas(event)">
+            <div class="row g-3 align-items-end">
+                <!-- Campo de pesquisa principal -->
+                <div class="col-lg-3 col-md-6">
+                    <label class="form-label fw-semibold" style="font-size: 0.85rem; color: #777;">
+                        <i class="bi bi-search me-1"></i> O que você procura?
+                    </label>
+                    <div class="search-input-wrapper">
+                        <i class="bi bi-briefcase"></i>
+                        <input type="text" id="searchTerm" class="form-control search-input"
+                            placeholder="Ex: desenvolvedor, data science...">
+                    </div>
+                </div>
+
+                <!-- Estado -->
+                <div class="col-lg-2 col-md-3">
+                    <label class="form-label fw-semibold" style="font-size: 0.85rem; color: #777;">
+                        <i class="bi bi-geo-alt me-1"></i> Estado
+                    </label>
+                    <select id="filterEstado" class="form-select filter-select">
+                        <option value="">Todo o Brasil</option>
+                        <option value="AC">Acre</option>
+                        <option value="AL">Alagoas</option>
+                        <option value="AP">Amapá</option>
+                        <option value="AM">Amazonas</option>
+                        <option value="BA">Bahia</option>
+                        <option value="CE">Ceará</option>
+                        <option value="DF">Distrito Federal</option>
+                        <option value="ES">Espírito Santo</option>
+                        <option value="GO">Goiás</option>
+                        <option value="MA">Maranhão</option>
+                        <option value="MT">Mato Grosso</option>
+                        <option value="MS">Mato Grosso do Sul</option>
+                        <option value="MG">Minas Gerais</option>
+                        <option value="PA">Pará</option>
+                        <option value="PB">Paraíba</option>
+                        <option value="PR" selected>Paraná</option>
+                        <option value="PE">Pernambuco</option>
+                        <option value="PI">Piauí</option>
+                        <option value="RJ">Rio de Janeiro</option>
+                        <option value="RN">Rio Grande do Norte</option>
+                        <option value="RS">Rio Grande do Sul</option>
+                        <option value="RO">Rondônia</option>
+                        <option value="RR">Roraima</option>
+                        <option value="SC">Santa Catarina</option>
+                        <option value="SP">São Paulo</option>
+                        <option value="SE">Sergipe</option>
+                        <option value="TO">Tocantins</option>
+                    </select>
+                </div>
+
+                <!-- Cidade -->
+                <div class="col-lg-2 col-md-3">
+                    <label class="form-label fw-semibold" style="font-size: 0.85rem; color: #777;">
+                        <i class="bi bi-building me-1"></i> Cidade
+                    </label>
+                    <div class="search-input-wrapper cidade-wrapper">
+                        <i class="bi bi-building"></i>
+                        <input type="text" id="filterCidade" class="form-control search-input"
+                            placeholder="Todas as cidades" autocomplete="off">
+                        <div class="autocomplete-dropdown" id="cidadeDropdown"></div>
+                    </div>
+                </div>
+
+                <!-- Tipo de Vaga -->
+                <div class="col-lg-2 col-md-4">
+                    <label class="form-label fw-semibold" style="font-size: 0.85rem; color: #777;">
+                        <i class="bi bi-tag me-1"></i> Tipo
+                    </label>
+                    <select id="filterJobType" class="form-select filter-select">
+                        <option value="">Todos os tipos</option>
+                        <option value="internship">Estágio</option>
+                        <option value="fulltime">Tempo integral</option>
+                        <option value="parttime">Meio período</option>
+                        <option value="contract">Contrato</option>
+                    </select>
+                </div>
+
+                <!-- Modo de trabalho -->
+                <div class="col-lg-1 col-md-4">
+                    <label class="form-label fw-semibold" style="font-size: 0.85rem; color: #777;">
+                        <i class="bi bi-house me-1"></i> Modo
+                    </label>
+                    <select id="filterRemote" class="form-select filter-select">
+                        <option value="">Todos</option>
+                        <option value="true">Remoto</option>
+                        <option value="false">Presencial</option>
+                    </select>
+                </div>
+
+                <!-- Botão Buscar -->
+                <div class="col-lg-2 col-md-4">
+                    <button type="submit" id="btnSearch" class="btn btn-search w-100">
+                        <i class="bi bi-search"></i>
+                        <span>Buscar</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filtros rápidos -->
+            <div class="quick-filters" id="quickFilters">
+                <button type="button" class="quick-filter-chip" data-term="estágio desenvolvimento software"
+                    data-type="internship">
+                    <i class="bi bi-mortarboard"></i> Estágio Dev
+                </button>
+                <button type="button" class="quick-filter-chip" data-term="estágio ciência de dados"
+                    data-type="internship">
+                    <i class="bi bi-bar-chart-line"></i> Estágio Dados
+                </button>
+                <button type="button" class="quick-filter-chip" data-term="desenvolvedor junior programador"
+                    data-type="fulltime">
+                    <i class="bi bi-code-square"></i> Dev Júnior
+                </button>
+                <button type="button" class="quick-filter-chip" data-term="desenvolvedor software remoto"
+                    data-remote="true">
+                    <i class="bi bi-laptop"></i> Dev Remoto
+                </button>
+                <button type="button" class="quick-filter-chip" data-term="machine learning engenheiro dados"
+                    data-type="">
+                    <i class="bi bi-robot"></i> ML / IA
+                </button>
+                <button type="button" class="quick-filter-chip" data-term="frontend developer react angular"
+                    data-type="">
+                    <i class="bi bi-window-sidebar"></i> Frontend
+                </button>
+                <button type="button" class="quick-filter-chip" data-term="backend developer python java node"
+                    data-type="">
+                    <i class="bi bi-server"></i> Backend
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Área de Resultados -->
+<div class="container results-area">
+
+    <!-- Stats rápidas (atualizadas após busca) -->
+    <div class="stats-row" id="statsRow" style="display: none;">
+        <div class="stat-mini-card">
+            <div class="stat-icon" style="background: rgba(59,130,246,0.1); color: #3b82f6;">
+                <i class="bi bi-briefcase"></i>
+            </div>
+            <div class="stat-value" id="statTotal">0</div>
+            <div class="stat-label">Vagas encontradas</div>
+        </div>
+        <div class="stat-mini-card">
+            <div class="stat-icon" style="background: rgba(16,185,129,0.1); color: #10b981;">
+                <i class="bi bi-building"></i>
+            </div>
+            <div class="stat-value" id="statCompanies">0</div>
+            <div class="stat-label">Empresas</div>
+        </div>
+        <div class="stat-mini-card">
+            <div class="stat-icon" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">
+                <i class="bi bi-house"></i>
+            </div>
+            <div class="stat-value" id="statRemote">0</div>
+            <div class="stat-label">Vagas remotas</div>
+        </div>
+        <div class="stat-mini-card">
+            <div class="stat-icon" style="background: rgba(249,115,22,0.1); color: #f97316;">
+                <i class="bi bi-globe"></i>
+            </div>
+            <div class="stat-value" id="statSources">0</div>
+            <div class="stat-label">Fontes</div>
         </div>
     </div>
-    
-    <!-- Filters -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Filtrar Vagas</h5>
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" placeholder="Buscar por cargo...">
-                        </div>
-                        <div class="col-md-3">
-                            <input type="text" class="form-control" placeholder="Buscar por empresa...">
-                        </div>
-                        <div class="col-md-2">
-                            <select class="form-select">
-                                <option>Todos os níveis</option>
-                                <option>Estágio</option>
-                                <option>Júnior</option>
-                                <option>Pleno</option>
-                                <option>Sênior</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <select class="form-select">
-                                <option>Remoto</option>
-                                <option>Híbrido</option>
-                                <option>Presencial</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-primary w-100">
-                                <i class="bi bi-search me-1"></i> Buscar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
+    <!-- Cabeçalho dos resultados -->
+    <div class="results-header" id="resultsHeader" style="display: none;">
+        <div class="results-count">
+            Mostrando <strong id="resultsCountText">0</strong> vagas para "<strong id="resultsSearchTerm"></strong>"
         </div>
     </div>
-    
-    <!-- Featured Jobs -->
-    <div class="row mb-4">
+
+    <!-- Container dos cards -->
+    <div class="row g-4" id="jobsContainer">
+        <!-- Estado inicial: chamada à ação -->
         <div class="col-12">
-            <h5 class="section-title">Vagas em Destaque</h5>
-        </div>
-        
-        <div class="col-md-6 mb-4">
-            <div class="card job-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="d-flex align-items-center">
-                            <div class="company-logo me-3">
-                                TC
-                            </div>
-                            <div>
-                                <h6 class="mb-1">Desenvolvedor Python Júnior</h6>
-                                <p class="text-muted mb-0">Tech Company</p>
-                            </div>
-                        </div>
-                        <span class="job-type full-time">CLT</span>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <span class="badge-skill">Python</span>
-                        <span class="badge-skill">Django</span>
-                        <span class="badge-skill">PostgreSQL</span>
-                        <span class="badge-skill">Docker</span>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
-                            <i class="bi bi-geo-alt me-1 text-muted"></i>
-                            <small class="text-muted">São Paulo, SP</small>
-                        </div>
-                        <div class="salary-badge">
-                            R$ 4k-6k
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">
-                            <i class="bi bi-clock me-1"></i> Publicada há 2 dias
-                        </small>
-                        <button class="btn btn-sm btn-outline-primary">
-                            Ver detalhes
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6 mb-4">
-            <div class="card job-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="d-flex align-items-center">
-                            <div class="company-logo me-3">
-                                AC
-                            </div>
-                            <div>
-                                <h6 class="mb-1">Estágio em Data Science</h6>
-                                <p class="text-muted mb-0">Analytics Corp</p>
-                            </div>
-                        </div>
-                        <span class="job-type internship">Estágio</span>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <span class="badge-skill">Python</span>
-                        <span class="badge-skill">Machine Learning</span>
-                        <span class="badge-skill">Pandas</span>
-                        <span class="badge-skill">SQL</span>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
-                            <i class="bi bi-house me-1 text-muted"></i>
-                            <small class="text-muted">Remoto</small>
-                        </div>
-                        <div class="salary-badge">
-                            R$ 1.5k-2k
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">
-                            <i class="bi bi-clock me-1"></i> Publicada há 1 dia
-                        </small>
-                        <button class="btn btn-sm btn-outline-primary">
-                            Ver detalhes
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6 mb-4">
-            <div class="card job-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="d-flex align-items-center">
-                            <div class="company-logo me-3">
-                                ST
-                            </div>
-                            <div>
-                                <h6 class="mb-1">Desenvolvedor Frontend Pleno</h6>
-                                <p class="text-muted mb-0">StartupTech</p>
-                            </div>
-                        </div>
-                        <span class="job-type full-time">CLT</span>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <span class="badge-skill">React</span>
-                        <span class="badge-skill">TypeScript</span>
-                        <span class="badge-skill">Node.js</span>
-                        <span class="badge-skill">AWS</span>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
-                            <i class="bi bi-laptop me-1 text-muted"></i>
-                            <small class="text-muted">Híbrido - Belo Horizonte, MG</small>
-                        </div>
-                        <div class="salary-badge">
-                            R$ 7k-9k
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">
-                            <i class="bi bi-clock me-1"></i> Publicada há 3 dias
-                        </small>
-                        <button class="btn btn-sm btn-outline-primary">
-                            Ver detalhes
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6 mb-4">
-            <div class="card job-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="d-flex align-items-center">
-                            <div class="company-logo me-3">
-                                IT
-                            </div>
-                            <div>
-                                <h6 class="mb-1">DevOps Engineer Júnior</h6>
-                                <p class="text-muted mb-0">InovaTech</p>
-                            </div>
-                        </div>
-                        <span class="job-type junior">PJ</span>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <span class="badge-skill">AWS</span>
-                        <span class="badge-skill">Kubernetes</span>
-                        <span class="badge-skill">CI/CD</span>
-                        <span class="badge-skill">Terraform</span>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
-                            <i class="bi bi-building me-1 text-muted"></i>
-                            <small class="text-muted">Florianópolis, SC</small>
-                        </div>
-                        <div class="salary-badge">
-                            R$ 8k-10k
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">
-                            <i class="bi bi-clock me-1"></i> Publicada há 5 dias
-                        </small>
-                        <button class="btn btn-sm btn-outline-primary">
-                            Ver detalhes
-                        </button>
-                    </div>
-                </div>
+            <div class="state-container" id="stateInitial">
+                <i class="bi bi-search" style="color: #ddd;"></i>
+                <h4>Pesquise por oportunidades</h4>
+                <p>Digite um termo de busca e clique em "Buscar" ou escolha um dos filtros rápidos acima para encontrar
+                    vagas de estágio e emprego em tecnologia.</p>
             </div>
         </div>
     </div>
-    
-    <!-- Recommended for You -->
-    <div class="row">
-        <div class="col-12">
-            <h5 class="section-title">Recomendadas para seu Perfil</h5>
-        </div>
-        
-        <div class="col-md-6 mb-4">
-            <div class="card job-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="d-flex align-items-center">
-                            <div class="company-logo me-3">
-                                DS
-                            </div>
-                            <div>
-                                <h6 class="mb-1">Machine Learning Engineer</h6>
-                                <p class="text-muted mb-0">DataScience Inc</p>
-                            </div>
-                        </div>
-                        <span class="job-type full-time">CLT</span>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <span class="badge-skill">Python</span>
-                        <span class="badge-skill">TensorFlow</span>
-                        <span class="badge-skill">PyTorch</span>
-                        <span class="badge-skill">Deep Learning</span>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
-                            <i class="bi bi-house me-1 text-muted"></i>
-                            <small class="text-muted">Remoto</small>
-                        </div>
-                        <div class="salary-badge">
-                            R$ 10k-15k
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">
-                            <i class="bi bi-clock me-1"></i> Publicada hoje
-                        </small>
-                        <button class="btn btn-sm btn-primary">
-                            Candidatar-se
-                        </button>
-                    </div>
+
+    <!-- Botão carregar mais -->
+    <div class="text-center mt-4" id="loadMoreContainer" style="display: none;">
+        <button class="btn btn-outline-dark px-4 py-2" id="btnLoadMore" onclick="carregarMais()"
+            style="border-radius: 12px; font-weight: 600;">
+            <i class="bi bi-arrow-down-circle me-2"></i> Carregar mais vagas
+        </button>
+    </div>
+</div>
+
+<!-- Modal de Detalhes da Vaga -->
+<div class="modal fade modal-job" id="jobDetailModal" tabindex="-1" aria-labelledby="jobDetailModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div>
+                    <h5 class="modal-job-title" id="modalJobTitle"></h5>
+                    <div class="modal-job-company" id="modalJobCompany"></div>
                 </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
             </div>
-        </div>
-        
-        <div class="col-md-6 mb-4">
-            <div class="card job-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-3">
-                        <div class="d-flex align-items-center">
-                            <div class="company-logo me-3">
-                                BF
-                            </div>
-                            <div>
-                                <h6 class="mb-1">Backend Developer Júnior</h6>
-                                <p class="text-muted mb-0">BigFinance</p>
-                            </div>
-                        </div>
-                        <span class="job-type full-time">CLT</span>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <span class="badge-skill">Java</span>
-                        <span class="badge-skill">Spring Boot</span>
-                        <span class="badge-skill">Microservices</span>
-                        <span class="badge-skill">MongoDB</span>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
-                            <i class="bi bi-geo-alt me-1 text-muted"></i>
-                            <small class="text-muted">Curitiba, PR</small>
-                        </div>
-                        <div class="salary-badge">
-                            R$ 5k-7k
-                        </div>
-                    </div>
-                    
-                    <div class="d-flex justify-content-between align-items-center">
-                        <small class="text-muted">
-                            <i class="bi bi-clock me-1"></i> Publicada há 4 dias
-                        </small>
-                        <button class="btn btn-sm btn-primary">
-                            Candidatar-se
-                        </button>
-                    </div>
-                </div>
+            <div class="modal-body">
+                <div class="modal-info-grid" id="modalInfoGrid"></div>
+                <h6 class="fw-bold mb-3">
+                    <i class="bi bi-text-paragraph me-2"></i>Descrição da Vaga
+                </h6>
+                <div class="modal-description" id="modalDescription"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"
+                    style="border-radius: 10px;">
+                    Fechar
+                </button>
+                <a href="#" id="modalApplyLink" target="_blank" class="btn btn-apply">
+                    <i class="bi bi-box-arrow-up-right"></i> Acessar vaga
+                </a>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // ============================================
+    // VARIÁVEIS GLOBAIS
+    // ============================================
+    let currentJobs = [];
+    let currentOffset = 0;
+    let isLoading = false;
+    const RESULTS_PER_PAGE = 20;
+
+    // ============================================
+    // BUSCA DE VAGAS
+    // ============================================
+    async function buscarVagas(event, append = false) {
+        if (event) event.preventDefault();
+        if (isLoading) return;
+
+        const searchTerm = document.getElementById('searchTerm').value.trim();
+        if (!searchTerm) {
+            document.getElementById('searchTerm').focus();
+            document.getElementById('searchTerm').style.borderColor = '#ef4444';
+            setTimeout(() => {
+                document.getElementById('searchTerm').style.borderColor = '#e9ecef';
+            }, 2000);
+            return;
+        }
+
+        const estado = document.getElementById('filterEstado').value;
+        const cidade = document.getElementById('filterCidade').value.trim();
+        const jobType = document.getElementById('filterJobType').value;
+        const isRemote = document.getElementById('filterRemote').value;
+
+        if (!append) {
+            currentOffset = 0;
+            currentJobs = [];
+        }
+
+        // Atualizar UI para estado de carregamento
+        isLoading = true;
+        const btnSearch = document.getElementById('btnSearch');
+        btnSearch.disabled = true;
+        btnSearch.innerHTML = '<div class="btn-spinner"></div> <span>Buscando...</span>';
+
+        if (!append) {
+            mostrarSkeletons();
+        }
+
+        // Construir URL da API
+        const params = new URLSearchParams({
+            search_term: searchTerm,
+            results_wanted: RESULTS_PER_PAGE.toString(),
+            sites: 'indeed,linkedin',
+        });
+
+        if (estado) params.append('estado', estado);
+        if (cidade) params.append('cidade', cidade);
+        if (jobType) params.append('job_type', jobType);
+        if (isRemote) params.append('is_remote', isRemote);
+
+        try {
+            const response = await fetch(`/api/vagas/?${params.toString()}`);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Erro ao buscar vagas');
+            }
+
+            if (append) {
+                currentJobs = [...currentJobs, ...data.jobs];
+            } else {
+                currentJobs = data.jobs;
+            }
+
+            renderizarResultados(data.jobs, data.total, searchTerm, append);
+
+        } catch (error) {
+            console.error('Erro:', error);
+            mostrarErro(error.message);
+        } finally {
+            isLoading = false;
+            btnSearch.disabled = false;
+            btnSearch.innerHTML = '<i class="bi bi-search"></i> <span>Buscar</span>';
+        }
+    }
+
+    // ============================================
+    // CARREGAR MAIS VAGAS
+    // ============================================
+    function carregarMais() {
+        currentOffset += RESULTS_PER_PAGE;
+        buscarVagas(null, true);
+    }
+
+    // ============================================
+    // RENDERIZAR RESULTADOS
+    // ============================================
+    function renderizarResultados(jobs, total, searchTerm, append) {
+        const container = document.getElementById('jobsContainer');
+        const statsRow = document.getElementById('statsRow');
+        const resultsHeader = document.getElementById('resultsHeader');
+        const loadMoreContainer = document.getElementById('loadMoreContainer');
+
+        if (!append) {
+            container.innerHTML = '';
+        }
+
+        if (currentJobs.length === 0) {
+            mostrarVazio(searchTerm);
+            statsRow.style.display = 'none';
+            resultsHeader.style.display = 'none';
+            loadMoreContainer.style.display = 'none';
+            return;
+        }
+
+        // Atualizar stats
+        statsRow.style.display = 'grid';
+        resultsHeader.style.display = 'flex';
+
+        const uniqueCompanies = new Set(currentJobs.map(j => j.company).filter(Boolean));
+        const remoteCount = currentJobs.filter(j => j.is_remote).length;
+        const uniqueSources = new Set(currentJobs.map(j => j.site).filter(Boolean));
+
+        document.getElementById('statTotal').textContent = currentJobs.length;
+        document.getElementById('statCompanies').textContent = uniqueCompanies.size;
+        document.getElementById('statRemote').textContent = remoteCount;
+        document.getElementById('statSources').textContent = uniqueSources.size;
+        document.getElementById('resultsCountText').textContent = currentJobs.length;
+        document.getElementById('resultsSearchTerm').textContent = searchTerm;
+
+        // Renderizar cards
+        jobs.forEach((job, index) => {
+            const globalIndex = (append ? currentJobs.length - jobs.length : 0) + index;
+            const card = criarCardVaga(job, globalIndex);
+            container.insertAdjacentHTML('beforeend', card);
+        });
+
+        // Mostrar/esconder "carregar mais"
+        if (jobs.length >= RESULTS_PER_PAGE) {
+            loadMoreContainer.style.display = 'block';
+        } else {
+            loadMoreContainer.style.display = 'none';
+        }
+    }
+
+    // ============================================
+    // CRIAR CARD DA VAGA
+    // ============================================
+    function criarCardVaga(job, index) {
+        const site = (job.site || 'unknown').toLowerCase();
+        const sourceClass = `source-${site}`;
+        const sourceBadgeClass = `badge-source-${site}`;
+
+        // Logo da empresa
+        let logoHTML = '';
+        if (job.company_logo) {
+            logoHTML = `<div class="company-logo"><img src="${escapeHtml(job.company_logo)}" alt="${escapeHtml(job.company || '')}" onerror="this.parentElement.innerHTML='${getCompanyInitials(job.company)}'"></div>`;
+        } else {
+            logoHTML = `<div class="company-logo">${getCompanyInitials(job.company)}</div>`;
+        }
+
+        // Badges
+        let badgesHTML = '';
+        if (job.job_type) {
+            const typeLabel = getJobTypeLabel(job.job_type);
+            const typeClass = `badge-${job.job_type}`;
+            badgesHTML += `<span class="badge-job-type ${typeClass}">${typeLabel}</span>`;
+        }
+        if (job.is_remote) {
+            badgesHTML += `<span class="badge-remote"><i class="bi bi-house-door me-1"></i>Remoto</span>`;
+        }
+        badgesHTML += `<span class="badge-source ${sourceBadgeClass}">${site}</span>`;
+
+        // Localização
+        let locationHTML = '';
+        if (job.location) {
+            locationHTML = `
+                <div class="job-info-item">
+                    <i class="bi bi-geo-alt-fill"></i>
+                    <span>${escapeHtml(truncateText(job.location, 35))}</span>
+                </div>`;
+        }
+
+        // Salário
+        let salaryHTML = '';
+        if (job.min_amount || job.max_amount) {
+            const salary = formatSalary(job.min_amount, job.max_amount, job.interval, job.currency);
+            salaryHTML = `<div class="salary-tag"><i class="bi bi-cash-stack"></i> ${salary}</div>`;
+        }
+
+        // Data de publicação
+        let dateHTML = '';
+        if (job.date_posted) {
+            const timeAgo = getTimeAgo(job.date_posted);
+            dateHTML = `<span class="job-date"><i class="bi bi-clock"></i> ${timeAgo}</span>`;
+        } else {
+            dateHTML = `<span class="job-date"><i class="bi bi-clock"></i> Recente</span>`;
+        }
+
+        // Nível (se disponível)
+        let levelHTML = '';
+        if (job.job_level) {
+            levelHTML = `
+                <div class="job-info-item">
+                    <i class="bi bi-bar-chart-steps"></i>
+                    <span>${escapeHtml(job.job_level)}</span>
+                </div>`;
+        }
+
+        // Indústria
+        let industryHTML = '';
+        if (job.company_industry) {
+            industryHTML = `
+                <div class="job-info-item">
+                    <i class="bi bi-building"></i>
+                    <span>${escapeHtml(truncateText(job.company_industry, 30))}</span>
+                </div>`;
+        }
+
+        const delay = Math.min(index * 0.05, 0.5);
+
+        return `
+        <div class="col-lg-6 col-12">
+            <div class="job-card ${sourceClass} job-card-animated" style="animation-delay: ${delay}s;">
+                <div class="job-card-header">
+                    <div class="job-card-header-left">
+                        ${logoHTML}
+                        <div style="min-width:0;">
+                            <div class="job-title">${escapeHtml(job.title || 'Vaga sem título')}</div>
+                            <div class="job-company">${escapeHtml(job.company || 'Empresa não informada')}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="badge-group">
+                    ${badgesHTML}
+                </div>
+
+                <div class="job-info">
+                    ${locationHTML}
+                    ${levelHTML}
+                    ${industryHTML}
+                    ${salaryHTML}
+                </div>
+
+                <div class="job-card-footer">
+                    ${dateHTML}
+                    <div class="d-flex gap-2">
+                        <button class="btn-details" onclick="abrirDetalhes(${index})">
+                            <i class="bi bi-eye me-1"></i> Detalhes
+                        </button>
+                        <a href="${escapeHtml(job.job_url || '#')}" target="_blank" rel="noopener" class="btn-apply">
+                            <i class="bi bi-box-arrow-up-right"></i> Acessar
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    // ============================================
+    // MODAL DE DETALHES
+    // ============================================
+    function abrirDetalhes(jobIndex) {
+        const job = currentJobs[jobIndex];
+        if (!job) return;
+        document.getElementById('modalJobTitle').textContent = job.title || 'Vaga sem título';
+        document.getElementById('modalJobCompany').textContent = job.company || 'Empresa não informada';
+
+        // Info grid
+        let infoItems = '';
+
+        if (job.location) {
+            infoItems += `
+                <div class="modal-info-item">
+                    <label><i class="bi bi-geo-alt me-1"></i> Localização</label>
+                    <span>${escapeHtml(job.location)}</span>
+                </div>`;
+        }
+
+        if (job.job_type) {
+            infoItems += `
+                <div class="modal-info-item">
+                    <label><i class="bi bi-tag me-1"></i> Tipo</label>
+                    <span>${getJobTypeLabel(job.job_type)}</span>
+                </div>`;
+        }
+
+        if (job.is_remote) {
+            infoItems += `
+                <div class="modal-info-item">
+                    <label><i class="bi bi-house me-1"></i> Modo</label>
+                    <span>Remoto</span>
+                </div>`;
+        }
+
+        if (job.min_amount || job.max_amount) {
+            infoItems += `
+                <div class="modal-info-item">
+                    <label><i class="bi bi-cash me-1"></i> Salário</label>
+                    <span>${formatSalary(job.min_amount, job.max_amount, job.interval, job.currency)}</span>
+                </div>`;
+        }
+
+        if (job.date_posted) {
+            infoItems += `
+                <div class="modal-info-item">
+                    <label><i class="bi bi-calendar me-1"></i> Publicação</label>
+                    <span>${formatDate(job.date_posted)}</span>
+                </div>`;
+        }
+
+        if (job.site) {
+            infoItems += `
+                <div class="modal-info-item">
+                    <label><i class="bi bi-globe me-1"></i> Fonte</label>
+                    <span style="text-transform: capitalize;">${job.site}</span>
+                </div>`;
+        }
+
+        if (job.company_industry) {
+            infoItems += `
+                <div class="modal-info-item">
+                    <label><i class="bi bi-building me-1"></i> Indústria</label>
+                    <span>${escapeHtml(job.company_industry)}</span>
+                </div>`;
+        }
+
+        if (job.company_num_employees) {
+            infoItems += `
+                <div class="modal-info-item">
+                    <label><i class="bi bi-people me-1"></i> Funcionários</label>
+                    <span>${escapeHtml(job.company_num_employees)}</span>
+                </div>`;
+        }
+
+        document.getElementById('modalInfoGrid').innerHTML = infoItems;
+
+        // Descrição
+        const descEl = document.getElementById('modalDescription');
+        if (job.description) {
+            descEl.innerHTML = job.description;
+        } else {
+            descEl.innerHTML = '<p class="text-muted"><i class="bi bi-info-circle me-2"></i>Descrição não disponível. Acesse o link da vaga para mais informações.</p>';
+        }
+
+        // Link
+        const applyLink = document.getElementById('modalApplyLink');
+        applyLink.href = job.job_url || '#';
+
+        // Abrir modal
+        const modal = new bootstrap.Modal(document.getElementById('jobDetailModal'));
+        modal.show();
+    }
+
+    // ============================================
+    // ESTADOS DA UI
+    // ============================================
+    function mostrarSkeletons() {
+        const container = document.getElementById('jobsContainer');
+        let skeletons = '';
+        for (let i = 0; i < 6; i++) {
+            skeletons += `
+            <div class="col-lg-6 col-12">
+                <div class="skeleton-card">
+                    <div class="d-flex gap-3 mb-3">
+                        <div class="skeleton skeleton-logo"></div>
+                        <div style="flex:1;">
+                            <div class="skeleton skeleton-text" style="width:70%;"></div>
+                            <div class="skeleton skeleton-text-sm" style="width:50%;"></div>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 mb-3">
+                        <div class="skeleton skeleton-badge"></div>
+                        <div class="skeleton skeleton-badge" style="width:60px;"></div>
+                    </div>
+                    <div class="skeleton skeleton-text" style="width:60%;"></div>
+                    <div class="skeleton skeleton-text" style="width:40%; margin-top:12px;"></div>
+                </div>
+            </div>`;
+        }
+        container.innerHTML = skeletons;
+    }
+
+    function mostrarVazio(searchTerm) {
+        const container = document.getElementById('jobsContainer');
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="state-container fade-in-up">
+                    <i class="bi bi-emoji-frown" style="color: #ddd;"></i>
+                    <h4>Nenhuma vaga encontrada</h4>
+                    <p>Não encontramos vagas para "<strong>${escapeHtml(searchTerm)}</strong>". Tente outros termos de pesquisa ou ajuste os filtros.</p>
+                    <div class="d-flex gap-2 justify-content-center mt-3">
+                        <button class="btn btn-outline-dark" style="border-radius:10px;" onclick="document.getElementById('searchTerm').value='estágio tecnologia';buscarVagas(event);">
+                            Buscar "estágio tecnologia"
+                        </button>
+                        <button class="btn btn-outline-dark" style="border-radius:10px;" onclick="document.getElementById('searchTerm').value='desenvolvedor';buscarVagas(event);">
+                            Buscar "desenvolvedor"
+                        </button>
+                    </div>
+                </div>
+            </div>`;
+    }
+
+    function mostrarErro(message) {
+        const container = document.getElementById('jobsContainer');
+        container.innerHTML = `
+            <div class="col-12">
+                <div class="state-container fade-in-up">
+                    <i class="bi bi-exclamation-triangle" style="color: #ef4444;"></i>
+                    <h4>Ops! Algo deu errado</h4>
+                    <p>${escapeHtml(message)}</p>
+                    <button class="btn btn-search mt-3" onclick="buscarVagas(event)">
+                        <i class="bi bi-arrow-clockwise"></i> Tentar novamente
+                    </button>
+                </div>
+            </div>`;
+        document.getElementById('statsRow').style.display = 'none';
+        document.getElementById('resultsHeader').style.display = 'none';
+        document.getElementById('loadMoreContainer').style.display = 'none';
+    }
+
+    // ============================================
+    // FILTROS RÁPIDOS
+    // ============================================
+    document.querySelectorAll('.quick-filter-chip').forEach(chip => {
+        chip.addEventListener('click', function () {
+            // Atualizar estado visual dos chips
+            document.querySelectorAll('.quick-filter-chip').forEach(c => c.classList.remove('active'));
+            this.classList.add('active');
+
+            // Aplicar filtros
+            const term = this.dataset.term;
+            const type = this.dataset.type || '';
+            const remote = this.dataset.remote || '';
+
+            document.getElementById('searchTerm').value = term;
+            document.getElementById('filterJobType').value = type;
+            document.getElementById('filterRemote').value = remote;
+
+            // Não altera estado/cidade — mantém o que o usuário já selecionou
+
+            // Executar busca
+            buscarVagas(null);
+        });
+    });
+
+    // ============================================
+    // FUNÇÕES UTILITÁRIAS
+    // ============================================
+    function escapeHtml(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+    }
+
+    function truncateText(text, maxLength) {
+        if (!text) return '';
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
+    }
+
+    function getCompanyInitials(company) {
+        if (!company) return '?';
+        const words = company.split(/\s+/).filter(w => w.length > 0);
+        if (words.length >= 2) {
+            return (words[0][0] + words[1][0]).toUpperCase();
+        }
+        return company.substring(0, 2).toUpperCase();
+    }
+
+    function getJobTypeLabel(type) {
+        const labels = {
+            'fulltime': 'Tempo integral',
+            'parttime': 'Meio período',
+            'internship': 'Estágio',
+            'contract': 'Contrato'
+        };
+        return labels[type] || type;
+    }
+
+    function formatSalary(min, max, interval, currency) {
+        const curr = currency === 'BRL' ? 'R$' : (currency || 'R$');
+        const intervalLabel = {
+            'yearly': '/ano',
+            'monthly': '/mês',
+            'weekly': '/sem',
+            'daily': '/dia',
+            'hourly': '/hora'
+        };
+        const suffix = intervalLabel[interval] || '';
+
+        if (min && max) {
+            return `${curr} ${formatNumber(min)} - ${formatNumber(max)}${suffix}`;
+        } else if (min) {
+            return `${curr} ${formatNumber(min)}${suffix}`;
+        } else if (max) {
+            return `Até ${curr} ${formatNumber(max)}${suffix}`;
+        }
+        return '';
+    }
+
+    function formatNumber(num) {
+        if (num >= 1000) {
+            return (num / 1000).toFixed(num % 1000 === 0 ? 0 : 1) + 'k';
+        }
+        return num.toLocaleString('pt-BR');
+    }
+
+    function getTimeAgo(dateStr) {
+        if (!dateStr) return 'Recente';
+        try {
+            const date = new Date(dateStr);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+            if (diffHours < 1) return 'Agora mesmo';
+            if (diffHours < 24) return `Há ${diffHours}h`;
+            if (diffDays === 1) return 'Há 1 dia';
+            if (diffDays < 7) return `Há ${diffDays} dias`;
+            if (diffDays < 30) return `Há ${Math.floor(diffDays / 7)} sem`;
+            return `Há ${Math.floor(diffDays / 30)} mês(es)`;
+        } catch {
+            return 'Recente';
+        }
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return 'Não informada';
+        try {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+        } catch {
+            return dateStr;
+        }
+    }
+
+    // ============================================
+    // ATALHOS DE TECLADO
+    // ============================================
+    document.addEventListener('keydown', function (e) {
+        // Ctrl+K ou "/" para focar na busca
+        if ((e.ctrlKey && e.key === 'k') || (e.key === '/' && document.activeElement.tagName !== 'INPUT')) {
+            e.preventDefault();
+            document.getElementById('searchTerm').focus();
+        }
+    });
+
+    // ============================================
+    // AUTOCOMPLETE DE CIDADES (API IBGE)
+    // ============================================
+    (function () {
+        const cidadeInput = document.getElementById('filterCidade');
+        const cidadeDropdown = document.getElementById('cidadeDropdown');
+        const estadoSelect = document.getElementById('filterEstado');
+
+        let cidadesCache = {};  // Cache por UF
+        let activeIndex = -1;
+        let debounceTimer = null;
+
+        // Buscar cidades do IBGE quando o estado muda
+        async function carregarCidades(uf) {
+            if (!uf) {
+                cidadesCache[uf] = [];
+                return [];
+            }
+            if (cidadesCache[uf]) return cidadesCache[uf];
+
+            cidadeDropdown.innerHTML = '<div class="autocomplete-loading"><div class="btn-spinner" style="width:14px;height:14px;border-width:2px;display:inline-block;vertical-align:middle;border-color:rgba(0,0,0,0.15);border-top-color:#666;"></div> Carregando cidades...</div>';
+            cidadeDropdown.classList.add('show');
+
+            try {
+                const resp = await fetch(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${uf}/municipios?orderBy=nome`);
+                const data = await resp.json();
+                const nomes = data.map(m => m.nome);
+                cidadesCache[uf] = nomes;
+                cidadeDropdown.classList.remove('show');
+                return nomes;
+            } catch (e) {
+                console.error('Erro ao carregar cidades:', e);
+                cidadeDropdown.classList.remove('show');
+                cidadesCache[uf] = [];
+                return [];
+            }
+        }
+
+        // Pre-carregar cidades do estado padrão (PR)
+        const estadoInicial = estadoSelect.value;
+        if (estadoInicial) carregarCidades(estadoInicial);
+
+        // Quando o estado muda, limpa cidade e carrega novas cidades
+        estadoSelect.addEventListener('change', function () {
+            cidadeInput.value = '';
+            cidadeDropdown.classList.remove('show');
+            if (this.value) carregarCidades(this.value);
+        });
+
+        // Filtrar e mostrar dropdown ao digitar
+        cidadeInput.addEventListener('input', function () {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => filtrarCidades(), 100);
+        });
+
+        cidadeInput.addEventListener('focus', function () {
+            if (this.value.length >= 1) filtrarCidades();
+        });
+
+        async function filtrarCidades() {
+            const uf = estadoSelect.value;
+            const query = cidadeInput.value.trim().toLowerCase();
+            activeIndex = -1;
+
+            if (!uf || query.length < 1) {
+                cidadeDropdown.classList.remove('show');
+                return;
+            }
+
+            const cidades = await carregarCidades(uf);
+            // Normalizar para comparação sem acento
+            const normalize = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+            const queryNorm = normalize(query);
+
+            const filtradas = cidades.filter(c => normalize(c).includes(queryNorm)).slice(0, 15);
+
+            if (filtradas.length === 0) {
+                cidadeDropdown.innerHTML = '<div class="autocomplete-loading">Nenhuma cidade encontrada</div>';
+                cidadeDropdown.classList.add('show');
+                return;
+            }
+
+            cidadeDropdown.innerHTML = filtradas.map((cidade, i) => {
+                // Highlight match
+                const cidadeNorm = normalize(cidade);
+                const matchIdx = cidadeNorm.indexOf(queryNorm);
+                let html = cidade;
+                if (matchIdx >= 0) {
+                    html = cidade.substring(0, matchIdx)
+                        + '<mark>' + cidade.substring(matchIdx, matchIdx + query.length) + '</mark>'
+                        + cidade.substring(matchIdx + query.length);
+                }
+                return `<div class="autocomplete-item" data-value="${escapeHtml(cidade)}" data-index="${i}">${html}</div>`;
+            }).join('');
+
+            cidadeDropdown.classList.add('show');
+
+            // Eventos de clique nos itens
+            cidadeDropdown.querySelectorAll('.autocomplete-item').forEach(item => {
+                item.addEventListener('mousedown', function (e) {
+                    e.preventDefault();
+                    cidadeInput.value = this.dataset.value;
+                    cidadeDropdown.classList.remove('show');
+                });
+            });
+        }
+
+        // Navegação com teclado no dropdown
+        cidadeInput.addEventListener('keydown', function (e) {
+            const items = cidadeDropdown.querySelectorAll('.autocomplete-item');
+            if (!cidadeDropdown.classList.contains('show') || items.length === 0) return;
+
+            if (e.key === 'ArrowDown') {
+                e.preventDefault();
+                activeIndex = Math.min(activeIndex + 1, items.length - 1);
+                updateActive(items);
+            } else if (e.key === 'ArrowUp') {
+                e.preventDefault();
+                activeIndex = Math.max(activeIndex - 1, 0);
+                updateActive(items);
+            } else if (e.key === 'Enter' && activeIndex >= 0) {
+                e.preventDefault();
+                cidadeInput.value = items[activeIndex].dataset.value;
+                cidadeDropdown.classList.remove('show');
+            } else if (e.key === 'Escape') {
+                cidadeDropdown.classList.remove('show');
+            }
+        });
+
+        function updateActive(items) {
+            items.forEach((el, i) => {
+                el.classList.toggle('active', i === activeIndex);
+                if (i === activeIndex) el.scrollIntoView({ block: 'nearest' });
+            });
+        }
+
+        // Fechar dropdown ao clicar fora
+        document.addEventListener('click', function (e) {
+            if (!cidadeInput.contains(e.target) && !cidadeDropdown.contains(e.target)) {
+                cidadeDropdown.classList.remove('show');
+            }
+        });
+    })();
+</script>
+
 {% endblock %}

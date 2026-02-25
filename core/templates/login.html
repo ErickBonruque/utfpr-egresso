@@ -1,156 +1,249 @@
-{% extends 'base.html' %}
-
-{% block title %}Login - Sistema CEA{% endblock %}
-
-{% block content %}
-<style>
-    body {
-        background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .login-container {
-        background: white;
-        border-radius: 20px;
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        width: 100%;
-        max-width: 900px;
-        min-height: 500px;
-    }
-    .login-left {
-        background: linear-gradient(135deg, #1a1a1a 0%, #333333 100%);
-        color: white;
-        padding: 40px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        position: relative;
-    }
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Sistema CEA</title>
     
-    .login-left::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 5px;
-        background: #FFC72C;
-    }
-    .login-right {
-        padding: 40px;
-    }
-    .brand-logo {
-        font-size: 2.5rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
-    }
-    .brand-subtitle {
-        font-size: 1.1rem;
-        opacity: 0.9;
-    }
-    .form-control {
-        border-radius: 10px;
-        padding: 12px 15px;
-        border: 1px solid #e0e0e0;
-        margin-bottom: 15px;
-    }
-    .form-control:focus {
-        box-shadow: 0 0 0 0.2rem rgba(255, 199, 44, 0.25);
-        border-color: #FFC72C;
-    }
-    .btn-login {
-        background: #FFC72C;
-        color: #1a1a1a;
-        border: 2px solid #FFC72C;
-        border-radius: 10px;
-        padding: 12px;
-        font-weight: 600;
-        width: 100%;
-        transition: all 0.3s;
-    }
-    .btn-login:hover {
-        background: #e6b329;
-        border-color: #e6b329;
-        color: #1a1a1a;
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(255, 199, 44, 0.4);
-    }
-    .feature-icon {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-    }
-    .feature-text {
-        font-size: 0.9rem;
-        opacity: 0.9;
-    }
-</style>
-
-<div class="login-container">
-    <div class="row g-0 h-100">
-        <div class="col-md-5 login-left">
-            <div class="mb-4">
-                <i class="bi bi-tree-fill feature-icon"></i>
-                <h1 class="brand-logo">Árvore de Carreiras</h1>
-                <p class="brand-subtitle">Sistema CEA - Conexão Egresso-Aluno</p>
-            </div>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    
+    <style>
+        body {
+            background: #12141c;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            background: #1f2233;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            min-height: 500px;
+            border: 1px solid #2c3050;
+        }
+        
+        .login-left {
+            background: linear-gradient(135deg, #232640 0%, #2e3254 100%);
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            position: relative;
+        }
+        
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: #FFD04A;
+        }
+        
+        .login-right {
+            padding: 40px;
+            background: #1b1e2b;
+        }
+        
+        .login-right h2 {
+            color: #e6e8f0;
+        }
+        
+        .login-right .text-muted {
+            color: #a1a7bf !important;
+        }
+        
+        .brand-logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #e6e8f0;
+        }
+        
+        .brand-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            color: #c4c8dc;
+        }
+        
+        .form-label {
+            color: #e6e8f0;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 1px solid #2c3050;
+            margin-bottom: 15px;
+            background: #12141c;
+            color: #e6e8f0;
+        }
+        
+        .form-control::placeholder {
+            color: #6d748a;
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 0.2rem rgba(255, 208, 74, 0.12);
+            border-color: #FFD04A;
+            background: #12141c;
+            color: #e6e8f0;
+        }
+        
+        .form-check-label {
+            color: #a1a7bf;
+        }
+        
+        .form-check-input {
+            background-color: #12141c;
+            border-color: #2c3050;
+        }
+        
+        .form-check-input:checked {
+            background-color: #FFD04A;
+            border-color: #FFD04A;
+        }
+        
+        .btn-login {
+            background: #FFC72C;
+            color: #1a1a1a;
+            border: 2px solid #FFC72C;
+            border-radius: 10px;
+            padding: 12px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        
+        .btn-login:hover {
+            background: #e6b329;
+            border-color: #e6b329;
+            color: #1a1a1a;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 199, 44, 0.4);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-text {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        hr {
+            border-color: #2c3050;
+            opacity: 0.5;
+        }
+        
+        .login-right a {
+            color: #FFD04A;
+        }
+        
+        .login-right a:hover {
+            color: #FFC72C;
+        }
+        
+        .login-right p {
+            color: #a1a7bf;
+        }
+        
+        @media (max-width: 768px) {
+            .login-left {
+                padding: 30px 20px;
+            }
             
-            <div class="mt-4">
-                <div class="row text-center">
-                    <div class="col-4">
-                        <i class="bi bi-people-fill feature-icon"></i>
-                        <p class="feature-text">Conecte-se com egressos</p>
-                    </div>
-                    <div class="col-4">
-                        <i class="bi bi-trophy-fill feature-icon"></i>
-                        <p class="feature-text">Acompanhe seu progresso</p>
-                    </div>
-                    <div class="col-4">
-                        <i class="bi bi-briefcase-fill feature-icon"></i>
-                        <p class="feature-text">Encontre oportunidades</p>
+            .login-right {
+                padding: 30px 20px;
+            }
+            
+            .brand-logo {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="row g-0 h-100">
+            <div class="col-md-5 login-left">
+                <div class="mb-4">
+                    <i class="bi bi-tree-fill feature-icon"></i>
+                    <h1 class="brand-logo">Árvore de Carreiras</h1>
+                    <p class="brand-subtitle">Sistema CEA - Conexão Egresso-Aluno</p>
+                </div>
+                
+                <div class="mt-4">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <i class="bi bi-people-fill feature-icon"></i>
+                            <p class="feature-text">Conecte-se com egressos</p>
+                        </div>
+                        <div class="col-4">
+                            <i class="bi bi-trophy-fill feature-icon"></i>
+                            <p class="feature-text">Acompanhe seu progresso</p>
+                        </div>
+                        <div class="col-4">
+                            <i class="bi bi-briefcase-fill feature-icon"></i>
+                            <p class="feature-text">Encontre oportunidades</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        
-        <div class="col-md-7 login-right d-flex align-items-center">
-            <div class="w-100">
-                <h2 class="mb-4">Bem-vindo de volta!</h2>
-                <p class="text-muted mb-4">Faça login para acessar sua conta</p>
-                
-                <form>
-                    <div class="mb-3">
-                        <label for="ra" class="form-label">RA do Aluno</label>
-                        <input type="text" class="form-control" id="ra" placeholder="Ex: a2587246" maxlength="9">
-                    </div>
+            
+            <div class="col-md-7 login-right d-flex align-items-center">
+                <div class="w-100">
+                    <h2 class="mb-4">Bem-vindo de volta!</h2>
+                    <p class="text-muted mb-4">Faça login para acessar sua conta</p>
                     
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Senha</label>
-                        <input type="password" class="form-control" id="password" placeholder="Digite sua senha">
-                    </div>
+                    <form>
+                        <div class="mb-3">
+                            <label for="ra" class="form-label">RA do Aluno</label>
+                            <input type="text" class="form-control" id="ra" placeholder="Ex: a2587246" maxlength="9">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Senha</label>
+                            <input type="password" class="form-control" id="password" placeholder="Digite sua senha">
+                        </div>
+                        
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="remember">
+                            <label class="form-check-label" for="remember">Lembrar-me</label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-login mb-4">
+                            Entrar
+                        </button>
+                    </form>
                     
-                    <div class="mb-3 form-check">
-                        <input type="checkbox" class="form-check-input" id="remember">
-                        <label class="form-check-label" for="remember">Lembrar-me</label>
-                    </div>
+                    <hr class="my-4">
                     
-                    <button type="submit" class="btn btn-login mb-4">
-                        Entrar
-                    </button>
-                </form>
-                
-                <hr class="my-4">
-                
-                <div class="text-center">
-                    <p class="mb-0">Ainda não tem uma conta?</p>
-                    <a href="#" class="text-decoration-none fw-bold">Fale com o administrador</a>
+                    <div class="text-center">
+                        <p class="mb-0">Ainda não tem uma conta?</p>
+                        <a href="#" class="text-decoration-none fw-bold">Fale com o administrador</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-{% endblock %}
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

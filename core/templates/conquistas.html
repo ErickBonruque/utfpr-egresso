@@ -2,95 +2,18 @@
 {% load static %}
 
 {% block title %}Conquistas - Árvore de Carreiras{% endblock %}
+{% block nav_conquistas %}active{% endblock %}
 
 {% block content %}
 <style>
     :root {
-        --primary-color: #1a1a1a;
-        --secondary-color: #333333;
-        --accent-color: #FFC72C;
-        --utfpr-yellow: #FFC72C;
-        --utfpr-black: #1a1a1a;
-        --light-bg: #f8f9fa;
-        --card-shadow: 0 2px 10px rgba(0,0,0,0.08);
         --locked-color: #9e9e9e;
     }
-    
-    body {
-        background-color: var(--light-bg);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-    
-    .navbar {
-        background: white;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-        padding: 1rem 0;
-    }
-    
-    .navbar-brand {
-        font-weight: bold;
-        color: var(--primary-color) !important;
-        font-size: 1.5rem;
-    }
-    
-    .nav-link {
-        color: #666 !important;
-        font-weight: 500;
-        margin: 0 10px;
-        transition: color 0.3s;
-        position: relative;
-    }
-    
-    .nav-link:hover {
-        color: var(--primary-color) !important;
-    }
-    
-    .nav-link.active {
-        color: var(--primary-color) !important;
-    }
-    
-    .nav-link.active::after {
-        content: '';
-        position: absolute;
-        bottom: -10px;
-        left: 0;
-        right: 0;
-        height: 3px;
-        background: var(--primary-color);
-        border-radius: 2px;
-    }
-    
-    .user-info {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-    
-    .user-avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-    }
-    
-    .user-level {
-        background: var(--utfpr-yellow);
-        color: var(--utfpr-black);
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-size: 0.9rem;
-        font-weight: 600;
-    }
-    
+
     .main-content {
         padding: 2rem 0;
     }
-    
+
     .achievement-card {
         border: none;
         border-radius: 15px;
@@ -100,99 +23,99 @@
         position: relative;
         overflow: hidden;
     }
-    
+
     .achievement-card.unlocked {
         background: linear-gradient(135deg, #ffffff, #f8f9fa);
         border: 2px solid var(--accent-color);
     }
-    
+
     .achievement-card.locked {
         background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
         opacity: 0.7;
         filter: grayscale(1);
     }
-    
+
     .achievement-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
     }
-    
+
     .achievement-card.unlocked:hover {
         box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
     }
-    
+
     .achievement-icon {
         font-size: 4rem;
         margin-bottom: 1rem;
         transition: transform 0.3s ease;
     }
-    
+
     .achievement-card:hover .achievement-icon {
         transform: scale(1.1);
     }
-    
+
     .achievement-card.unlocked .achievement-icon {
         color: var(--accent-color);
     }
-    
+
     .achievement-card.locked .achievement-icon {
         color: var(--locked-color);
     }
-    
+
     .achievement-title {
         font-weight: 600;
         font-size: 1.1rem;
         margin-bottom: 0.5rem;
     }
-    
+
     .achievement-card.locked .achievement-title {
         color: var(--locked-color);
     }
-    
+
     .achievement-description {
         font-size: 0.9rem;
-        color: #666;
+        color: var(--text-secondary);
         margin-bottom: 1rem;
     }
-    
+
     .achievement-card.locked .achievement-description {
-        color: #999;
+        color: var(--text-muted);
     }
-    
+
     .achievement-progress {
-        background-color: #e0e0e0;
+        background-color: var(--border-color);
         height: 8px;
         border-radius: 10px;
         overflow: hidden;
         margin-bottom: 0.5rem;
     }
-    
+
     .achievement-progress-bar {
         height: 100%;
         background: linear-gradient(90deg, var(--accent-color), #45a049);
         border-radius: 10px;
         transition: width 0.5s ease;
     }
-    
+
     .achievement-card.locked .achievement-progress-bar {
         background: linear-gradient(90deg, var(--locked-color), #757575);
     }
-    
+
     .achievement-xp {
         font-size: 0.85rem;
         font-weight: 600;
         color: var(--primary-color);
     }
-    
+
     .achievement-card.locked .achievement-xp {
         color: var(--locked-color);
     }
-    
+
     .achievement-date {
         font-size: 0.8rem;
-        color: #999;
+        color: var(--text-muted);
     }
-    
+
     .category-badge {
         display: inline-block;
         padding: 5px 12px;
@@ -201,48 +124,48 @@
         font-weight: 600;
         margin-bottom: 1rem;
     }
-    
+
     .category-academic {
         background-color: #e3f2fd;
         color: #1565c0;
     }
-    
+
     .category-social {
         background-color: #f3e5f5;
         color: #7b1fa2;
     }
-    
+
     .category-professional {
         background-color: #e8f5e9;
         color: #2e7d32;
     }
-    
+
     .category-special {
         background-color: #fff3e0;
         color: #e65100;
     }
-    
+
     .locked-overlay {
         position: absolute;
         top: 10px;
         right: 10px;
-        background: rgba(0,0,0,0.7);
+        background: rgba(0, 0, 0, 0.7);
         color: white;
         padding: 5px 10px;
         border-radius: 20px;
         font-size: 0.75rem;
         font-weight: 600;
     }
-    
+
     .section-title {
         font-size: 1.5rem;
         font-weight: 600;
-        color: var(--primary-color);
+        color: var(--text-primary);
         margin-bottom: 1.5rem;
         position: relative;
         padding-left: 20px;
     }
-    
+
     .section-title::before {
         content: '';
         position: absolute;
@@ -251,24 +174,24 @@
         transform: translateY(-50%);
         width: 5px;
         height: 25px;
-        background: var(--primary-color);
+        background: var(--accent-color);
         border-radius: 3px;
     }
-    
+
     .stats-card {
-        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        color: white;
+        background: var(--stats-gradient);
+        color: var(--stats-text);
         border-radius: 15px;
         padding: 2rem;
         text-align: center;
     }
-    
+
     .stats-number {
         font-size: 3rem;
         font-weight: bold;
         margin-bottom: 0.5rem;
     }
-    
+
     .filter-btn {
         padding: 8px 20px;
         border-radius: 20px;
@@ -280,70 +203,13 @@
         margin-right: 10px;
         margin-bottom: 10px;
     }
-    
+
     .filter-btn:hover,
     .filter-btn.active {
         background: var(--primary-color);
         color: white;
     }
 </style>
-
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light sticky-top">
-    <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="{% url 'dashboard' %}">
-            <img src="{% static 'img/logo_UTFPR_cor.png' %}" alt="UTFPR" style="height: 50px;">
-            <span class="ms-2">Sistema CEA</span>
-        </a>
-        
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'dashboard' %}">
-                        <i class="bi bi-grid-fill me-1"></i> Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'arvore' %}">
-                        <i class="bi bi-tree me-1"></i> Árvore
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'egressos' %}">
-                        <i class="bi bi-people me-1"></i> Egressos
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link active" href="{% url 'conquistas' %}">
-                        <i class="bi bi-trophy me-1"></i> Conquistas
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'vagas' %}">
-                        <i class="bi bi-briefcase me-1"></i> Vagas
-                    </a>
-                </li>
-            </ul>
-            
-            <div class="user-info">
-                <div class="user-level">
-                    Nível 7 • 1450 XP
-                </div>
-                <div class="user-avatar">
-                    EB
-                </div>
-                <div>
-                    <div class="fw-bold">Alex Silva Demo</div>
-                    <small class="text-muted">4º Período • CRA: 8.2</small>
-                </div>
-            </div>
-        </div>
-    </div>
-</nav>
 
 <!-- Main Content -->
 <div class="container main-content">
@@ -354,7 +220,7 @@
             <p class="text-muted">Desbloqueie novas conquistas e acompanhe seu progresso</p>
         </div>
     </div>
-    
+
     <!-- Stats Card -->
     <div class="row mb-4">
         <div class="col-md-4">
@@ -376,7 +242,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Filter Buttons -->
     <div class="row mb-4">
         <div class="col-12">
@@ -400,13 +266,13 @@
             </button>
         </div>
     </div>
-    
+
     <!-- Academic Achievements -->
     <div class="row mb-4">
         <div class="col-12">
             <h5 class="section-title">Conquistas Acadêmicas</h5>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="academic unlocked">
             <div class="card achievement-card unlocked">
                 <div class="card-body text-center">
@@ -423,7 +289,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="academic unlocked">
             <div class="card achievement-card unlocked">
                 <div class="card-body text-center">
@@ -440,7 +306,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="academic locked">
             <div class="card achievement-card locked">
                 <div class="locked-overlay">
@@ -461,7 +327,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="academic locked">
             <div class="card achievement-card locked">
                 <div class="locked-overlay">
@@ -483,13 +349,13 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Social Achievements -->
     <div class="row mb-4">
         <div class="col-12">
             <h5 class="section-title">Conquistas Sociais</h5>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="social unlocked">
             <div class="card achievement-card unlocked">
                 <div class="card-body text-center">
@@ -506,7 +372,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="social unlocked">
             <div class="card achievement-card unlocked">
                 <div class="card-body text-center">
@@ -523,7 +389,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="social locked">
             <div class="card achievement-card locked">
                 <div class="locked-overlay">
@@ -545,13 +411,13 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Professional Achievements -->
     <div class="row mb-4">
         <div class="col-12">
             <h5 class="section-title">Conquistas Profissionais</h5>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="professional unlocked">
             <div class="card achievement-card unlocked">
                 <div class="card-body text-center">
@@ -568,7 +434,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="professional unlocked">
             <div class="card achievement-card unlocked">
                 <div class="card-body text-center">
@@ -585,7 +451,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="professional locked">
             <div class="card achievement-card locked">
                 <div class="locked-overlay">
@@ -606,7 +472,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="professional locked">
             <div class="card achievement-card locked">
                 <div class="locked-overlay">
@@ -628,13 +494,13 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Special Achievements -->
     <div class="row">
         <div class="col-12">
             <h5 class="section-title">Conquistas Especiais</h5>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="special unlocked">
             <div class="card achievement-card unlocked">
                 <div class="card-body text-center">
@@ -651,7 +517,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="special locked">
             <div class="card achievement-card locked">
                 <div class="locked-overlay">
@@ -672,7 +538,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-4 mb-4 achievement-item" data-category="special locked">
             <div class="card achievement-card locked">
                 <div class="locked-overlay">
@@ -697,47 +563,47 @@
 </div>
 
 <script>
-function filterAchievements(category) {
-    // Remove active class from all buttons
-    document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    // Add active class to clicked button
-    event.target.classList.add('active');
-    
-    // Filter achievements
-    const achievements = document.querySelectorAll('.achievement-item');
-    
-    achievements.forEach(achievement => {
-        const categories = achievement.dataset.category.split(' ');
-        
-        if (category === 'all') {
-            achievement.style.display = 'block';
-        } else if (category === 'unlocked' && categories.includes('unlocked')) {
-            achievement.style.display = 'block';
-        } else if (category === 'locked' && categories.includes('locked')) {
-            achievement.style.display = 'block';
-        } else if (categories.includes(category)) {
-            achievement.style.display = 'block';
-        } else {
-            achievement.style.display = 'none';
-        }
-    });
-    
-    // Add fade-in animation
-    achievements.forEach(achievement => {
-        if (achievement.style.display === 'block') {
-            achievement.style.opacity = '0';
-            achievement.style.transform = 'translateY(20px)';
-            
-            setTimeout(() => {
-                achievement.style.transition = 'all 0.3s ease';
-                achievement.style.opacity = '1';
-                achievement.style.transform = 'translateY(0)';
-            }, 100);
-        }
-    });
-}
+    function filterAchievements(category) {
+        // Remove active class from all buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+
+        // Add active class to clicked button
+        event.target.classList.add('active');
+
+        // Filter achievements
+        const achievements = document.querySelectorAll('.achievement-item');
+
+        achievements.forEach(achievement => {
+            const categories = achievement.dataset.category.split(' ');
+
+            if (category === 'all') {
+                achievement.style.display = 'block';
+            } else if (category === 'unlocked' && categories.includes('unlocked')) {
+                achievement.style.display = 'block';
+            } else if (category === 'locked' && categories.includes('locked')) {
+                achievement.style.display = 'block';
+            } else if (categories.includes(category)) {
+                achievement.style.display = 'block';
+            } else {
+                achievement.style.display = 'none';
+            }
+        });
+
+        // Add fade-in animation
+        achievements.forEach(achievement => {
+            if (achievement.style.display === 'block') {
+                achievement.style.opacity = '0';
+                achievement.style.transform = 'translateY(20px)';
+
+                setTimeout(() => {
+                    achievement.style.transition = 'all 0.3s ease';
+                    achievement.style.opacity = '1';
+                    achievement.style.transform = 'translateY(0)';
+                }, 100);
+            }
+        });
+    }
 </script>
 {% endblock %}
