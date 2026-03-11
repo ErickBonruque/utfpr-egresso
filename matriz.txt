@@ -1,0 +1,78 @@
+| Período    | Tipo        | Grupo Optativa | Código   | Disciplina                                                                 | Carga Horária (h) |
+| ---------- | ----------- | -------------- | -------- | -------------------------------------------------------------------------- | ----------------: |
+| 1º Período | Obrigatória | -              | CC1AED1  | Algoritmos E Estrutura De Dados I                                          |                90 |
+| 1º Período | Obrigatória | -              | CC1ICC   | Introdução À Ciência Da Computação                                         |                45 |
+| 1º Período | Obrigatória | -              | CC1MBD   | Modelagem De Banco De Dados                                                |                60 |
+| 1º Período | Obrigatória | -              | HU1LA    | Linguagem Acadêmica                                                        |                45 |
+| 1º Período | Obrigatória | -              | MA1FM    | Fundamentos De Matemática                                                  |                60 |
+| 1º Período | Obrigatória | -              | MA1LM    | Lógica Matemática                                                          |                45 |
+| 2º Período | Obrigatória | -              | CC2AED2  | Algoritmos E Estrutura De Dados Ii                                         |                60 |
+| 2º Período | Obrigatória | -              | CC2CLD   | Circuitos Lógicos Digitais                                                 |                60 |
+| 2º Período | Obrigatória | -              | CC2ER    | Engenharia De Requisitos                                                   |                60 |
+| 2º Período | Obrigatória | -              | CC2POO   | Programação Orientada A Objetos                                            |                60 |
+| 2º Período | Obrigatória | -              | MA2MA    | Matemática Aplicada                                                        |                60 |
+| 2º Período | Optativa    | [412]          | OPHCC    | Canto Coral                                                                |                30 |
+| 2º Período | Optativa    | [412]          | OPHE     | Empreendedorismo                                                           |                30 |
+| 2º Período | Optativa    | [412]          | OPHFE    | Fundamentos Da Ética                                                       |                30 |
+| 2º Período | Optativa    | [412]          | OPHGIT   | Gestão Da Inovação E Tecnologia                                            |                30 |
+| 2º Período | Optativa    | [412]          | OPHHCA   | História E Cultura Afro                                                    |                30 |
+| 2º Período | Optativa    | [412]          | OPHIT1   | Inglês Técnico I                                                           |                30 |
+| 2º Período | Optativa    | [412]          | OPHIT2   | Inglês Técnico Ii                                                          |                30 |
+| 2º Período | Optativa    | [412]          | OPHL     | Libras I                                                                   |                30 |
+| 2º Período | Optativa    | [412]          | OPHL2    | Libras 2                                                                   |                30 |
+| 2º Período | Optativa    | [412]          | OPHLG    | Liderança E Gerenciamento                                                  |                30 |
+| 2º Período | Optativa    | [412]          | OPHMAS   | Meio Ambiente E Sociedade                                                  |                30 |
+| 2º Período | Optativa    | [412]          | OPHMP    | Metodologia Da Pesquisa                                                    |                30 |
+| 2º Período | Optativa    | [412]          | OPHRHL   | Relações Humanas E Liderança                                               |                30 |
+| 3º Período | Obrigatória | -              | CC3AED3  | Algoritmos E Estrutura De Dados Iii                                        |                60 |
+| 3º Período | Obrigatória | -              | CC3AOC   | Arquitetura E Organização De Computadores                                  |                90 |
+| 3º Período | Obrigatória | -              | CC3ES    | Engenharia De Software                                                     |                60 |
+| 3º Período | Obrigatória | -              | CC3PI1   | Projeto Integrador I: Computação E Educação                                |               180 |
+| 3º Período | Obrigatória | -              | MA3AL    | Álgebra Linear                                                             |                45 |
+| 3º Período | Obrigatória | -              | MA3CA    | Cálculo Aplicado                                                           |                60 |
+| 4º Período | Obrigatória | -              | CC4IHC   | Interação Humano Computador                                                |                60 |
+| 4º Período | Obrigatória | -              | CC4LBD   | Laboratório De Banco De Dados                                              |                60 |
+| 4º Período | Obrigatória | -              | CC4PO    | Pesquisa E Ordenação                                                       |                60 |
+| 4º Período | Obrigatória | -              | CC4RC    | Redes De Computadores                                                      |                60 |
+| 4º Período | Obrigatória | -              | CC4SO    | Sistemas Operacionais                                                      |                60 |
+| 4º Período | Obrigatória | -              | MA4PE    | Probabilidade E Estatística                                                |                60 |
+| 5º Período | Obrigatória | -              | CC5AG    | Algoritmos Em Grafos                                                       |                60 |
+| 5º Período | Obrigatória | -              | CC5PI2   | Projeto Integrador Ii: Desenvolvimento, Inovação E Empreendedorismo Social |               180 |
+| 5º Período | Obrigatória | -              | CC5PLDS  | Paradigmas De Linguagens E Desenvolvimento De Sistemas                     |                60 |
+| 5º Período | Obrigatória | -              | CC5QS    | Qualidade De Software                                                      |                60 |
+| 5º Período | Obrigatória | -              | CC5SDT   | Sistemas Distribuídos E Tecnologias                                        |                60 |
+| 5º Período | Obrigatória | -              | EO11     | Estágio Obrigatório                                                        |               360 |
+| 5º Período | Obrigatória | -              | MA5MN    | Métodos Numéricos                                                          |                45 |
+| 6º Período | Obrigatória | -              | CC6FIA   | Fundamentos De Inteligência Artificial                                     |                45 |
+| 6º Período | Obrigatória | -              | CC6IBDDA | Introdução A Big Data E Data Analytics                                     |                60 |
+| 6º Período | Obrigatória | -              | CC6LFTC  | Linguagens Formais E Teoria Da Computação                                  |                60 |
+| 6º Período | Obrigatória | -              | CC6PDSW  | Projeto E Desenvolvimento De Sistemas Web                                  |                60 |
+| 6º Período | Obrigatória | -              | CC6TRC   | Tecnologias De Redes De Computadores                                       |                60 |
+| 6º Período | Obrigatória | -              | MA6PO    | Pesquisa Operacional                                                       |                45 |
+| 6º Período | Obrigatória | -              | TCC1     | Trabalho De Conclusão De Curso I                                           |                45 |
+| 7º Período | Obrigatória | -              | CC7C     | Compiladores                                                               |                60 |
+| 7º Período | Obrigatória | -              | CC7CS    | Cibersegurança                                                             |                60 |
+| 7º Período | Obrigatória | -              | CC7IAA   | Inteligência Artificial Aplicada                                           |                60 |
+| 7º Período | Obrigatória | -              | CC7PI3   | Projeto Integrador Iii: Tecnologia E Mundo Do Trabalho                     |               180 |
+| 7º Período | Obrigatória | -              | CC7VC    | Visão Computacional                                                        |                60 |
+| 7º Período | Optativa    | [413]          | OPEAP    | Aprendizagem Profunda                                                      |                60 |
+| 7º Período | Optativa    | [413]          | OPECD    | Comunicação De Dados                                                       |                60 |
+| 7º Período | Optativa    | [413]          | OPECDMS  | Cultura Digital E Mídias Sociais                                           |                60 |
+| 7º Período | Optativa    | [413]          | OPECF    | Computação Forense                                                         |                60 |
+| 7º Período | Optativa    | [413]          | OPEDADM  | Desenvolvimento De Aplicações Para Dispositivos Móveis                     |                60 |
+| 7º Período | Optativa    | [413]          | OPEGP    | Gerenciamento De Projetos                                                  |                60 |
+| 7º Período | Optativa    | [413]          | OPEIC    | Internet Das Coisas                                                        |                60 |
+| 7º Período | Optativa    | [413]          | OPEIE    | Informática Na Educação                                                    |                60 |
+| 7º Período | Optativa    | [413]          | OPELEAC  | Linguagem De Estruturação E Apresentação De Conteúdos                      |                60 |
+| 7º Período | Optativa    | [413]          | OPELM    | Linguagem De Montagem                                                      |                60 |
+| 7º Período | Optativa    | [413]          | OPELPOO  | Linguagem De Programação Objeto Orientada                                  |                60 |
+| 7º Período | Optativa    | [413]          | OPELSO   | Laboratório De Sistemas Operacionais                                       |                60 |
+| 7º Período | Optativa    | [413]          | OPEPDI   | Processamento Digital De Imagens                                           |                60 |
+| 7º Período | Optativa    | [413]          | OPEPL    | Programação Lógica                                                         |                60 |
+| 7º Período | Optativa    | [413]          | OPEPPD   | Programação Paralela E Distribuída                                         |                60 |
+| 7º Período | Optativa    | [413]          | OPERP    | Redes De Petri                                                             |                60 |
+| 7º Período | Optativa    | [413]          | OPESM    | Sistemas Multiagentes                                                      |                60 |
+| 7º Período | Optativa    | [413]          | OPETCD   | Tópicos Em Ciência De Dados                                                |                60 |
+| 7º Período | Optativa    | [413]          | OPETDS   | Tecnologia Em Desenvolvimento De Sistemas                                  |                60 |
+| 8º Período | Obrigatória | -              | CC8CG    | Computação Gráfica                                                         |                60 |
+| 8º Período | Obrigatória | -              | TCC2     | Trabalho De Conclusão De Curso Ii                                          |                30 |
