@@ -235,6 +235,7 @@
                             <div id="completion-bar" class="progress-bar" style="width:0%"></div>
                         </div>
                         <p class="mb-1 small"><i class="bi bi-mortarboard-fill me-1"></i> <span id="gpa-text">CR: —</span></p>
+                        <p class="mb-1 small"><i class="bi bi-stars me-1"></i> <span id="xp-text">XP: —</span></p>
                         <p class="mb-0 small opacity-75" id="campus-text"></p>
                     </div>
                 </div>
@@ -341,11 +342,13 @@
         }
         row.innerHTML = shown.map(a => {
             const isUnlocked = !!a.unlocked;
+                        const achName = a.name || a.label || 'Conquista';
+                        const achDesc = a.desc || a.description || '';
             return `<div class="col-4">
               <div class="achievement-card">
                 <i class="bi ${a.icon} achievement-icon ${isUnlocked ? 'unlocked' : 'locked'}"></i>
-                <h6 class="mb-1 small fw-semibold ${isUnlocked ? '' : 'text-muted'}">${a.label}</h6>
-                <p class="text-muted" style="font-size:.75rem;margin:0">${a.desc}</p>
+                                <h6 class="mb-1 small fw-semibold ${isUnlocked ? '' : 'text-muted'}">${achName}</h6>
+                                <p class="text-muted" style="font-size:.75rem;margin:0">${achDesc}</p>
                 ${!isUnlocked ? '<span class="badge bg-secondary mt-1" style="font-size:.65rem">Bloqueada</span>' : ''}
               </div>
             </div>`;
@@ -407,6 +410,10 @@
     document.getElementById('workload-text').textContent = `${student.completedWorkload} / ${student.totalCourseWorkload} h concluídas`;
     document.getElementById('completion-pct').textContent = `${pct}%`;
     document.getElementById('completion-bar').style.width = `${pct}%`;
+    if (progress && progress.xp) {
+        const next = progress.xp.nextAchievement ? ` | Próxima: ${progress.xp.nextAchievement}` : '';
+        document.getElementById('xp-text').textContent = `XP: ${progress.xp.total}${next}`;
+    }
 
     // Achievements
     renderAchievements(progress);

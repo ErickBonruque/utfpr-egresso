@@ -1060,7 +1060,8 @@
             const dropdown = document.getElementById('profileDropdown');
             if (!trigger || !modalEl || !searchInput || !listEl || !emptyEl) return;
 
-            const modal = new bootstrap.Modal(modalEl);
+            const hasBootstrapModal = !!(window.bootstrap && window.bootstrap.Modal);
+            const modal = hasBootstrapModal ? new window.bootstrap.Modal(modalEl) : null;
             let debounce = null;
 
             function esc(text) {
@@ -1117,8 +1118,13 @@
                 e.preventDefault();
                 dropdown.classList.remove('show');
                 searchInput.value = '';
-                modal.show();
-                loadStudents('');
+                if (modal) {
+                    modal.show();
+                    loadStudents('');
+                } else {
+                    // Fallback seguro caso o JS do Bootstrap não carregue em produção.
+                    window.location.href = '/egressos/';
+                }
             });
 
             searchInput.addEventListener('input', () => {
