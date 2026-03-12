@@ -330,7 +330,7 @@
     const hCursando   = subjects.filter(s => s.status === 'cursando').reduce((a, s) => a + s.workload, 0);
     const hReprovada  = subjects.filter(s => s.status === 'reprovada').reduce((a, s) => a + s.workload, 0);
     const totalMandH  = curriculumData.totalMandatoryWorkload || 1;
-    const pct         = Math.round((hAprovada / totalMandH) * 100);
+    const pct         = Math.min(100, Math.round((hAprovada / totalMandH) * 100));
     const hMissing    = Math.max(0, totalMandH - hAprovada);
 
     $('statAprovada').textContent  = hAprovada  + 'h';
@@ -355,10 +355,12 @@
   // ── Student header ────────────────────────────────────────────────────
   function renderHeader() {
     const s = studentData;
+    const pct = s.totalCourseWorkload > 0
+      ? Math.round(s.completedWorkload / s.totalCourseWorkload * 100) : 0;
     $('studentName').textContent       = s.name || s.id;
-    $('studentPeriod').textContent     = s.currentPeriod ? `${s.currentPeriod}º período` : '—';
+    $('studentPeriod').textContent     = s.status === 'formado' ? 'Formado' : (s.currentPeriod ? `${s.currentPeriod}º período` : '—');
     $('studentGpa').textContent        = s.gpa != null ? s.gpa.toFixed(2) : '—';
-    $('studentCompletion').textContent = s.completionPct != null ? s.completionPct + '%' : '—';
+    $('studentCompletion').textContent = `${pct}%`;
   }
 
   // ── Data loading ──────────────────────────────────────────────────────
