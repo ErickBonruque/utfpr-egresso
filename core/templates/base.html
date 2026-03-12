@@ -922,23 +922,23 @@
                 </ul>
 
                 <div class="navbar-user-section">
-                    <div class="user-level-badge">Nível 7 • 1450 XP</div>
+                    <div class="user-level-badge" id="navUserBadge">...</div>
                     <div class="user-name-group d-none d-lg-block">
-                        <div class="u-name">Alex Silva Demo</div>
-                        <div class="u-detail">4º Período • CRA: 8.2</div>
+                        <div class="u-name" id="navUserName">Carregando...</div>
+                        <div class="u-detail" id="navUserDetail"></div>
                     </div>
                     <div style="position: relative;">
-                        <button class="user-avatar-btn" id="userAvatarBtn" aria-label="Menu do perfil">EB</button>
+                        <button class="user-avatar-btn" id="userAvatarBtn" aria-label="Menu do perfil">?</button>
                         <div class="profile-dropdown" id="profileDropdown">
                             <div class="profile-dropdown-header">
-                                <div class="pd-name">Alex Silva Demo</div>
-                                <div class="pd-detail">4º Período • CRA: 8.2</div>
+                                <div class="pd-name" id="navDropdownName">Carregando...</div>
+                                <div class="pd-detail" id="navDropdownDetail"></div>
                             </div>
-                            <a class="profile-dropdown-item" href="#">
-                                <i class="bi bi-person"></i> Meu Perfil
+                            <a class="profile-dropdown-item" href="{% url 'dashboard' %}">
+                                <i class="bi bi-person"></i> Meu Dashboard
                             </a>
-                            <a class="profile-dropdown-item" href="#">
-                                <i class="bi bi-gear"></i> Configurações
+                            <a class="profile-dropdown-item" href="{% url 'egressos' %}">
+                                <i class="bi bi-people"></i> Trocar Aluno
                             </a>
                             <div class="profile-dropdown-divider"></div>
                             <div class="theme-toggle-row">
@@ -982,6 +982,52 @@
                     dropdown.classList.remove('show');
                 }
             });
+        })();
+
+        // ============================================
+        // NAVBAR: POPULATE STUDENT INFO FROM API
+        // ============================================
+        (function () {
+            const studentId = localStorage.getItem('selectedStudentId') || 'stu-001';
+            const seed = localStorage.getItem('studentSeed') || '42';
+            const count = localStorage.getItem('studentCount') || '50';
+
+            function initials(name) {
+                const parts = name.trim().split(/\s+/);
+                if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+                return parts[0].slice(0, 2).toUpperCase();
+            }
+
+            function statusLabel(s) {
+                return { ativo: 'Ativo', formado: 'Formado', trancado: 'Trancado', evadido: 'Evadido' }[s] || s;
+            }
+
+            fetch(`/api/synthetic/students/${studentId}/?seed=${seed}&count=${count}`)
+                .then(r => r.ok ? r.json() : null)
+                .then(data => {
+                    if (!data) return;
+                    const name = data.name || 'Aluno';
+                    const period = data.status === 'formado' ? 'Formado' : `${data.currentPeriod}º Período`;
+                    const gpa = data.gpa != null ? `CR: ${data.gpa.toFixed(1)}` : '';
+                    const pct = data.totalCourseWorkload
+                        ? Math.round(data.completedWorkload / data.totalCourseWorkload * 100) : 0;
+                    const detail = [period, gpa, `${pct}%`].filter(Boolean).join(' • ');
+
+                    const badge = document.getElementById('navUserBadge');
+                    const uname = document.getElementById('navUserName');
+                    const udetail = document.getElementById('navUserDetail');
+                    const avatar = document.getElementById('userAvatarBtn');
+                    const dname = document.getElementById('navDropdownName');
+                    const ddetail = document.getElementById('navDropdownDetail');
+
+                    if (badge) badge.textContent = `${statusLabel(data.status)} • ${pct}% concluído`;
+                    if (uname) uname.textContent = name;
+                    if (udetail) udetail.textContent = detail;
+                    if (avatar) avatar.textContent = initials(name);
+                    if (dname) dname.textContent = name;
+                    if (ddetail) ddetail.textContent = detail;
+                })
+                .catch(() => {});
         })();
 
         // ============================================

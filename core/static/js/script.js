@@ -24,24 +24,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Simular atualização de XP
-    const xpBar = document.querySelector('.progress-bar');
-    if (xpBar) {
-        let currentXP = 1450;
-        const targetXP = 1500;
-        const increment = 1;
-        const interval = setInterval(() => {
-            if (currentXP < targetXP) {
-                currentXP += increment;
-                const percentage = (currentXP / 3500) * 100;
-                xpBar.style.width = percentage + '%';
-                document.querySelector('.d-flex.justify-content-between span').textContent = 
-                    `${currentXP} / 3500 XP`;
-            } else {
-                clearInterval(interval);
-            }
-        }, 50);
-    }
     
     // Menu mobile
     const navbarToggler = document.querySelector('.navbar-toggler');

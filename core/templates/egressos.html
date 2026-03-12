@@ -266,47 +266,62 @@
 
       const col = document.createElement('div');
       col.className = 'col-12 col-sm-6 col-xl-4';
-      col.innerHTML = `
-        <div class="student-card${isMe ? ' is-me' : ''}" onclick="selectAndGo('${s.id}')">
-          <div class="student-card-body">
-            <div class="d-flex justify-content-between align-items-start mb-2">
-              <div style="min-width:0">
-                <div class="student-name text-truncate">${escHtml(s.name)}</div>
-                <div class="student-meta">${escHtml(s.course ?? 'Ciência da Computação')} · ${escHtml(s.campus ?? '')}</div>
-              </div>
-              <div class="d-flex flex-column align-items-end gap-1 ms-2 flex-shrink-0">
-                <span class="badge bg-${badgeClass}">${statusText}</span>
-                ${isMe ? '<span class="badge" style="background:var(--utfpr-yellow);color:var(--utfpr-black)">Este é você</span>' : ''}
-              </div>
-            </div>
 
-            <div class="d-flex gap-3 mb-2 flex-wrap">
-              <span class="student-meta"><i class="bi bi-calendar3 me-1"></i>${periodText}</span>
-              <span class="student-meta"><i class="bi bi-graph-up me-1"></i>CR: <strong>${s.gpa != null ? s.gpa.toFixed(1) : '—'}</strong></span>
-            </div>
+      const card = document.createElement('div');
+      card.className = `student-card${isMe ? ' is-me' : ''}`;
+      card.dataset.studentId = s.id;
 
-            <div class="mb-1 d-flex justify-content-between">
-              <span class="student-meta small">Conclusão</span>
-              <span class="student-meta small fw-semibold">${pct}%</span>
-            </div>
-            <div class="progress mb-2">
-              <div class="progress-bar" style="width:${pct}%"></div>
-            </div>
-
-            <div class="d-flex gap-3 flex-wrap mt-auto pt-1">
-              <span class="student-meta small"><i class="bi bi-mortarboard me-1"></i>Turma de ${admYear}</span>
-              <span class="student-meta small"><i class="bi bi-book me-1"></i>${s.completedWorkload ?? 0}h / ${s.totalCourseWorkload ?? 0}h</span>
-            </div>
+      const body = document.createElement('div');
+      body.className = 'student-card-body';
+      body.innerHTML = `
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div style="min-width:0">
+            <div class="student-name text-truncate">${escHtml(s.name)}</div>
+            <div class="student-meta">${escHtml(s.course ?? 'Ciência da Computação')} · ${escHtml(s.campus ?? '')}</div>
           </div>
-          <div class="card-footer-actions">
-            <button class="btn btn-sm btn-outline-secondary flex-fill" onclick="event.stopPropagation();selectStudent('${s.id}')">
-              <i class="bi bi-person-check me-1"></i>Selecionar
-            </button>
-            <button class="btn btn-sm flex-fill" style="background:var(--utfpr-yellow);color:var(--utfpr-black);border:none" onclick="event.stopPropagation();selectAndGo('${s.id}')">
-              <i class="bi bi-eye me-1"></i>Ver Perfil
-            </button>
+          <div class="d-flex flex-column align-items-end gap-1 ms-2 flex-shrink-0">
+            <span class="badge bg-${badgeClass}">${statusText}</span>
+            ${isMe ? '<span class="badge me-badge" style="background:var(--utfpr-yellow);color:var(--utfpr-black)">Este é você</span>' : ''}
           </div>
+        </div>
+        <div class="d-flex gap-3 mb-2 flex-wrap">
+          <span class="student-meta"><i class="bi bi-calendar3 me-1"></i>${periodText}</span>
+          <span class="student-meta"><i class="bi bi-graph-up me-1"></i>CR: <strong>${s.gpa != null ? s.gpa.toFixed(1) : '—'}</strong></span>
+        </div>
+        <div class="mb-1 d-flex justify-content-between">
+          <span class="student-meta small">Conclusão</span>
+          <span class="student-meta small fw-semibold">${pct}%</span>
+        </div>
+        <div class="progress mb-2">
+          <div class="progress-bar" style="width:${pct}%"></div>
+        </div>
+        <div class="d-flex gap-3 flex-wrap mt-auto pt-1">
+          <span class="student-meta small"><i class="bi bi-mortarboard me-1"></i>Turma de ${admYear}</span>
+          <span class="student-meta small"><i class="bi bi-book me-1"></i>${s.completedWorkload ?? 0}h / ${s.totalCourseWorkload ?? 0}h</span>
         </div>`;
+
+      const footer = document.createElement('div');
+      footer.className = 'card-footer-actions';
+
+      const btnSelect = document.createElement('button');
+      btnSelect.type = 'button';
+      btnSelect.className = 'btn btn-sm btn-outline-secondary flex-fill';
+      btnSelect.innerHTML = '<i class="bi bi-person-check me-1"></i>Selecionar';
+      btnSelect.addEventListener('click', e => { e.stopPropagation(); selectStudent(s.id); });
+
+      const btnView = document.createElement('button');
+      btnView.type = 'button';
+      btnView.className = 'btn btn-sm flex-fill';
+      btnView.style.cssText = 'background:var(--utfpr-yellow);color:var(--utfpr-black);border:none';
+      btnView.innerHTML = '<i class="bi bi-eye me-1"></i>Ver Perfil';
+      btnView.addEventListener('click', e => { e.stopPropagation(); selectAndGo(s.id); });
+
+      footer.appendChild(btnSelect);
+      footer.appendChild(btnView);
+      card.appendChild(body);
+      card.appendChild(footer);
+      card.addEventListener('click', () => selectAndGo(s.id));
+      col.appendChild(card);
       grid.appendChild(col);
     });
   }
@@ -355,20 +370,16 @@
   }
 
   // ── Actions ───────────────────────────────────────────────────
-  window.selectStudent = function(id) {
+  function selectStudent(id) {
     state.selectedId = id;
     localStorage.setItem('selectedStudentId', id);
-    // Highlight the card without navigating
     document.querySelectorAll('.student-card').forEach(c => {
-      const isMeNow = c.getAttribute('onclick')?.includes(`'${id}'`);
-      c.classList.toggle('is-me', !!isMeNow);
-    });
-    document.querySelectorAll('.student-card').forEach(c => {
-      const isMeNow = c.getAttribute('onclick')?.includes(`'${id}'`);
-      const existing = c.querySelector('.badge[style*="utfpr-yellow"]');
+      const isMeNow = c.dataset.studentId === id;
+      c.classList.toggle('is-me', isMeNow);
+      const existing = c.querySelector('.me-badge');
       if (isMeNow && !existing) {
         const badge = document.createElement('span');
-        badge.className = 'badge';
+        badge.className = 'badge me-badge';
         badge.style.cssText = 'background:var(--utfpr-yellow);color:var(--utfpr-black)';
         badge.textContent = 'Este é você';
         c.querySelector('.d-flex.flex-column')?.appendChild(badge);
@@ -376,12 +387,12 @@
         existing.remove();
       }
     });
-  };
+  }
 
-  window.selectAndGo = function(id) {
+  function selectAndGo(id) {
     localStorage.setItem('selectedStudentId', id);
     window.location.href = '/dashboard/';
-  };
+  }
 
   // ── Filter events ─────────────────────────────────────────────
   statusGroup.addEventListener('click', e => {

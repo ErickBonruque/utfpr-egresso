@@ -146,7 +146,7 @@
         &bull; Conclusão: <strong id="studentCompletion">—</strong>
       </p>
     </div>
-    <a href="/alunos/" class="btn btn-sm btn-outline-secondary">
+    <a href="/egressos/" class="btn btn-sm btn-outline-secondary">
       <i class="bi bi-person-lines-fill me-1"></i>Trocar Aluno
     </a>
   </div>
@@ -344,10 +344,12 @@
     // Optionals
     renderOptionals(curriculumData.subjects || []);
 
-    // Tooltips
-    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
-      new bootstrap.Tooltip(el, { trigger: 'hover focus' });
-    });
+    // Tooltips (only if Bootstrap is available)
+    if (typeof bootstrap !== 'undefined') {
+      document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+        new bootstrap.Tooltip(el, { trigger: 'hover focus' });
+      });
+    }
   }
 
   // ── Student header ────────────────────────────────────────────────────

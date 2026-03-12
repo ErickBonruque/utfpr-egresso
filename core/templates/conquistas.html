@@ -166,8 +166,9 @@
         const twl         = s.totalCourseWorkload || 1;
         const wlPct       = wl / twl;
         const approvedN   = subs.filter(x => x.status === 'aprovada').length;
-        // Use non-optativa subjects as denominator; fall back to total when type field is absent
-        const totalSubs   = subs.length || 1;
+        // Count mandatory subjects as denominator for "Primeiro Passo" progress; fall back to total
+        const mandatorySubs = subs.filter(x => x.type !== 'optativa');
+        const totalSubs   = (mandatorySubs.length || subs.length) || 1;
         const maxAttend   = subs.filter(x => x.status === 'aprovada')
                                .reduce((m, x) => Math.max(m, x.attendance || 0), 0);
 
@@ -357,7 +358,7 @@
         else if (filter === 'bloqueadas')    list = list.filter(a => !a.unlocked);
         else if (filter !== 'todas')         list = list.filter(a => a.category === filter);
 
-        // Unlocked first, then by progress descending
+        // Sort: unlocked achievements first, then locked ones ordered by progress % descending
         list.sort((a, b) => (a.unlocked === b.unlocked) ? b.progress - a.progress : a.unlocked ? -1 : 1);
 
         const categories = [...new Set(list.map(a => a.category))];
