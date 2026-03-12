@@ -135,14 +135,20 @@ def perfil(request):
 
     if aluno:
         if is_public_profile:
+            # Calculate progress from full data (needed for tracks/achievements display)
+            # but only expose sanitized public fields to the frontend
+            full_data = serializar_aluno(aluno)
+            progresso = calcular_progresso_aluno(full_data)
             aluno_data = serializar_egresso_publico(aluno)
-            aluno_data['subjects'] = []
-            aluno_data['currentPeriod'] = None
-            aluno_data['gpa'] = None
-            aluno_data['registration'] = None
-            aluno_data['totalCourseWorkload'] = None
-            aluno_data['completedWorkload'] = None
-            progresso = None
+            # Add non-sensitive aggregate stats so the profile shows rich data
+            approved_subs = [s for s in full_data.get('subjects', []) if s.get('status') == 'aprovada']
+            aluno_data['approvedCount'] = len(approved_subs)
+            aluno_data['completedWorkload'] = full_data.get('completedWorkload') or 0
+            aluno_data['totalCourseWorkload'] = full_data.get('totalCourseWorkload') or 1
+            aluno_data['currentPeriod'] = full_data.get('currentPeriod')
+            aluno_data['gpa'] = None          # grades are private
+            aluno_data['registration'] = None  # RA is private
+            aluno_data['subjects'] = []        # individual subjects are private
         else:
             aluno_data = serializar_aluno(aluno)
             progresso = calcular_progresso_aluno(aluno_data)

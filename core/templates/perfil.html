@@ -339,13 +339,30 @@
         : `<span class="stat-chip"><i class="bi bi-layers"></i> RA: <strong>${st.registration}</strong></span>`,
       `<span class="stat-chip"><i class="bi bi-envelope"></i> <strong>${esc(st.email)}</strong></span>`,
     ];
+    if (isPublicProfile) {
+      if (st.jobTitle && st.jobTitle !== 'Egresso(a)') {
+        chips.push(`<span class="stat-chip"><i class="bi bi-briefcase"></i> <strong>${esc(st.jobTitle)}</strong></span>`);
+      }
+      if (st.company && st.company !== 'Não informado') {
+        chips.push(`<span class="stat-chip"><i class="bi bi-building"></i> <strong>${esc(st.company)}</strong></span>`);
+      }
+      if (st.graduationYear) {
+        chips.push(`<span class="stat-chip"><i class="bi bi-patch-check-fill" style="color:var(--utfpr-yellow)"></i> Formado em <strong>${st.graduationYear}</strong></span>`);
+      }
+    }
     $id('p-chips').innerHTML = chips.join('');
 
     // Metrics
     $id('m-gpa').textContent    = st.gpa != null ? (st.gpa || 0).toFixed(1) : '—';
-    $id('m-aprov').textContent  = isPublicProfile ? '—' : (st.subjects||[]).filter(x=>x.status==='aprovada').length;
-    $id('m-pct').textContent    = isPublicProfile ? '—' : pct + '%';
-    $id('m-period').textContent = isPublicProfile ? '—' : (st.status === 'formado' ? '✓' : `${st.currentPeriod}/8`);
+    $id('m-aprov').textContent  = isPublicProfile
+      ? (st.approvedCount != null ? st.approvedCount : '—')
+      : (st.subjects||[]).filter(x=>x.status==='aprovada').length;
+    $id('m-pct').textContent    = (isPublicProfile && st.totalCourseWorkload > 0)
+      ? Math.round(st.completedWorkload / st.totalCourseWorkload * 100) + '%'
+      : (!isPublicProfile ? pct + '%' : '—');
+    $id('m-period').textContent = isPublicProfile
+      ? (st.status === 'formado' ? '✓' : (st.currentPeriod ? `${st.currentPeriod}/8` : '—'))
+      : (st.status === 'formado' ? '✓' : `${st.currentPeriod}/8`);
   }
 
   // ── Render career tracks ───────────────────────────────────────────────
@@ -380,6 +397,49 @@
       const unlocked = a.check(subjects, st);
       return `<span class="ach-badge${unlocked ? '' : ' locked'}">
         <i class="bi ${a.icon}"></i>${esc(a.label)}
+      </span>`;
+    }).join('');
+    $id('ach-container').innerHTML = html;
+  }
+
+  // ── Render tracks from server progress (public profiles) ──────────────
+  function renderTracksFromProgress(progress) {
+    if (!progress || !progress.branches || !progress.branches.length) {
+      $id('tracks-container').innerHTML = '<p class="text-muted small mb-0">Nenhuma trilha disponível.</p>';
+      return;
+    }
+    const colorMap = {
+      'Fundamentos': '#3b82f6', 'Engenharia de Software': '#ef4444',
+      'Inteligencia Artificial': '#8b5cf6', 'Sistemas': '#06b6d4', 'Banco de Dados': '#f59e0b',
+    };
+    const html = progress.branches.map(b => {
+      const color = colorMap[b.label] || '#FFC72C';
+      return `<div class="track-row">
+        <div class="d-flex justify-content-between align-items-baseline">
+          <span class="track-label">${esc(b.label)}</span>
+          <span class="track-meta">${b.done}/${b.total}</span>
+        </div>
+        <div class="track-bar"><div class="track-fill" style="width:${b.pct}%;background:${color}"></div></div>
+      </div>`;
+    }).join('');
+    $id('tracks-container').innerHTML = html;
+    setTimeout(() => {
+      document.querySelectorAll('.track-fill').forEach(f => {
+        const w = f.style.width; f.style.width = '0%';
+        requestAnimationFrame(() => { f.style.width = w; });
+      });
+    }, 60);
+  }
+
+  // ── Render achievements from server progress (public profiles) ─────────
+  function renderAchievementsFromProgress(progress) {
+    if (!progress || !progress.achievements || !progress.achievements.length) {
+      $id('ach-container').innerHTML = '';
+      return;
+    }
+    const html = progress.achievements.map(a => {
+      return `<span class="ach-badge${a.unlocked ? '' : ' locked'}" title="${esc(a.desc || '')}">
+        <i class="bi ${a.icon || 'bi-trophy'}"></i>${esc(a.name || '')}
       </span>`;
     }).join('');
     $id('ach-container').innerHTML = html;
@@ -497,13 +557,15 @@
       $id('page-title').textContent = 'Perfil Público de Egresso';
     }
 
+    const progress = {{ progress_json|default:"null"|safe }};
+
     renderHero(student);
     if (!isPublicProfile) {
       renderTracks(subjectLookup);
       renderAchievements(student.subjects || [], student);
     } else {
-      $id('tracks-container').innerHTML = '<p class="text-muted small mb-0">As trilhas acadêmicas são visíveis apenas para o próprio aluno.</p>';
-      $id('ach-container').innerHTML = '<span class="ach-badge"><i class="bi bi-envelope-paper"></i>Contato disponível por e-mail</span>';
+      renderTracksFromProgress(progress);
+      renderAchievementsFromProgress(progress);
     }
     renderPeriods(subjectLookup, student);
 

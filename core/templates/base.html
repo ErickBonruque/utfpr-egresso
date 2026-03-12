@@ -1071,10 +1071,7 @@
             }
 
             function goToStudent(studentId) {
-                const url = new URL(window.location.href);
-                url.searchParams.set('id', studentId);
-                url.searchParams.delete('target');
-                window.location.href = url.pathname + url.search;
+                window.location.href = '/dashboard/?id=' + studentId;
             }
 
             function renderList(students) {
