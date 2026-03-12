@@ -6,604 +6,435 @@
 
 {% block content %}
 <style>
-    :root {
-        --locked-color: #9e9e9e;
-    }
+    .main-content { padding: 2rem 0; }
 
-    .main-content {
-        padding: 2rem 0;
-    }
-
-    .achievement-card {
-        border: none;
-        border-radius: 15px;
-        box-shadow: var(--card-shadow);
-        transition: all 0.3s ease;
-        height: 100%;
-        position: relative;
-        overflow: hidden;
-    }
-
-    .achievement-card.unlocked {
-        background: linear-gradient(135deg, #ffffff, #f8f9fa);
-        border: 2px solid var(--accent-color);
-    }
-
-    .achievement-card.locked {
-        background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
-        opacity: 0.7;
-        filter: grayscale(1);
-    }
-
-    .achievement-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-    }
-
-    .achievement-card.unlocked:hover {
-        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
-    }
-
-    .achievement-icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
-        transition: transform 0.3s ease;
-    }
-
-    .achievement-card:hover .achievement-icon {
-        transform: scale(1.1);
-    }
-
-    .achievement-card.unlocked .achievement-icon {
-        color: var(--accent-color);
-    }
-
-    .achievement-card.locked .achievement-icon {
-        color: var(--locked-color);
-    }
-
-    .achievement-title {
-        font-weight: 600;
-        font-size: 1.1rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .achievement-card.locked .achievement-title {
-        color: var(--locked-color);
-    }
-
-    .achievement-description {
-        font-size: 0.9rem;
-        color: var(--text-secondary);
-        margin-bottom: 1rem;
-    }
-
-    .achievement-card.locked .achievement-description {
-        color: var(--text-muted);
-    }
-
-    .achievement-progress {
-        background-color: var(--border-color);
-        height: 8px;
-        border-radius: 10px;
-        overflow: hidden;
-        margin-bottom: 0.5rem;
-    }
-
-    .achievement-progress-bar {
-        height: 100%;
-        background: linear-gradient(90deg, var(--accent-color), #45a049);
-        border-radius: 10px;
-        transition: width 0.5s ease;
-    }
-
-    .achievement-card.locked .achievement-progress-bar {
-        background: linear-gradient(90deg, var(--locked-color), #757575);
-    }
-
-    .achievement-xp {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: var(--primary-color);
-    }
-
-    .achievement-card.locked .achievement-xp {
-        color: var(--locked-color);
-    }
-
-    .achievement-date {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-    }
-
-    .category-badge {
-        display: inline-block;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-    }
-
-    .category-academic {
-        background-color: #e3f2fd;
-        color: #1565c0;
-    }
-
-    .category-social {
-        background-color: #f3e5f5;
-        color: #7b1fa2;
-    }
-
-    .category-professional {
-        background-color: #e8f5e9;
-        color: #2e7d32;
-    }
-
-    .category-special {
-        background-color: #fff3e0;
-        color: #e65100;
-    }
-
-    .locked-overlay {
-        position: absolute;
-        top: 10px;
-        right: 10px;
-        background: rgba(0, 0, 0, 0.7);
-        color: white;
-        padding: 5px 10px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-    }
-
-    .section-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 1.5rem;
-        position: relative;
-        padding-left: 20px;
-    }
-
-    .section-title::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 5px;
-        height: 25px;
-        background: var(--accent-color);
-        border-radius: 3px;
-    }
-
-    .stats-card {
+    .stats-bar {
         background: var(--stats-gradient);
         color: var(--stats-text);
-        border-radius: 15px;
-        padding: 2rem;
-        text-align: center;
+        border-radius: 16px;
+        padding: 1.25rem 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    .stat-item { text-align: center; }
+    .stat-value { font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
+    .stat-label { font-size: 0.78rem; opacity: 0.75; margin-top: 0.15rem; }
+    .stat-next  { font-size: 0.95rem; font-weight: 600; }
+
+    .filter-btns { gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .filter-btns .btn { border-radius: 20px; font-size: 0.82rem; padding: 0.3rem 0.9rem; }
+
+    .achievement-card {
+        background: var(--bg-card);
+        border-radius: 14px;
+        box-shadow: var(--card-shadow);
+        padding: 1.2rem;
+        height: 100%;
+        transition: transform 0.25s, box-shadow 0.25s;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+    }
+    .achievement-card.unlocked:hover { transform: translateY(-4px); box-shadow: var(--card-shadow-hover); }
+    .achievement-card.locked { opacity: 0.6; filter: grayscale(0.85); }
+
+    .ach-icon {
+        width: 50px; height: 50px;
+        border-radius: 12px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 1.4rem;
+        margin-bottom: 0.7rem;
+        flex-shrink: 0;
+    }
+    .unlocked .ach-icon { background: linear-gradient(135deg, #FFC72C33, #FFC72C55); color: var(--accent-color); }
+    .locked   .ach-icon { background: var(--badge-bg); color: var(--text-muted); }
+
+    .xp-badge {
+        position: absolute; top: 0.7rem; right: 0.7rem;
+        font-size: 0.68rem; font-weight: 700;
+        padding: 2px 7px; border-radius: 20px;
+    }
+    .unlocked .xp-badge { background: var(--accent-color); color: #1a1a2e; }
+    .locked   .xp-badge { background: var(--badge-bg); color: var(--text-muted); }
+
+    .ach-name { font-size: 0.9rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.2rem; }
+    .ach-desc { font-size: 0.76rem; color: var(--text-secondary); line-height: 1.4; flex-grow: 1; margin-bottom: 0.6rem; }
+
+    .ach-progress .progress { height: 5px; border-radius: 5px; background: var(--border-color); }
+    .ach-progress .progress-bar { background: linear-gradient(90deg, #FFC72C, #e6a800); border-radius: 5px; }
+    .ach-progress .pct-label { font-size: 0.7rem; color: var(--text-muted); }
+
+    .section-title {
+        font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+        text-transform: uppercase; color: var(--text-muted);
+        margin: 1.4rem 0 0.7rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid var(--border-color);
     }
 
-    .stats-number {
-        font-size: 3rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-
-    .filter-btn {
-        padding: 8px 20px;
-        border-radius: 20px;
-        border: 2px solid var(--primary-color);
-        background: white;
-        color: var(--primary-color);
-        font-weight: 600;
-        transition: all 0.3s;
-        margin-right: 10px;
-        margin-bottom: 10px;
-    }
-
-    .filter-btn:hover,
-    .filter-btn.active {
-        background: var(--primary-color);
-        color: white;
-    }
+    #loading-spinner { padding: 4rem 0; }
+    #error-msg       { display: none; }
+    #conquistas-content { display: none; }
 </style>
 
-<!-- Main Content -->
 <div class="container main-content">
-    <!-- Header Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="h3 mb-1">Suas Conquistas</h1>
-            <p class="text-muted">Desbloqueie novas conquistas e acompanhe seu progresso</p>
+
+    <!-- Loading -->
+    <div id="loading-spinner" class="text-center">
+        <div class="spinner-border text-warning" role="status" style="width:3rem;height:3rem;">
+            <span class="visually-hidden">Carregando...</span>
         </div>
+        <p class="mt-3 text-muted">Carregando conquistas…</p>
     </div>
 
-    <!-- Stats Card -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="stats-card">
-                <div class="stats-number">12</div>
-                <div>Conquistas Desbloqueadas</div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stats-card">
-                <div class="stats-number">8</div>
-                <div>Conquistas Bloqueadas</div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="stats-card">
-                <div class="stats-number">850</div>
-                <div>XP Ganho em Conquistas</div>
-            </div>
-        </div>
+    <!-- Error -->
+    <div id="error-msg" class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+        <span id="error-text">Não foi possível carregar os dados do aluno.</span>
     </div>
 
-    <!-- Filter Buttons -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <button class="filter-btn active" onclick="filterAchievements('all')">
-                <i class="bi bi-grid-3x3-gap me-1"></i> Todas
-            </button>
-            <button class="filter-btn" onclick="filterAchievements('unlocked')">
-                <i class="bi bi-unlock me-1"></i> Desbloqueadas
-            </button>
-            <button class="filter-btn" onclick="filterAchievements('locked')">
-                <i class="bi bi-lock me-1"></i> Bloqueadas
-            </button>
-            <button class="filter-btn" onclick="filterAchievements('academic')">
-                <i class="bi bi-book me-1"></i> Acadêmicas
-            </button>
-            <button class="filter-btn" onclick="filterAchievements('social')">
-                <i class="bi bi-people me-1"></i> Sociais
-            </button>
-            <button class="filter-btn" onclick="filterAchievements('professional')">
-                <i class="bi bi-briefcase me-1"></i> Profissionais
-            </button>
-        </div>
-    </div>
+    <!-- Content -->
+    <div id="conquistas-content">
 
-    <!-- Academic Achievements -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h5 class="section-title">Conquistas Acadêmicas</h5>
+        <!-- Header -->
+        <div class="d-flex align-items-start flex-wrap gap-2 mb-3">
+            <div class="flex-grow-1">
+                <h1 class="h4 mb-0">Suas Conquistas</h1>
+                <p class="text-muted small mb-0" id="student-subtitle"></p>
+            </div>
+            <span id="status-badge" class="badge fs-6 px-3 py-2"></span>
         </div>
 
-        <div class="col-md-4 mb-4 achievement-item" data-category="academic unlocked">
-            <div class="card achievement-card unlocked">
-                <div class="card-body text-center">
-                    <span class="category-badge category-academic">Acadêmica</span>
-                    <i class="bi bi-calculator achievement-icon"></i>
-                    <h6 class="achievement-title">Matemático</h6>
-                    <p class="achievement-description">Obteve nota acima de 9.0 em Cálculo II</p>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star-fill me-1"></i> +100 XP
-                    </div>
-                    <div class="achievement-date">
-                        <i class="bi bi-calendar-check me-1"></i> Desbloqueada em 15/10/2023
-                    </div>
+        <!-- Stats bar -->
+        <div class="stats-bar">
+            <div class="row g-0">
+                <div class="col-4 stat-item" style="border-right:1px solid rgba(255,255,255,0.2)">
+                    <div class="stat-value" id="stat-xp">0</div>
+                    <div class="stat-label">XP Total</div>
+                </div>
+                <div class="col-4 stat-item" style="border-right:1px solid rgba(255,255,255,0.2)">
+                    <div class="stat-value" id="stat-count">0/20</div>
+                    <div class="stat-label">Desbloqueadas</div>
+                </div>
+                <div class="col-4 stat-item px-2">
+                    <div class="stat-next" id="stat-next">—</div>
+                    <div class="stat-label">Próxima conquista</div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4 mb-4 achievement-item" data-category="academic unlocked">
-            <div class="card achievement-card unlocked">
-                <div class="card-body text-center">
-                    <span class="category-badge category-academic">Acadêmica</span>
-                    <i class="bi bi-code-slash achievement-icon"></i>
-                    <h6 class="achievement-title">Programador Nato</h6>
-                    <p class="achievement-description">Aprovado com distinção em POO</p>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star-fill me-1"></i> +100 XP
-                    </div>
-                    <div class="achievement-date">
-                        <i class="bi bi-calendar-check me-1"></i> Desbloqueada em 20/09/2023
-                    </div>
-                </div>
-            </div>
+        <!-- Filter buttons -->
+        <div class="d-flex filter-btns">
+            <button class="btn btn-dark active" data-filter="todas">Todas</button>
+            <button class="btn btn-outline-success"   data-filter="desbloqueadas">Desbloqueadas</button>
+            <button class="btn btn-outline-secondary" data-filter="bloqueadas">Bloqueadas</button>
+            <button class="btn btn-outline-primary"   data-filter="Acadêmica">Acadêmica</button>
+            <button class="btn btn-outline-primary"   data-filter="Programação">Programação</button>
+            <button class="btn btn-outline-primary"   data-filter="Infraestrutura">Infraestrutura</button>
+            <button class="btn btn-outline-primary"   data-filter="IA">IA</button>
+            <button class="btn btn-outline-primary"   data-filter="Marcos">Marcos</button>
         </div>
 
-        <div class="col-md-4 mb-4 achievement-item" data-category="academic locked">
-            <div class="card achievement-card locked">
-                <div class="locked-overlay">
-                    <i class="bi bi-lock-fill me-1"></i> Bloqueada
-                </div>
-                <div class="card-body text-center">
-                    <span class="category-badge category-academic">Acadêmica</span>
-                    <i class="bi bi-award achievement-icon"></i>
-                    <h6 class="achievement-title">Loureiro de Ouro</h6>
-                    <p class="achievement-description">Média geral acima de 9.0 em todos os períodos</p>
-                    <div class="achievement-progress">
-                        <div class="achievement-progress-bar" style="width: 82%"></div>
-                    </div>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star me-1"></i> +200 XP
-                    </div>
-                    <small class="text-muted">CRA atual: 8.2/9.0</small>
-                </div>
-            </div>
-        </div>
+        <!-- Achievement grid -->
+        <div id="achievements-grid"></div>
 
-        <div class="col-md-4 mb-4 achievement-item" data-category="academic locked">
-            <div class="card achievement-card locked">
-                <div class="locked-overlay">
-                    <i class="bi bi-lock-fill me-1"></i> Bloqueada
-                </div>
-                <div class="card-body text-center">
-                    <span class="category-badge category-academic">Acadêmica</span>
-                    <i class="bi bi-graph-up achievement-icon"></i>
-                    <h6 class="achievement-title">Ascensão Constante</h6>
-                    <p class="achievement-description">Aumentar CRA em 4 períodos consecutivos</p>
-                    <div class="achievement-progress">
-                        <div class="achievement-progress-bar" style="width: 50%"></div>
-                    </div>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star me-1"></i> +150 XP
-                    </div>
-                    <small class="text-muted">2/4 períodos concluídos</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Social Achievements -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h5 class="section-title">Conquistas Sociais</h5>
-        </div>
-
-        <div class="col-md-4 mb-4 achievement-item" data-category="social unlocked">
-            <div class="card achievement-card unlocked">
-                <div class="card-body text-center">
-                    <span class="category-badge category-social">Social</span>
-                    <i class="bi bi-handshake achievement-icon"></i>
-                    <h6 class="achievement-title">Networker</h6>
-                    <p class="achievement-description">Realizou 5+ mentorias</p>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star-fill me-1"></i> +75 XP
-                    </div>
-                    <div class="achievement-date">
-                        <i class="bi bi-calendar-check me-1"></i> Desbloqueada em 05/11/2023
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4 achievement-item" data-category="social unlocked">
-            <div class="card achievement-card unlocked">
-                <div class="card-body text-center">
-                    <span class="category-badge category-social">Social</span>
-                    <i class="bi bi-people achievement-icon"></i>
-                    <h6 class="achievement-title">Líder Comunitário</h6>
-                    <p class="achievement-description">Organizou 3 eventos estudantis</p>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star-fill me-1"></i> +100 XP
-                    </div>
-                    <div class="achievement-date">
-                        <i class="bi bi-calendar-check me-1"></i> Desbloqueada em 01/12/2023
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4 achievement-item" data-category="social locked">
-            <div class="card achievement-card locked">
-                <div class="locked-overlay">
-                    <i class="bi bi-lock-fill me-1"></i> Bloqueada
-                </div>
-                <div class="card-body text-center">
-                    <span class="category-badge category-social">Social</span>
-                    <i class="bi bi-megaphone achievement-icon"></i>
-                    <h6 class="achievement-title">Influenciador</h6>
-                    <p class="achievement-description">100+ conexões com egressos</p>
-                    <div class="achievement-progress">
-                        <div class="achievement-progress-bar" style="width: 65%"></div>
-                    </div>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star me-1"></i> +125 XP
-                    </div>
-                    <small class="text-muted">65/100 conexões</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Professional Achievements -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h5 class="section-title">Conquistas Profissionais</h5>
-        </div>
-
-        <div class="col-md-4 mb-4 achievement-item" data-category="professional unlocked">
-            <div class="card achievement-card unlocked">
-                <div class="card-body text-center">
-                    <span class="category-badge category-professional">Profissional</span>
-                    <i class="bi bi-microscope achievement-icon"></i>
-                    <h6 class="achievement-title">Pesquisador Iniciante</h6>
-                    <p class="achievement-description">Iniciou projeto de iniciação científica</p>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star-fill me-1"></i> +150 XP
-                    </div>
-                    <div class="achievement-date">
-                        <i class="bi bi-calendar-check me-1"></i> Desbloqueada em 10/10/2023
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4 achievement-item" data-category="professional unlocked">
-            <div class="card achievement-card unlocked">
-                <div class="card-body text-center">
-                    <span class="category-badge category-profissional">Profissional</span>
-                    <i class="bi bi-briefcase achievement-icon"></i>
-                    <h6 class="achievement-title">Estagiador Destaque</h6>
-                    <p class="achievement-description">Conquistou estágio antes do 5º período</p>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star-fill me-1"></i> +100 XP
-                    </div>
-                    <div class="achievement-date">
-                        <i class="bi bi-calendar-check me-1"></i> Desbloqueada em 15/11/2023
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4 achievement-item" data-category="professional locked">
-            <div class="card achievement-card locked">
-                <div class="locked-overlay">
-                    <i class="bi bi-lock-fill me-1"></i> Bloqueada
-                </div>
-                <div class="card-body text-center">
-                    <span class="category-badge category-professional">Profissional</span>
-                    <i class="bi bi-trophy achievement-icon"></i>
-                    <h6 class="achievement-title">Hackathon Master</h6>
-                    <p class="achievement-description">Vencer 3 hackathons</p>
-                    <div class="achievement-progress">
-                        <div class="achievement-progress-bar" style="width: 33%"></div>
-                    </div>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star me-1"></i> +200 XP
-                    </div>
-                    <small class="text-muted">1/3 hackathons vencidos</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4 achievement-item" data-category="professional locked">
-            <div class="card achievement-card locked">
-                <div class="locked-overlay">
-                    <i class="bi bi-lock-fill me-1"></i> Bloqueada
-                </div>
-                <div class="card-body text-center">
-                    <span class="category-badge category-professional">Profissional</span>
-                    <i class="bi bi-globe achievement-icon"></i>
-                    <h6 class="achievement-title">Empreendedor Digital</h6>
-                    <p class="achievement-description">Lançar um produto digital</p>
-                    <div class="achievement-progress">
-                        <div class="achievement-progress-bar" style="width: 0%"></div>
-                    </div>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star me-1"></i> +250 XP
-                    </div>
-                    <small class="text-muted">Não iniciado</small>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Special Achievements -->
-    <div class="row">
-        <div class="col-12">
-            <h5 class="section-title">Conquistas Especiais</h5>
-        </div>
-
-        <div class="col-md-4 mb-4 achievement-item" data-category="special unlocked">
-            <div class="card achievement-card unlocked">
-                <div class="card-body text-center">
-                    <span class="category-badge category-special">Especial</span>
-                    <i class="bi bi-lightning-charge achievement-icon"></i>
-                    <h6 class="achievement-title">Primeiros Passos</h6>
-                    <p class="achievement-description">Completou o primeiro semestre</p>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star-fill me-1"></i> +50 XP
-                    </div>
-                    <div class="achievement-date">
-                        <i class="bi bi-calendar-check me-1"></i> Desbloqueada em 20/06/2022
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4 achievement-item" data-category="special locked">
-            <div class="card achievement-card locked">
-                <div class="locked-overlay">
-                    <i class="bi bi-lock-fill me-1"></i> Bloqueada
-                </div>
-                <div class="card-body text-center">
-                    <span class="category-badge category-special">Especial</span>
-                    <i class="bi bi-crown achievement-icon"></i>
-                    <h6 class="achievement-title">Mestre da Árvore</h6>
-                    <p class="achievement-description">Alcançar o nível máximo (Nível 10)</p>
-                    <div class="achievement-progress">
-                        <div class="achievement-progress-bar" style="width: 70%"></div>
-                    </div>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star me-1"></i> +500 XP
-                    </div>
-                    <small class="text-muted">Nível 7/10</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-4 achievement-item" data-category="special locked">
-            <div class="card achievement-card locked">
-                <div class="locked-overlay">
-                    <i class="bi bi-lock-fill me-1"></i> Bloqueada
-                </div>
-                <div class="card-body text-center">
-                    <span class="category-badge category-special">Especial</span>
-                    <i class="bi bi-infinity achievement-icon"></i>
-                    <h6 class="achievement-title">Lenda UTFPR</h6>
-                    <p class="achievement-description">Desbloquear todas as outras conquistas</p>
-                    <div class="achievement-progress">
-                        <div class="achievement-progress-bar" style="width: 60%"></div>
-                    </div>
-                    <div class="achievement-xp">
-                        <i class="bi bi-star me-1"></i> +1000 XP
-                    </div>
-                    <small class="text-muted">12/20 conquistas</small>
-                </div>
-            </div>
-        </div>
     </div>
 </div>
 
 <script>
-    function filterAchievements(category) {
-        // Remove active class from all buttons
-        document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
+(function () {
+    const studentId = localStorage.getItem('selectedStudentId') || 'stu-001';
+    const seed      = localStorage.getItem('studentSeed')       || '42';
+    const count     = localStorage.getItem('studentCount')      || '50';
 
-        // Add active class to clicked button
-        event.target.classList.add('active');
+    const STATUS_CLASSES = {
+        ativo:    'bg-success',
+        trancado: 'bg-warning text-dark',
+        evadido:  'bg-danger',
+        formado:  'bg-primary',
+    };
 
-        // Filter achievements
-        const achievements = document.querySelectorAll('.achievement-item');
-
-        achievements.forEach(achievement => {
-            const categories = achievement.dataset.category.split(' ');
-
-            if (category === 'all') {
-                achievement.style.display = 'block';
-            } else if (category === 'unlocked' && categories.includes('unlocked')) {
-                achievement.style.display = 'block';
-            } else if (category === 'locked' && categories.includes('locked')) {
-                achievement.style.display = 'block';
-            } else if (categories.includes(category)) {
-                achievement.style.display = 'block';
-            } else {
-                achievement.style.display = 'none';
-            }
-        });
-
-        // Add fade-in animation
-        achievements.forEach(achievement => {
-            if (achievement.style.display === 'block') {
-                achievement.style.opacity = '0';
-                achievement.style.transform = 'translateY(20px)';
-
-                setTimeout(() => {
-                    achievement.style.transition = 'all 0.3s ease';
-                    achievement.style.opacity = '1';
-                    achievement.style.transform = 'translateY(0)';
-                }, 100);
-            }
-        });
+    function approved(subs, code) {
+        return subs.some(x => x.code === code && x.status === 'aprovada');
     }
+    function countApproved(subs, codes) {
+        return codes.filter(c => approved(subs, c)).length;
+    }
+
+    function buildAchievements(s) {
+        const subs        = s.subjects || [];
+        const wl          = s.completedWorkload || 0;
+        const twl         = s.totalCourseWorkload || 1;
+        const wlPct       = wl / twl;
+        const approvedN   = subs.filter(x => x.status === 'aprovada').length;
+        // Use non-optativa subjects as denominator; fall back to total when type field is absent
+        const totalSubs   = subs.length || 1;
+        const maxAttend   = subs.filter(x => x.status === 'aprovada')
+                               .reduce((m, x) => Math.max(m, x.attendance || 0), 0);
+
+        return [
+            // ── Acadêmica ──────────────────────────────────────────────
+            {
+                id: 'primeiro_passo', name: 'Primeiro Passo', category: 'Acadêmica',
+                icon: 'bi-mortarboard', xp: 50,
+                desc: 'Aprovado em alguma disciplina',
+                unlocked: subs.some(x => x.status === 'aprovada'),
+                progress: Math.min(1, approvedN / totalSubs),
+            },
+            {
+                id: 'dedicado', name: 'Dedicado', category: 'Acadêmica',
+                icon: 'bi-book-half', xp: 100,
+                desc: 'CR igual ou acima de 7,0',
+                unlocked: s.gpa >= 7.0,
+                progress: Math.min(1, s.gpa / 7.0),
+            },
+            {
+                id: 'aluno_destaque', name: 'Aluno Destaque', category: 'Acadêmica',
+                icon: 'bi-trophy', xp: 200,
+                desc: 'CR igual ou acima de 9,0',
+                unlocked: s.gpa >= 9.0,
+                progress: Math.min(1, s.gpa / 9.0),
+            },
+            {
+                id: 'nota_10', name: 'Nota 10', category: 'Acadêmica',
+                icon: 'bi-star-fill', xp: 150,
+                desc: 'Obteve nota 10,0 em alguma disciplina',
+                unlocked: subs.some(x => x.grade === 10.0),
+                progress: subs.some(x => x.grade === 10.0) ? 1 : 0,
+            },
+            {
+                id: 'sem_faltas', name: 'Sem Faltas', category: 'Acadêmica',
+                icon: 'bi-person-check', xp: 75,
+                desc: '100% de presença em alguma disciplina',
+                unlocked: subs.some(x => x.status === 'aprovada' && x.attendance === 100),
+                progress: Math.min(1, maxAttend / 100),
+            },
+            {
+                id: 'metade_jornada', name: 'Metade da Jornada', category: 'Acadêmica',
+                icon: 'bi-pie-chart', xp: 300,
+                desc: 'Completou 50% da carga horária total',
+                unlocked: wlPct >= 0.5,
+                progress: Math.min(1, wlPct),
+            },
+            {
+                id: 'quase_formado', name: 'Quase Formado', category: 'Acadêmica',
+                icon: 'bi-hourglass-bottom', xp: 500,
+                desc: 'Completou 75% da carga horária total',
+                unlocked: wlPct >= 0.75,
+                progress: Math.min(1, wlPct),
+            },
+            {
+                id: 'formado', name: 'Formado!', category: 'Acadêmica',
+                icon: 'bi-patch-check-fill', xp: 1000,
+                desc: 'Concluiu o curso completamente',
+                unlocked: s.status === 'formado',
+                progress: Math.min(1, wlPct),
+            },
+            // ── Programação ────────────────────────────────────────────
+            {
+                id: 'programador', name: 'Programador', category: 'Programação',
+                icon: 'bi-code-slash', xp: 100,
+                desc: 'Aprovado em Programação Orientada a Objetos',
+                unlocked: approved(subs, 'CC2POO'),
+                progress: approved(subs, 'CC2POO') ? 1 : 0,
+            },
+            {
+                id: 'mestre_algoritmos', name: 'Mestre dos Algoritmos', category: 'Programação',
+                icon: 'bi-diagram-3', xp: 200,
+                desc: 'Aprovado nas 3 disciplinas de Algoritmos e Estrutura de Dados',
+                unlocked: countApproved(subs, ['CC1AED1','CC2AED2','CC3AED3']) === 3,
+                progress: countApproved(subs, ['CC1AED1','CC2AED2','CC3AED3']) / 3,
+            },
+            {
+                id: 'arquiteto', name: 'Arquiteto de Software', category: 'Programação',
+                icon: 'bi-layers', xp: 150,
+                desc: 'Aprovado em Engenharia de Requisitos e Engenharia de Software',
+                unlocked: countApproved(subs, ['CC2ER','CC3ES']) === 2,
+                progress: countApproved(subs, ['CC2ER','CC3ES']) / 2,
+            },
+            {
+                id: 'guru_bd', name: 'Guru de Banco de Dados', category: 'Programação',
+                icon: 'bi-database-fill', xp: 150,
+                desc: 'Aprovado em Modelagem e Lab de Banco de Dados',
+                unlocked: countApproved(subs, ['CC1MBD','CC4LBD']) === 2,
+                progress: countApproved(subs, ['CC1MBD','CC4LBD']) / 2,
+            },
+            // ── Infraestrutura ─────────────────────────────────────────
+            {
+                id: 'esp_redes', name: 'Especialista em Redes', category: 'Infraestrutura',
+                icon: 'bi-hdd-network', xp: 150,
+                desc: 'Aprovado nas duas disciplinas de Redes',
+                unlocked: countApproved(subs, ['CC4RC','CC6TRC']) === 2,
+                progress: countApproved(subs, ['CC4RC','CC6TRC']) / 2,
+            },
+            {
+                id: 'guardiao', name: 'Guardião Digital', category: 'Infraestrutura',
+                icon: 'bi-shield-lock', xp: 200,
+                desc: 'Aprovado em Cibersegurança',
+                unlocked: approved(subs, 'CC7CS'),
+                progress: approved(subs, 'CC7CS') ? 1 : 0,
+            },
+            // ── IA ─────────────────────────────────────────────────────
+            {
+                id: 'cientista', name: 'Cientista de Dados', category: 'IA',
+                icon: 'bi-graph-up-arrow', xp: 200,
+                desc: 'Aprovado em IA, Big Data e IA Aplicada',
+                unlocked: countApproved(subs, ['CC6FIA','CC6IBDDA','CC7IAA']) === 3,
+                progress: countApproved(subs, ['CC6FIA','CC6IBDDA','CC7IAA']) / 3,
+            },
+            {
+                id: 'visao', name: 'Visão de Futuro', category: 'IA',
+                icon: 'bi-eye', xp: 200,
+                desc: 'Aprovado em Visão Computacional',
+                unlocked: approved(subs, 'CC7VC'),
+                progress: approved(subs, 'CC7VC') ? 1 : 0,
+            },
+            // ── Marcos ─────────────────────────────────────────────────
+            {
+                id: 'estagiario', name: 'Estagiário', category: 'Marcos',
+                icon: 'bi-briefcase', xp: 300,
+                desc: 'Completou o Estágio Obrigatório',
+                unlocked: approved(subs, 'EO11'),
+                progress: approved(subs, 'EO11') ? 1 : 0,
+            },
+            {
+                id: 'tcc', name: 'TCC Concluído', category: 'Marcos',
+                icon: 'bi-file-earmark-text', xp: 500,
+                desc: 'Concluiu o Trabalho de Conclusão de Curso',
+                unlocked: approved(subs, 'TCC2'),
+                progress: approved(subs, 'TCC2') ? 1 : 0,
+            },
+            {
+                id: 'pi1', name: 'Projeto Integrador', category: 'Marcos',
+                icon: 'bi-puzzle', xp: 150,
+                desc: 'Aprovado no Projeto Integrador I',
+                unlocked: approved(subs, 'CC3PI1'),
+                progress: approved(subs, 'CC3PI1') ? 1 : 0,
+            },
+            {
+                id: 'trilha_pi', name: 'Trilha Completa de Projetos', category: 'Marcos',
+                icon: 'bi-diagram-2', xp: 400,
+                desc: 'Aprovado nos 3 Projetos Integradores',
+                unlocked: countApproved(subs, ['CC3PI1','CC5PI2','CC7PI3']) === 3,
+                progress: countApproved(subs, ['CC3PI1','CC5PI2','CC7PI3']) / 3,
+            },
+        ];
+    }
+
+    // ── Rendering ─────────────────────────────────────────────────────
+
+    let allAchievements = [];
+
+    function renderCard(a) {
+        const pct    = Math.round(a.progress * 100);
+        const cls    = a.unlocked ? 'unlocked' : 'locked';
+        const footer = a.unlocked
+            ? `<span class="badge bg-success-subtle text-success-emphasis" style="font-size:.71rem">
+                 <i class="bi bi-check2-circle me-1"></i>Desbloqueado
+               </span>`
+            : `<div class="ach-progress mt-auto">
+                 <div class="d-flex justify-content-between pct-label mb-1">
+                   <span>Progresso</span><span>${pct}%</span>
+                 </div>
+                 <div class="progress">
+                   <div class="progress-bar" style="width:${pct}%"></div>
+                 </div>
+               </div>`;
+        return `
+        <div class="col-6 col-md-4 col-lg-3">
+          <div class="achievement-card ${cls}">
+            <span class="xp-badge">+${a.xp} XP</span>
+            <div class="ach-icon"><i class="bi ${a.icon}"></i></div>
+            <div class="ach-name">${a.name}</div>
+            <div class="ach-desc">${a.desc}</div>
+            ${footer}
+          </div>
+        </div>`;
+    }
+
+    function renderGrid(filter) {
+        let list = [...allAchievements];
+        if      (filter === 'desbloqueadas') list = list.filter(a => a.unlocked);
+        else if (filter === 'bloqueadas')    list = list.filter(a => !a.unlocked);
+        else if (filter !== 'todas')         list = list.filter(a => a.category === filter);
+
+        // Unlocked first, then by progress descending
+        list.sort((a, b) => (a.unlocked === b.unlocked) ? b.progress - a.progress : a.unlocked ? -1 : 1);
+
+        const categories = [...new Set(list.map(a => a.category))];
+        document.getElementById('achievements-grid').innerHTML = categories.map(cat =>
+            `<div class="section-title">${cat}</div>
+             <div class="row g-3 mb-1">
+               ${list.filter(a => a.category === cat).map(renderCard).join('')}
+             </div>`
+        ).join('') || '<p class="text-muted mt-3">Nenhuma conquista nesta categoria.</p>';
+    }
+
+    // ── Filter buttons ────────────────────────────────────────────────
+
+    const FILTER_CLS = {
+        todas:          ['btn-dark',      'btn-outline-dark'],
+        desbloqueadas:  ['btn-success',   'btn-outline-success'],
+        bloqueadas:     ['btn-secondary', 'btn-outline-secondary'],
+    };
+    function filterBtnClass(f, active) {
+        const pair = FILTER_CLS[f] || ['btn-primary', 'btn-outline-primary'];
+        return 'btn ' + (active ? pair[0] + ' active' : pair[1]);
+    }
+
+    document.querySelectorAll('[data-filter]').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const chosen = btn.dataset.filter;
+            document.querySelectorAll('[data-filter]').forEach(b =>
+                b.className = filterBtnClass(b.dataset.filter, b.dataset.filter === chosen)
+            );
+            renderGrid(chosen);
+        });
+    });
+
+    // ── Load & populate ───────────────────────────────────────────────
+
+    function populatePage(student) {
+        allAchievements = buildAchievements(student);
+
+        const unlockedList = allAchievements.filter(a => a.unlocked);
+        const totalXp      = unlockedList.reduce((s, a) => s + a.xp, 0);
+        const nextAch      = allAchievements.filter(a => !a.unlocked)
+                                            .sort((a, b) => b.progress - a.progress)[0];
+
+        const badge = document.getElementById('status-badge');
+        badge.textContent = student.status;
+        badge.className   = `badge fs-6 px-3 py-2 ${STATUS_CLASSES[student.status] || 'bg-secondary'}`;
+        document.getElementById('student-subtitle').textContent =
+            `${student.name} — ${student.course}`;
+
+        document.getElementById('stat-xp').textContent    = totalXp.toLocaleString('pt-BR');
+        document.getElementById('stat-count').textContent = `${unlockedList.length}/20`;
+        document.getElementById('stat-next').textContent  = nextAch ? nextAch.name : '🎉 Todas!';
+
+        renderGrid('todas');
+    }
+
+    async function load() {
+        try {
+            const res = await fetch(
+                `/api/synthetic/students/${encodeURIComponent(studentId)}/` +
+                `?seed=${encodeURIComponent(seed)}&count=${encodeURIComponent(count)}`
+            );
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const student = await res.json();
+            populatePage(student);
+            document.getElementById('loading-spinner').style.display    = 'none';
+            document.getElementById('conquistas-content').style.display = 'block';
+        } catch (err) {
+            document.getElementById('loading-spinner').style.display = 'none';
+            document.getElementById('error-text').textContent =
+                'Não foi possível carregar os dados do aluno. Tente novamente mais tarde.';
+            document.getElementById('error-msg').style.display = 'flex';
+            console.error('Conquistas load error:', err);
+        }
+    }
+
+    load();
+})();
 </script>
 {% endblock %}
