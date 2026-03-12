@@ -420,14 +420,16 @@
     // Branches
     renderBranches(student);
 
+    const subjects = Array.isArray(student.subjects) ? student.subjects : [];
+
     // Ongoing subjects (first)
-    const ongoingCount = renderSubjectBadges(student.subjects, 'ongoing-badges', 'cursando', 'ongoing');
+    const ongoingCount = renderSubjectBadges(subjects, 'ongoing-badges', s => s.status === 'cursando', 'ongoing');
     document.getElementById('ongoing-title').textContent = `Disciplinas em Andamento (${ongoingCount})`;
     if (!ongoingCount) document.getElementById('ongoing-section').style.display = 'none';
 
     // Categoria 1: obrigatórias feitas
     const mandatoryDoneCount = renderSubjectBadges(
-        student.subjects,
+        subjects,
         'mandatory-done-badges',
         s => s.type === 'obrigatoria' && s.status === 'aprovada',
         'approved'
@@ -436,7 +438,7 @@
 
     // Categoria 2: optativas específicas feitas (grupo [412])
     const optSpecificCount = renderSubjectBadges(
-        student.subjects,
+        subjects,
         'opt-specific-badges',
         s => s.group === '[412]' && s.status === 'aprovada',
         'opt-specific'
@@ -445,7 +447,7 @@
 
     // Categoria 3: optativas humanísticas feitas (grupo [413])
     const optHumanCount = renderSubjectBadges(
-        student.subjects,
+        subjects,
         'opt-human-badges',
         s => s.group === '[413]' && s.status === 'aprovada',
         'opt-human'
@@ -454,7 +456,7 @@
 
     // Categoria 4: obrigatórias faltantes
     const mandatoryMissingCount = renderSubjectBadges(
-        student.subjects,
+        subjects,
         'mandatory-missing-badges',
         s => s.type === 'obrigatoria' && s.status !== 'aprovada',
         'missing',
