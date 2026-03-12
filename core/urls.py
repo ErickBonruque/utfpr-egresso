@@ -9,6 +9,7 @@ urlpatterns = [
     path('vagas/', views.vagas, name='vagas'),
     path('conquistas/', views.conquistas, name='conquistas'),
     path('arvore/', views.arvore, name='arvore'),
+    path('perfil/', views.perfil, name='perfil'),
 
     # API endpoints
     path('api/vagas/', views.api_buscar_vagas, name='api_buscar_vagas'),

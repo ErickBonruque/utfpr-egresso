@@ -391,7 +391,9 @@
 
   function selectAndGo(id) {
     localStorage.setItem('selectedStudentId', id);
-    window.location.href = '/dashboard/';
+    const seed  = localStorage.getItem('studentSeed')  || '42';
+    const count = localStorage.getItem('studentCount') || '50';
+    window.location.href = `/perfil/?id=${encodeURIComponent(id)}&seed=${encodeURIComponent(seed)}&count=${encodeURIComponent(count)}`;
   }
 
   // ── Filter events ─────────────────────────────────────────────

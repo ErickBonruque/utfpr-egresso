@@ -35,6 +35,11 @@ def arvore(request):
     return render(request, 'arvore.html')
 
 
+def perfil(request):
+    """View para a página de perfil de aluno"""
+    return render(request, 'perfil.html')
+
+
 def home(request):
     """View para a página inicial (redireciona para login)"""
     return render(request, 'login.html')

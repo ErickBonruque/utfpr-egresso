@@ -1,408 +1,771 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Grade Curricular - Sistema CEA{% endblock %}
+{% block title %}Árvore de Carreiras - Sistema CEA{% endblock %}
 {% block nav_arvore %}active{% endblock %}
 
 {% block content %}
 <style>
-  /* ── Status colours ── */
-  .st-aprovada   { background: #28a745; color: #fff; }
-  .st-cursando   { background: #0d6efd; color: #fff; }
-  .st-reprovada  { background: #dc3545; color: #fff; }
-  .st-nao_iniciada { background: #e9ecef; color: #495057; }
-
-  /* ── Layout ── */
-  .curriculum-board { gap: 0.75rem; }
-  .period-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    box-shadow: var(--card-shadow);
-    min-width: 140px;
-    flex: 1 1 140px;
-  }
-  .period-header {
-    background: var(--primary-color);
-    color: #fff;
-    border-radius: 11px 11px 0 0;
-    padding: 0.45rem 0.75rem;
-    font-size: 0.78rem;
-    font-weight: 700;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .period-body { padding: 0.6rem; }
-
-  /* ── Subject chip ── */
-  .subj-chip {
-    display: flex;
-    align-items: center;
-    gap: 0.3rem;
-    border-radius: 6px;
-    padding: 0.28rem 0.5rem;
-    margin-bottom: 0.3rem;
-    font-size: 0.72rem;
-    font-weight: 600;
-    cursor: default;
-    position: relative;
-    letter-spacing: 0.02em;
-    transition: filter 0.15s;
-  }
-  .subj-chip:hover { filter: brightness(0.9); }
-  .subj-chip .chip-icon { font-size: 0.65rem; flex-shrink: 0; }
-  .subj-chip .chip-code { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .subj-chip .chip-grade { font-size: 0.65rem; opacity: 0.9; white-space: nowrap; }
-
-  /* ── Tooltip ── */
-  .subj-chip [data-bs-toggle="tooltip"] { cursor: default; }
-
-  /* ── Stats bar ── */
-  .stats-bar {
-    background: var(--bg-card);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    padding: 0.75rem 1.25rem;
-    box-shadow: var(--card-shadow);
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem 2rem;
-    align-items: center;
-  }
-  .stat-item { display: flex; flex-direction: column; line-height: 1.2; }
-  .stat-value { font-size: 1.25rem; font-weight: 800; color: var(--primary-color); }
-  .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
-
-  /* ── Progress bar ── */
-  .completion-bar { height: 6px; border-radius: 3px; overflow: hidden; background: var(--border-color); }
-  .completion-fill { height: 100%; background: #28a745; border-radius: 3px; transition: width 0.6s ease; }
-
-  /* ── Legend ── */
-  .legend-dot {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    font-size: 0.78rem; font-weight: 500;
-  }
-  .legend-swatch {
-    width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0;
+  :root {
+    --tree-bg-start: #1e2a3a;
+    --tree-bg-end:   #111827;
+    --connector-color: rgba(255,199,44,0.35);
+    --node-locked-bg: rgba(255,255,255,0.04);
   }
 
-  /* ── Optional section ── */
-  .opt-group-title {
-    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.4rem;
-  }
-  .opt-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
-  .opt-chips .subj-chip { margin-bottom: 0; }
+  /* ── Page layout ── */
+  .arvore-page { padding: 2rem 0 4rem; }
 
-  /* ── Spinner overlay ── */
-  #loadingOverlay {
-    position: fixed; inset: 0; background: rgba(0,0,0,.35);
+  .page-header h1 {
+    font-weight: 800; font-size: 1.8rem;
+    color: var(--text-primary); letter-spacing: -.5px;
+  }
+
+  /* ── Student info bar ── */
+  .student-bar {
+    background: var(--bg-card); border-radius: 14px;
+    padding: .85rem 1.5rem; display: flex; align-items: center;
+    gap: 1rem; flex-wrap: wrap; box-shadow: var(--card-shadow);
+    margin-bottom: 1.5rem;
+  }
+  .student-bar .avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--utfpr-yellow); color: var(--utfpr-black);
     display: flex; align-items: center; justify-content: center;
-    z-index: 9999;
+    font-weight: 700; font-size: 1rem; flex-shrink: 0;
   }
-  #loadingOverlay.d-none { display: none !important; }
+  .student-bar .info { flex: 1 }
+  .student-bar .sname { font-weight: 700; font-size: 1rem; color: var(--text-primary); }
+  .student-bar .smeta { font-size: .8rem; color: var(--text-secondary); }
 
-  /* ── Error ── */
-  #errorBanner { display: none; }
-  #errorBanner.show { display: block; }
-
-  /* ── Horizontal scroll on mobile ── */
-  @media (max-width: 767px) {
-    .curriculum-board { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.5rem; }
-    .period-card { min-width: 130px; flex: 0 0 130px; }
+  /* ── Tree canvas ── */
+  .tree-canvas {
+    background: linear-gradient(160deg, #0f1923 0%, #1a2535 50%, #111820 100%);
+    border-radius: 20px; padding: 3rem 2rem 2.5rem;
+    position: relative; overflow: hidden;
+    min-height: 540px;
   }
+  .tree-canvas::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse 80% 50% at 50% 100%, rgba(255,199,44,.07), transparent);
+    pointer-events: none;
+  }
+
+  /* ── Tree level rows ── */
+  .tree-levels {
+    display: flex; flex-direction: column; align-items: center;
+    gap: 0; width: 100%; max-width: 960px; margin: 0 auto;
+    position: relative; z-index: 2;
+  }
+  .tree-level {
+    display: flex; justify-content: center;
+    gap: 1.2rem; width: 100%;
+  }
+
+  /* ── Branch connectors ── */
+  .tree-connector {
+    display: flex; justify-content: center;
+    height: 44px; position: relative;
+  }
+  .tree-connector .vert {
+    width: 3px; height: 100%; border-radius: 2px;
+    background: linear-gradient(to bottom, rgba(255,199,44,.5), rgba(255,199,44,.2));
+  }
+
+  .tree-branch {
+    display: flex; justify-content: center; align-items: flex-end;
+    height: 40px; width: 100%; max-width: 820px; position: relative;
+  }
+  .tree-branch .center-vert {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 3px; height: 20px; border-radius: 2px;
+    background: rgba(255,199,44,.45);
+  }
+  .tree-branch .h-line {
+    position: absolute; top: 20px; height: 3px; border-radius: 2px;
+    background: rgba(255,199,44,.35);
+  }
+  .tree-branch .down-line {
+    position: absolute; bottom: 0; width: 3px; height: 20px;
+    border-radius: 2px; background: rgba(255,199,44,.35);
+  }
+
+  /* branch-4: 4 child nodes */
+  .tree-branch.b4 .h-line { left: 12.5%; width: 75%; }
+  .tree-branch.b4 .d1 { left: calc(12.5% - 1.5px); }
+  .tree-branch.b4 .d2 { left: calc(37.5% - 1.5px); }
+  .tree-branch.b4 .d3 { left: calc(62.5% - 1.5px); }
+  .tree-branch.b4 .d4 { left: calc(87.5% - 1.5px); }
+
+  /* branch-3: 3 child nodes */
+  .tree-branch.b3 .h-line { left: 16.5%; width: 67%; }
+  .tree-branch.b3 .d1 { left: calc(16.5% - 1.5px); }
+  .tree-branch.b3 .d2 { left: calc(50% - 1.5px); }
+  .tree-branch.b3 .d3 { left: calc(83.5% - 1.5px); }
+
+  /* branch-1: single child */
+  .tree-branch.b1 .h-line { display: none; }
+  .tree-branch.b1 .d1 { left: calc(50% - 1.5px); }
+
+  /* ── Career Node cards ── */
+  .career-node {
+    background: rgba(255,255,255,.06);
+    border: 2px solid rgba(255,255,255,.1);
+    border-radius: 16px; padding: 1.2rem 1rem;
+    text-align: center;
+    cursor: pointer; width: 168px; min-width: 152px;
+    transition: transform .25s, box-shadow .25s, border-color .25s;
+    position: relative; user-select: none;
+  }
+  .career-node:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 12px 36px rgba(0,0,0,.4);
+  }
+
+  /* unlocked – has some progress */
+  .career-node.unlocked {
+    background: rgba(255,255,255,.09);
+    border-color: rgba(255,199,44,.55);
+  }
+  /* completed – ≥ 100 % */
+  .career-node.completed {
+    background: rgba(16,185,129,.08);
+    border-color: #10b981;
+    box-shadow: 0 0 22px rgba(16,185,129,.22);
+  }
+  /* locked */
+  .career-node.locked {
+    opacity: .6; filter: grayscale(.4);
+    cursor: default;
+  }
+  .career-node.locked::after {
+    content: '\f47b'; /* bootstrap-icons lock */
+    font-family: 'bootstrap-icons';
+    position: absolute; top: -9px; right: -9px;
+    width: 22px; height: 22px;
+    background: #555; color: #fff;
+    border-radius: 50%; font-size: .6rem;
+    display: flex; align-items: center; justify-content: center;
+  }
+  /* master (top node) */
+  .career-node.master {
+    background: rgba(139,92,246,.12);
+    border-color: rgba(139,92,246,.5);
+  }
+  .career-node.master.unlocked { border-color: #8b5cf6; box-shadow: 0 0 28px rgba(139,92,246,.3); }
+
+  .node-icon {
+    width: 46px; height: 46px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto .7rem; font-size: 1.35rem;
+    transition: transform .25s;
+  }
+  .career-node:hover .node-icon { transform: scale(1.1); }
+
+  .node-title { font-weight: 700; font-size: .92rem; color: #e2e8f0; margin-bottom: 2px; line-height: 1.25; }
+  .node-subtitle { font-size: .72rem; color: rgba(226,232,240,.55); margin-bottom: .6rem; }
+
+  .node-progress { height: 6px; background: rgba(255,255,255,.1); border-radius: 4px; overflow: hidden; }
+  .node-progress-bar {
+    height: 100%; border-radius: 4px;
+    transition: width 1.1s cubic-bezier(.4,0,.2,1);
+  }
+  .bar-blue   { background: linear-gradient(90deg,#3b82f6,#60a5fa); }
+  .bar-green  { background: linear-gradient(90deg,#10b981,#34d399); }
+  .bar-pink   { background: linear-gradient(90deg,#ec4899,#f472b6); }
+  .bar-orange { background: linear-gradient(90deg,#f59e0b,#fbbf24); }
+  .bar-teal   { background: linear-gradient(90deg,#14b8a6,#2dd4bf); }
+  .bar-cyan   { background: linear-gradient(90deg,#06b6d4,#22d3ee); }
+  .bar-purple { background: linear-gradient(90deg,#8b5cf6,#a78bfa); }
+  .bar-red    { background: linear-gradient(90deg,#ef4444,#f87171); }
+  .bar-yellow { background: linear-gradient(90deg,#eab308,#fde047); }
+
+  .node-percent { font-size: .68rem; font-weight: 700; color: rgba(226,232,240,.6); margin-top: 4px; }
+
+  .node-icon-bg-blue   { background: rgba(59,130,246,.18); color: #60a5fa; }
+  .node-icon-bg-green  { background: rgba(16,185,129,.18); color: #34d399; }
+  .node-icon-bg-pink   { background: rgba(236,72,153,.18); color: #f472b6; }
+  .node-icon-bg-orange { background: rgba(245,158,11,.18); color: #fbbf24; }
+  .node-icon-bg-teal   { background: rgba(20,184,166,.18); color: #2dd4bf; }
+  .node-icon-bg-cyan   { background: rgba(6,182,212,.18);  color: #22d3ee; }
+  .node-icon-bg-purple { background: rgba(139,92,246,.18); color: #a78bfa; }
+  .node-icon-bg-red    { background: rgba(239,68,68,.18);  color: #f87171; }
+  .node-icon-bg-yellow { background: rgba(234,179,8,.18);  color: #fde047; }
+
+  /* ── Tooltip popup ── */
+  .node-tooltip {
+    position: fixed; background: var(--bg-card);
+    border-radius: 16px; padding: 1.35rem;
+    box-shadow: 0 16px 50px rgba(0,0,0,.45);
+    z-index: 9999; width: 320px; max-width: 90vw;
+    border: 2px solid var(--utfpr-yellow);
+    display: none; animation: tooltipIn .18s ease;
+  }
+  .node-tooltip.show { display: block; }
+  @keyframes tooltipIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+  .node-tooltip .tt-header { display:flex; align-items:center; gap:10px; margin-bottom:.9rem; }
+  .node-tooltip .tt-close {
+    position:absolute; top:10px; right:12px;
+    background:none; border:none; font-size:1.2rem;
+    color:var(--text-muted); cursor:pointer;
+  }
+  .tt-skills { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:.9rem; }
+  .tt-skill-tag {
+    background: var(--badge-bg); padding: 3px 9px;
+    border-radius: 6px; font-size: .73rem; font-weight:500;
+    color: var(--badge-text);
+  }
+  .tt-subjects-list { max-height: 180px; overflow-y: auto; }
+  .tt-subject-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: .3rem 0; border-bottom: 1px solid var(--border-color);
+    font-size: .78rem;
+  }
+  .tt-subject-row:last-child { border-bottom: none; }
+  .tt-sub-name { color: var(--text-primary); flex: 1; }
+  .tt-sub-status { font-size: .7rem; font-weight:600; padding: 2px 7px; border-radius:5px; }
+  .tt-sub-status.aprov  { background:#d1fae5; color:#065f46; }
+  .tt-sub-status.curs   { background:#dbeafe; color:#1e40af; }
+  .tt-sub-status.reprov { background:#fee2e2; color:#7f1d1d; }
+  .tt-sub-status.pend   { background:rgba(0,0,0,.07); color:var(--text-muted); }
+
+  /* Dark mode fix for tt-subject status */
+  [data-theme="dark"] .tt-sub-status.aprov  { background:rgba(16,185,129,.15); color:#34d399; }
+  [data-theme="dark"] .tt-sub-status.curs   { background:rgba(59,130,246,.15); color:#60a5fa; }
+  [data-theme="dark"] .tt-sub-status.reprov { background:rgba(239,68,68,.15);  color:#f87171; }
+  [data-theme="dark"] .tt-sub-status.pend   { background:rgba(255,255,255,.06); color:var(--text-muted); }
+
+  /* ── Career paths cards ── */
+  .path-card {
+    background: var(--gradient-dark); color: #fff;
+    border-radius: 16px; padding: 1.4rem;
+    height: 100%; transition: transform .25s, box-shadow .25s;
+    position: relative; overflow: hidden;
+  }
+  .path-card::before {
+    content:''; position:absolute; top:-20px; right:-20px;
+    width:72px; height:72px;
+    background:rgba(255,199,44,.08); border-radius:50%;
+  }
+  .path-card:hover { transform:translateY(-5px); box-shadow:var(--card-shadow-hover); }
+  .path-card .path-icon {
+    width:40px; height:40px; border-radius:10px;
+    background:rgba(255,255,255,.1);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.2rem; margin-bottom:.9rem;
+  }
+  .path-card h6 { font-weight:700; font-size:.95rem; margin-bottom:.3rem; }
+  .path-card p { font-size:.83rem; opacity:.72; margin-bottom:.9rem; }
+  .path-compat {
+    display:inline-flex; align-items:center; gap:5px;
+    background:rgba(255,255,255,.1); padding:4px 11px;
+    border-radius:20px; font-size:.78rem; font-weight:600;
+  }
+  .path-compat i { color:var(--utfpr-yellow); }
+
+  /* ── Section title ── */
+  .section-title {
+    font-size:1.25rem; font-weight:700; color:var(--text-primary);
+    margin-bottom:1.2rem; padding-left:16px; position:relative;
+  }
+  .section-title::before {
+    content:''; position:absolute; left:0; top:50%; transform:translateY(-50%);
+    width:5px; height:22px; background:var(--utfpr-yellow); border-radius:3px;
+  }
+
+  /* ── Spinner / error ── */
+  #tree-spinner { padding: 4rem 0; }
+  #tree-error   { display: none; }
+  #tree-content { display: none; }
+
+  /* ── Responsive ── */
+  @media (max-width:768px) {
+    .tree-canvas { padding:2rem 1rem; }
+    .career-node { width:140px; min-width:128px; padding:1rem .75rem; }
+    .node-title  { font-size:.82rem; }
+    .tree-level  { gap:.75rem; flex-wrap:wrap; }
+  }
+  @media (max-width:480px) {
+    .career-node { width:130px; min-width:118px; }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity:0; transform:translateY(18px); }
+    to   { opacity:1; transform:none; }
+  }
+  .anim { opacity:0; animation:fadeInUp .5s ease forwards; }
 </style>
 
-<!-- Loading overlay -->
-<div id="loadingOverlay">
-  <div class="text-center text-white">
-    <div class="spinner-border mb-2" role="status"></div>
-    <div class="fw-semibold">Carregando grade…</div>
+<div class="container arvore-page">
+
+  <!-- Spinner -->
+  <div id="tree-spinner" class="text-center">
+    <div class="spinner-border text-warning" role="status" style="width:3rem;height:3rem;">
+      <span class="visually-hidden">Carregando…</span>
+    </div>
+    <p class="mt-3" style="color:var(--text-secondary)">Carregando dados do aluno…</p>
   </div>
-</div>
 
-<div class="container-fluid px-3 py-3" style="max-width:1400px;">
-
-  <!-- Error banner -->
-  <div id="errorBanner" class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
-    <i class="bi bi-exclamation-triangle-fill"></i>
-    <span id="errorMsg">Erro ao carregar dados.</span>
-    <button class="btn btn-sm btn-outline-danger ms-auto" onclick="loadData()">
-      <i class="bi bi-arrow-clockwise"></i> Tentar novamente
+  <!-- Error -->
+  <div id="tree-error" class="alert alert-danger d-flex align-items-center gap-2 mb-3">
+    <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+    <span id="tree-error-msg">Erro ao carregar dados.</span>
+    <button id="tree-retry-btn" class="btn btn-sm btn-outline-danger ms-auto">
+      <i class="bi bi-arrow-clockwise me-1"></i>Tentar novamente
     </button>
   </div>
 
-  <!-- Page header -->
-  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+  <!-- Main content -->
+  <div id="tree-content">
+
+    <!-- Header -->
+    <div class="page-header mb-3">
+      <h1><i class="bi bi-tree me-2" style="color:var(--utfpr-yellow)"></i>Árvore de Carreiras</h1>
+      <p class="text-muted mb-0">Sua jornada de evolução acadêmica em Ciência da Computação</p>
+    </div>
+
+    <!-- Student bar -->
+    <div class="student-bar">
+      <div class="avatar" id="stu-avatar">?</div>
+      <div class="info">
+        <div class="sname" id="stu-name">—</div>
+        <div class="smeta" id="stu-meta">—</div>
+      </div>
+      <a href="/egressos/" class="btn btn-sm btn-outline-secondary ms-auto">
+        <i class="bi bi-person-lines-fill me-1"></i>Trocar Aluno
+      </a>
+      <a id="stu-perfil-link" href="/perfil/" class="btn btn-sm btn-outline-warning">
+        <i class="bi bi-person-badge me-1"></i>Ver Perfil
+      </a>
+    </div>
+
+    <!-- Tree canvas -->
+    <div class="tree-canvas mb-4">
+      <div class="tree-levels" id="tree-levels"></div>
+    </div>
+
+    <!-- Career paths -->
+    <div class="mb-2">
+      <h5 class="section-title">Caminhos Recomendados</h5>
+    </div>
+    <div class="row g-3 mb-4" id="career-paths-row"></div>
+
+  </div><!-- /tree-content -->
+
+</div>
+
+<!-- Tooltip -->
+<div class="node-tooltip" id="nodeTooltip">
+  <button class="tt-close" id="tooltip-close-btn">&times;</button>
+  <div class="tt-header">
+    <div class="node-icon" id="tt-icon-wrap" style="margin:0;width:42px;height:42px;font-size:1.25rem;"></div>
     <div>
-      <h1 class="fw-800 mb-0" style="font-size:1.5rem;color:var(--primary-color);">
-        <i class="bi bi-journal-text me-2"></i>Grade Curricular
-      </h1>
-      <p class="text-muted mb-0" style="font-size:0.82rem;">
-        Aluno: <strong id="studentName">—</strong>
-        &bull; <span id="studentPeriod">—</span>
-        &bull; CR: <strong id="studentGpa">—</strong>
-        &bull; Conclusão: <strong id="studentCompletion">—</strong>
-      </p>
-    </div>
-    <a href="/egressos/" class="btn btn-sm btn-outline-secondary">
-      <i class="bi bi-person-lines-fill me-1"></i>Trocar Aluno
-    </a>
-  </div>
-
-  <!-- Stats bar -->
-  <div class="stats-bar mb-3" id="statsBar" style="display:none;">
-    <div class="stat-item">
-      <span class="stat-value text-success" id="statAprovada">0h</span>
-      <span class="stat-label">Aprovadas</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-value text-primary" id="statCursando">0h</span>
-      <span class="stat-label">Em Curso</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-value text-danger" id="statReprovada">0h</span>
-      <span class="stat-label">Reprovadas</span>
-    </div>
-    <div class="stat-item">
-      <span class="stat-value text-secondary" id="statMissing">0h</span>
-      <span class="stat-label">Restantes</span>
-    </div>
-    <div class="flex-grow-1" style="min-width:140px;">
-      <div class="d-flex justify-content-between mb-1" style="font-size:0.72rem;">
-        <span class="text-muted">Progresso obrigatórias</span>
-        <span id="statPct" class="fw-700">0%</span>
-      </div>
-      <div class="completion-bar">
-        <div class="completion-fill" id="completionFill" style="width:0%"></div>
-      </div>
+      <div style="font-weight:700;font-size:1rem;color:var(--text-primary)" id="tt-title"></div>
+      <div style="font-size:.78rem;color:var(--text-secondary)" id="tt-subtitle"></div>
     </div>
   </div>
-
-  <!-- Legend -->
-  <div class="d-flex flex-wrap gap-3 mb-3">
-    <span class="legend-dot"><span class="legend-swatch" style="background:#28a745"></span>Aprovada</span>
-    <span class="legend-dot"><span class="legend-swatch" style="background:#0d6efd"></span>Cursando</span>
-    <span class="legend-dot"><span class="legend-swatch" style="background:#dc3545"></span>Reprovada</span>
-    <span class="legend-dot"><span class="legend-swatch" style="background:#e9ecef;border:1px solid #ced4da"></span>Não Iniciada</span>
+  <p class="small mb-2" style="color:var(--text-secondary)" id="tt-desc"></p>
+  <div class="tt-skills" id="tt-skills"></div>
+  <div class="d-flex justify-content-between small mb-1">
+    <span style="color:var(--text-secondary)">Progresso</span>
+    <strong id="tt-pct"></strong>
   </div>
-
-  <!-- Curriculum board (periods 1-8) -->
-  <div class="curriculum-board d-flex mb-4" id="curriculumBoard"></div>
-
-  <!-- Optional subjects -->
-  <div id="optSection" style="display:none;">
-    <h6 class="fw-700 mb-2" style="font-size:0.85rem;color:var(--text-secondary);">
-      <i class="bi bi-layers me-1"></i>Disciplinas Optativas
-    </h6>
-    <div class="row g-3" id="optGroupsContainer"></div>
+  <div class="node-progress mb-3" style="height:8px">
+    <div class="node-progress-bar" id="tt-bar" style="width:0%"></div>
   </div>
-
+  <div style="font-size:.8rem;font-weight:600;color:var(--text-secondary)" class="mb-1">Disciplinas</div>
+  <div class="tt-subjects-list" id="tt-subjects"></div>
 </div>
 
 <script>
 (function () {
   'use strict';
 
-  // ── Curriculum definition (periods 1-8, mandatory codes) ──────────────
-  const PERIODS = [
-    { n: 1, codes: ['CC1AED1','CC1ICC','CC1MBD','HU1LA','MA1FM','MA1LM'] },
-    { n: 2, codes: ['CC2AED2','CC2CLD','CC2ER','CC2POO','MA2MA'] },
-    { n: 3, codes: ['CC3AED3','CC3AOC','CC3ES','CC3PI1','MA3AL','MA3CA'] },
-    { n: 4, codes: ['CC4IHC','CC4LBD','CC4PO','CC4RC','CC4SO','MA4PE'] },
-    { n: 5, codes: ['CC5AG','CC5PI2','CC5PLDS','CC5QS','CC5SDT','EO11','MA5MN'] },
-    { n: 6, codes: ['CC6FIA','CC6IBDDA','CC6LFTC','CC6PDSW','CC6TRC','MA6PO','TCC1'] },
-    { n: 7, codes: ['CC7C','CC7CS','CC7IAA','CC7PI3','CC7VC'] },
-    { n: 8, codes: ['CC8CG','TCC2'] },
+  // ── Career node definitions ────────────────────────────────────────────
+  const CAREER_NODES = [
+    {
+      id: 'fundamentos', title: 'Fundamentos', subtitle: 'Base da Computação',
+      icon: 'bi-cpu', color: 'blue', level: 1,
+      subjects: ['CC1ICC','MA1FM','MA1LM','HU1LA'],
+      desc: 'As bases essenciais da ciência da computação e raciocínio lógico-matemático. Ponto de partida de toda a jornada.',
+      skills: ['Lógica','Expressão Técnica','Raciocínio Computacional'],
+      prerequisite: null,
+    },
+    {
+      id: 'algoritmos', title: 'Algoritmos', subtitle: 'Estruturas & Eficiência',
+      icon: 'bi-diagram-3', color: 'green', level: 2,
+      subjects: ['CC1AED1','CC2AED2','CC3AED3','CC4PO','CC5AG'],
+      desc: 'Domínio de algoritmos, estruturas de dados e análise de eficiência computacional.',
+      skills: ['Complexidade','Estruturas de Dados','Otimização','Grafos'],
+      prerequisite: 'fundamentos',
+    },
+    {
+      id: 'matematica', title: 'Matemática', subtitle: 'Teoria & Aplicações',
+      icon: 'bi-calculator', color: 'pink', level: 2,
+      subjects: ['MA2MA','MA3CA','MA3AL','MA4PE','MA5MN','MA6PO'],
+      desc: 'Fundamentos matemáticos avançados que embasam IA, teoria e otimização de sistemas.',
+      skills: ['Cálculo','Álgebra Linear','Probabilidade','Estatística'],
+      prerequisite: 'fundamentos',
+    },
+    {
+      id: 'banco_dados', title: 'Banco de Dados', subtitle: 'Dados & Armazenamento',
+      icon: 'bi-database', color: 'orange', level: 2,
+      subjects: ['CC1MBD','CC4LBD','CC6IBDDA'],
+      desc: 'Modelagem, manipulação e análise de dados estruturados e em grande escala.',
+      skills: ['SQL','Modelagem de Dados','Big Data','Data Analytics'],
+      prerequisite: 'fundamentos',
+    },
+    {
+      id: 'programacao', title: 'Programação', subtitle: 'POO & Paradigmas',
+      icon: 'bi-code-slash', color: 'teal', level: 2,
+      subjects: ['CC2POO','CC5PLDS','CC5SDT','CC5QS'],
+      desc: 'Paradigmas de programação, qualidade, boas práticas e desenvolvimento de sistemas.',
+      skills: ['POO','Design Patterns','Clean Code','Sistemas Distribuídos'],
+      prerequisite: 'fundamentos',
+    },
+    {
+      id: 'sistemas', title: 'Sistemas & Redes', subtitle: 'Infraestrutura',
+      icon: 'bi-hdd-network', color: 'cyan', level: 3,
+      subjects: ['CC2CLD','CC3AOC','CC4RC','CC4SO','CC6LFTC','CC6TRC','CC7C','CC7CS'],
+      desc: 'Hardware, SO, redes de computadores, teoria da computação e cibersegurança.',
+      skills: ['Linux','Redes','Cibersegurança','Compiladores','Teoria dos Autômatos'],
+      prerequisite: 'algoritmos',
+    },
+    {
+      id: 'ia', title: 'Inteligência Artificial', subtitle: 'IA & Visão Computacional',
+      icon: 'bi-robot', color: 'purple', level: 3,
+      subjects: ['CC6FIA','CC7IAA','CC7VC'],
+      desc: 'Fundamentos de IA, aprendizado de máquina, IA aplicada e visão computacional.',
+      skills: ['Machine Learning','Redes Neurais','Visão Computacional','Deep Learning'],
+      prerequisite: 'banco_dados',
+    },
+    {
+      id: 'engenharia', title: 'Eng. de Software', subtitle: 'Projetos & Qualidade',
+      icon: 'bi-gear-wide-connected', color: 'red', level: 3,
+      subjects: ['CC2ER','CC3ES','CC4IHC','CC6PDSW','CC3PI1','CC5PI2','CC7PI3'],
+      desc: 'Engenharia de requisitos, UX, qualidade de software e desenvolvimento web.',
+      skills: ['UX/UI','Requisitos','Qualidade','Web Dev','Projetos Integradores'],
+      prerequisite: 'programacao',
+    },
+    {
+      id: 'pesquisa', title: 'Pesquisa & TCC', subtitle: 'Inovação & Formatura',
+      icon: 'bi-stars', color: 'yellow', level: 4,
+      subjects: ['EO11','TCC1','TCC2','CC8CG'],
+      desc: 'O ápice da jornada: estágio obrigatório, computação gráfica e trabalho de conclusão.',
+      skills: ['Pesquisa Científica','Inovação','Apresentação','Computação Gráfica'],
+      prerequisite: null, // multiple prereqs handled in logic
+    },
   ];
 
-  const STATUS_ICON  = { aprovada:'✓', cursando:'▶', reprovada:'✕', nao_iniciada:'' };
-  const STATUS_CLASS = { aprovada:'st-aprovada', cursando:'st-cursando', reprovada:'st-reprovada', nao_iniciada:'st-nao_iniciada' };
+  // Career path recommendations
+  const CAREER_PATHS = [
+    {
+      title: 'Engenheiro de IA & ML',
+      icon: 'bi-robot',
+      desc: 'Crie modelos inteligentes com machine learning, redes neurais e visão computacional.',
+      nodes: ['algoritmos','matematica','banco_dados','ia'],
+    },
+    {
+      title: 'Engenheiro de Software',
+      icon: 'bi-code-square',
+      desc: 'Desenvolva software de qualidade com boas práticas, requisitos e sistemas web.',
+      nodes: ['fundamentos','programacao','engenharia'],
+    },
+    {
+      title: 'Especialista em Segurança',
+      icon: 'bi-shield-check',
+      desc: 'Proteja sistemas com cibersegurança, redes, criptografia e análise forense.',
+      nodes: ['algoritmos','sistemas'],
+    },
+  ];
 
   // ── State ──────────────────────────────────────────────────────────────
-  let subjectLookup   = {};   // code → curriculum subject (name, workload, …)
-  let studentLookup   = {};   // code → student progress entry (status, grade, …)
-  let curriculumData  = null;
-  let studentData     = null;
+  let studentData = null;
+  let studentLookup = {};  // code → subject object
+  let nodeProgress = {};   // nodeId → { done, total, pct }
 
-  // ── Helpers ───────────────────────────────────────────────────────────
-  const $  = id => document.getElementById(id);
-  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  // ── DOM helpers ────────────────────────────────────────────────────────
+  function $id(id) { return document.getElementById(id); }
 
   function showError(msg) {
-    $('errorMsg').textContent = msg;
-    $('errorBanner').classList.add('show');
+    $id('tree-error-msg').textContent = msg;
+    $id('tree-error').style.display = 'flex';
+  }
+  function hideError() { $id('tree-error').style.display = 'none'; }
+
+  function initials(name) {
+    const p = name.trim().split(/\s+/);
+    return p.length >= 2 ? (p[0][0] + p[p.length-1][0]).toUpperCase() : p[0].slice(0,2).toUpperCase();
   }
 
-  function hideError() { $('errorBanner').classList.remove('show'); }
-
-  function setLoading(on) {
-    $('loadingOverlay').classList.toggle('d-none', !on);
+  // ── Progress calculation ───────────────────────────────────────────────
+  function calcProgress() {
+    for (const node of CAREER_NODES) {
+      const done  = node.subjects.filter(c => (studentLookup[c]||{}).status === 'aprovada').length;
+      const cursando = node.subjects.filter(c => (studentLookup[c]||{}).status === 'cursando').length;
+      const total = node.subjects.length;
+      const pct   = total ? Math.round(done / total * 100) : 0;
+      nodeProgress[node.id] = { done, cursando, total, pct };
+    }
   }
 
-  // ── Chip builder ──────────────────────────────────────────────────────
-  function buildChip(code) {
-    const curr   = subjectLookup[code] || { name: code, workload: 0 };
-    const prog   = studentLookup[code];
-    const status = prog ? prog.status : 'nao_iniciada';
-    const cls    = STATUS_CLASS[status] || STATUS_CLASS.nao_iniciada;
-    const icon   = STATUS_ICON[status]  || '';
-
-    // Tooltip: plain text only to avoid HTML-injection / double-escaping
-    let tip = `${curr.name} — ${curr.workload}h`;
-    if (prog && prog.grade != null)      tip += ` | Nota: ${prog.grade.toFixed(1)}`;
-    if (prog && prog.attendance != null) tip += ` | Freq: ${prog.attendance}%`;
-    if (prog && prog.completedAt)        tip += ` | ${prog.completedAt}`;
-
-    const gradeSpan = (prog && prog.grade != null)
-      ? `<span class="chip-grade">${prog.grade.toFixed(1)}</span>` : '';
-
-    return `<div class="subj-chip ${cls}"
-                 data-bs-toggle="tooltip"
-                 data-bs-placement="top"
-                 title="${esc(tip)}">
-              ${icon ? `<span class="chip-icon">${icon}</span>` : ''}
-              <span class="chip-code">${esc(code)}</span>
-              ${gradeSpan}
-            </div>`;
+  function isUnlocked(node) {
+    if (!node.prerequisite) return true;
+    return (nodeProgress[node.prerequisite] || {}).pct > 0;
   }
+  function isCompleted(node) { return (nodeProgress[node.id]||{}).pct >= 100; }
 
-  // ── Period card builder ───────────────────────────────────────────────
-  function buildPeriodCard(period) {
-    const periodSubjects = period.codes.map(c => {
-      const curr = subjectLookup[c] || { workload: 0 };
-      return { code: c, workload: curr.workload };
-    });
-    const totalH = periodSubjects.reduce((s, x) => s + x.workload, 0);
+  // ── Build a single career node card ───────────────────────────────────
+  function buildNode(node) {
+    const prog = nodeProgress[node.id] || { pct: 0, done: 0, total: 0 };
+    const unlocked = isUnlocked(node);
+    const completed = isCompleted(node);
 
-    const chips = period.codes.map(buildChip).join('');
+    let stateClass = 'locked';
+    if      (completed)        stateClass = 'completed';
+    else if (unlocked && prog.pct > 0) stateClass = 'unlocked';
+    else if (unlocked)         stateClass = '';
+    if (node.level === 4)      stateClass += ' master';
 
-    return `<div class="period-card">
-      <div class="period-header">
-        <span>${period.n}º Período</span>
-        <span style="opacity:.75;font-weight:400;">${totalH}h</span>
+    return `
+    <div class="career-node ${stateClass}"
+         data-node="${node.id}"
+         style="animation-delay:${node.level * .1}s">
+      <div class="node-icon node-icon-bg-${node.color}">
+        <i class="bi ${node.icon}"></i>
       </div>
-      <div class="period-body">${chips}</div>
+      <div class="node-title">${node.title}</div>
+      <div class="node-subtitle">${node.subtitle}</div>
+      <div class="node-progress">
+        <div class="node-progress-bar bar-${node.color}" style="width:${prog.pct}%"></div>
+      </div>
+      <div class="node-percent">${prog.done}/${prog.total} (${prog.pct}%)</div>
     </div>`;
   }
 
-  // ── Optional subjects renderer ────────────────────────────────────────
-  function renderOptionals(subjects) {
-    const groups = {};
-    for (const s of subjects) {
-      if (s.type !== 'optativa') continue;
-      const g = s.group || 'Outras';
-      (groups[g] = groups[g] || []).push(s);
-    }
-    const keys = Object.keys(groups);
-    if (!keys.length) return;
+  // ── Render the tree ────────────────────────────────────────────────────
+  function renderTree() {
+    const levels = {
+      1: CAREER_NODES.filter(n => n.level === 1),
+      2: CAREER_NODES.filter(n => n.level === 2),
+      3: CAREER_NODES.filter(n => n.level === 3),
+      4: CAREER_NODES.filter(n => n.level === 4),
+    };
 
-    const container = $('optGroupsContainer');
-    container.innerHTML = '';
-    for (const key of keys) {
-      const chips = groups[key].map(s => buildChip(s.code)).join('');
-      const col = document.createElement('div');
-      col.className = 'col-12 col-md-6 col-xl-4';
-      col.innerHTML = `
-        <div class="period-card p-0">
-          <div class="period-header">
-            <span>Optativas ${esc(key)}</span>
-            <span style="opacity:.75;font-weight:400;">${groups[key].length} disciplinas</span>
-          </div>
-          <div class="period-body">
-            <div class="opt-chips">${chips}</div>
-          </div>
-        </div>`;
-      container.appendChild(col);
-    }
-    $('optSection').style.display = '';
-  }
+    let html = '';
 
-  // ── Render full board ─────────────────────────────────────────────────
-  function render() {
-    // Board
-    $('curriculumBoard').innerHTML = PERIODS.map(buildPeriodCard).join('');
+    // Level 1 (root)
+    html += `<div class="tree-level anim" style="animation-delay:.05s">
+               ${levels[1].map(buildNode).join('')}
+             </div>`;
 
-    // Stats
-    const subjects = studentData.subjects || [];
-    const hAprovada   = subjects.filter(s => s.status === 'aprovada').reduce((a, s) => a + s.workload, 0);
-    const hCursando   = subjects.filter(s => s.status === 'cursando').reduce((a, s) => a + s.workload, 0);
-    const hReprovada  = subjects.filter(s => s.status === 'reprovada').reduce((a, s) => a + s.workload, 0);
-    const totalMandH  = curriculumData.totalMandatoryWorkload || 1;
-    const pct         = Math.min(100, Math.round((hAprovada / totalMandH) * 100));
-    const hMissing    = Math.max(0, totalMandH - hAprovada);
+    // Branch 1→2 (4 children)
+    html += `<div class="tree-connector"><div class="vert"></div></div>
+             <div class="tree-branch b4">
+               <div class="center-vert"></div>
+               <div class="h-line"></div>
+               <div class="down-line d1"></div>
+               <div class="down-line d2"></div>
+               <div class="down-line d3"></div>
+               <div class="down-line d4"></div>
+             </div>`;
 
-    $('statAprovada').textContent  = hAprovada  + 'h';
-    $('statCursando').textContent  = hCursando  + 'h';
-    $('statReprovada').textContent = hReprovada + 'h';
-    $('statMissing').textContent   = hMissing   + 'h';
-    $('statPct').textContent       = pct + '%';
-    $('completionFill').style.width = pct + '%';
-    $('statsBar').style.display = '';
+    // Level 2 (4 nodes)
+    html += `<div class="tree-level anim" style="animation-delay:.15s;gap:1.2rem">
+               ${levels[2].map(buildNode).join('')}
+             </div>`;
 
-    // Optionals
-    renderOptionals(curriculumData.subjects || []);
+    // Branch 2→3 (3 children from first, middle, last of L2)
+    html += `<div class="tree-connector"><div class="vert"></div></div>
+             <div class="tree-branch b3">
+               <div class="center-vert"></div>
+               <div class="h-line"></div>
+               <div class="down-line d1"></div>
+               <div class="down-line d2"></div>
+               <div class="down-line d3"></div>
+             </div>`;
 
-    // Tooltips (only if Bootstrap is available)
-    if (typeof bootstrap !== 'undefined') {
-      document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
-        new bootstrap.Tooltip(el, { trigger: 'hover focus' });
+    // Level 3 (3 nodes)
+    html += `<div class="tree-level anim" style="animation-delay:.25s;gap:2.5rem">
+               ${levels[3].map(buildNode).join('')}
+             </div>`;
+
+    // Branch 3→4 (1 child)
+    html += `<div class="tree-connector"><div class="vert"></div></div>
+             <div class="tree-branch b1">
+               <div class="down-line d1"></div>
+             </div>`;
+
+    // Level 4 (root)
+    html += `<div class="tree-level anim" style="animation-delay:.35s">
+               ${levels[4].map(buildNode).join('')}
+             </div>`;
+
+    $id('tree-levels').innerHTML = html;
+
+    // Animate progress bars after render
+    setTimeout(() => {
+      document.querySelectorAll('.node-progress-bar').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0%';
+        requestAnimationFrame(() => { bar.style.width = w; });
       });
-    }
+    }, 100);
+
+    // Click handlers
+    document.querySelectorAll('.career-node').forEach(el => {
+      el.addEventListener('click', onNodeClick);
+    });
   }
 
-  // ── Student header ────────────────────────────────────────────────────
-  function renderHeader() {
+  // ── Render career paths ────────────────────────────────────────────────
+  function renderCareerPaths() {
+    const row = $id('career-paths-row');
+    row.innerHTML = CAREER_PATHS.map(path => {
+      const total = path.nodes.length;
+      const done  = path.nodes.filter(id => (nodeProgress[id]||{}).pct > 0).length;
+      const pct   = Math.round(done / total * 100);
+      return `<div class="col-md-4">
+        <div class="path-card">
+          <div class="path-icon"><i class="bi ${path.icon}"></i></div>
+          <h6>${path.title}</h6>
+          <p>${path.desc}</p>
+          <div class="path-compat">
+            <i class="bi bi-star-fill"></i> ${pct}% compatível
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Render student bar ─────────────────────────────────────────────────
+  function renderStudentBar() {
     const s = studentData;
     const pct = s.totalCourseWorkload > 0
       ? Math.round(s.completedWorkload / s.totalCourseWorkload * 100) : 0;
-    $('studentName').textContent       = s.name || s.id;
-    $('studentPeriod').textContent     = s.status === 'formado' ? 'Formado' : (s.currentPeriod ? `${s.currentPeriod}º período` : '—');
-    $('studentGpa').textContent        = s.gpa != null ? s.gpa.toFixed(2) : '—';
-    $('studentCompletion').textContent = `${pct}%`;
+    const period = s.status === 'formado' ? 'Formado' : `${s.currentPeriod}º Período`;
+
+    $id('stu-avatar').textContent = initials(s.name || s.id);
+    $id('stu-name').textContent = s.name || s.id;
+    $id('stu-meta').textContent = `${period} • CR: ${(s.gpa||0).toFixed(1)} • ${pct}% concluído`;
+
+    const perfilLink = $id('stu-perfil-link');
+    const seed = localStorage.getItem('studentSeed') || '42';
+    const count = localStorage.getItem('studentCount') || '50';
+    perfilLink.href = `/perfil/?id=${encodeURIComponent(s.id)}&seed=${seed}&count=${count}`;
   }
 
-  // ── Data loading ──────────────────────────────────────────────────────
+  // ── Tooltip ────────────────────────────────────────────────────────────
+  function onNodeClick(e) {
+    const nodeId = this.dataset.node;
+    const node   = CAREER_NODES.find(n => n.id === nodeId);
+    if (!node) return;
+
+    const prog = nodeProgress[nodeId] || { pct: 0, done: 0, total: 0 };
+    const locked = this.classList.contains('locked') && !isUnlocked(node);
+
+    $id('tt-title').textContent    = node.title;
+    $id('tt-subtitle').textContent = locked ? '🔒 Bloqueado' : node.subtitle;
+    $id('tt-desc').textContent     = locked
+      ? 'Complete mais disciplinas para desbloquear este ramo!'
+      : node.desc;
+
+    // Icon
+    const wrap = $id('tt-icon-wrap');
+    wrap.className = `node-icon node-icon-bg-${node.color}`;
+    wrap.innerHTML = `<i class="bi ${node.icon}"></i>`;
+
+    // Skills
+    $id('tt-skills').innerHTML = node.skills
+      .map(s => `<span class="tt-skill-tag">${s}</span>`).join('');
+
+    // Progress bar
+    $id('tt-pct').textContent = `${prog.pct}%`;
+    const bar = $id('tt-bar');
+    bar.className = `node-progress-bar bar-${node.color}`;
+    bar.style.width = prog.pct + '%';
+
+    // Subjects list
+    const subj = node.subjects.map(code => {
+      const s = studentLookup[code];
+      const name = s ? s.name : code;
+      let cls = 'pend', lbl = 'Pendente';
+      if (s) {
+        if      (s.status === 'aprovada')  { cls='aprov';  lbl = s.grade ? `Nota ${s.grade.toFixed(1)}` : 'Aprovada'; }
+        else if (s.status === 'cursando')  { cls='curs';   lbl = 'Cursando'; }
+        else if (s.status === 'reprovada') { cls='reprov'; lbl = `Reprovada${s.grade ? ' '+s.grade.toFixed(1) : ''}`; }
+      }
+      return `<div class="tt-subject-row">
+        <span class="tt-sub-name">${name}</span>
+        <span class="tt-sub-status ${cls}">${lbl}</span>
+      </div>`;
+    }).join('');
+    $id('tt-subjects').innerHTML = subj;
+
+    // Position
+    const rect = this.getBoundingClientRect();
+    const ttW = 320;
+    let left = rect.left + rect.width / 2 - ttW / 2;
+    let top  = rect.bottom + 12 + window.scrollY;
+    if (left < 10) left = 10;
+    if (left + ttW > window.innerWidth - 10) left = window.innerWidth - ttW - 10;
+
+    const tt = $id('nodeTooltip');
+    tt.style.left = left + 'px';
+    tt.style.top  = top + 'px';
+    tt.classList.add('show');
+  }
+
+  function closeTooltip() { $id('nodeTooltip').classList.remove('show'); }
+
+  // ── Load data ──────────────────────────────────────────────────────────
   async function loadData() {
     hideError();
-    setLoading(true);
+    $id('tree-spinner').style.display = 'block';
+    $id('tree-content').style.display = 'none';
 
     const studentId = localStorage.getItem('selectedStudentId') || 'stu-001';
     const seed      = localStorage.getItem('studentSeed')       || '42';
     const count     = localStorage.getItem('studentCount')      || '50';
 
     try {
-      const [currRes, stuRes] = await Promise.all([
-        fetch('/api/synthetic/curriculum/'),
-        fetch(`/api/synthetic/students/${encodeURIComponent(studentId)}/?seed=${encodeURIComponent(seed)}&count=${encodeURIComponent(count)}`),
-      ]);
+      const res = await fetch(
+        `/api/synthetic/students/${encodeURIComponent(studentId)}/?seed=${encodeURIComponent(seed)}&count=${encodeURIComponent(count)}`
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      studentData = await res.json();
 
-      if (!currRes.ok) throw new Error(`Currículo: HTTP ${currRes.status}`);
-      if (!stuRes.ok)  throw new Error(`Aluno: HTTP ${stuRes.status}`);
-
-      curriculumData = await currRes.json();
-      studentData    = await stuRes.json();
-
-      // Build lookup tables
-      subjectLookup = {};
-      for (const s of (curriculumData.subjects || [])) {
-        subjectLookup[s.code] = s;
-      }
+      // Build lookup
       studentLookup = {};
       for (const s of (studentData.subjects || [])) {
         studentLookup[s.code] = s;
       }
 
-      renderHeader();
-      render();
+      calcProgress();
+      renderStudentBar();
+      renderTree();
+      renderCareerPaths();
+
+      $id('tree-spinner').style.display = 'none';
+      $id('tree-content').style.display = 'block';
     } catch (err) {
+      $id('tree-spinner').style.display = 'none';
       showError('Não foi possível carregar os dados: ' + err.message);
-    } finally {
-      setLoading(false);
+      console.error('Arvore load error:', err);
     }
   }
 
+  // ── Events ─────────────────────────────────────────────────────────────
+  $id('tree-retry-btn').addEventListener('click', loadData);
+  $id('tooltip-close-btn').addEventListener('click', closeTooltip);
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.career-node') && !e.target.closest('.node-tooltip')) {
+      closeTooltip();
+    }
+  });
+  window.addEventListener('scroll', closeTooltip, { passive: true });
+
+  // ── Init ───────────────────────────────────────────────────────────────
   loadData();
 })();
 </script>
