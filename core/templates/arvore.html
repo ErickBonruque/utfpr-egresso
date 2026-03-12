@@ -376,6 +376,7 @@
 <script>
 (function () {
   'use strict';
+  const progress = {{ progress_json|default:"null"|safe }};
 
   // ── Career node definitions ────────────────────────────────────────────
   const CAREER_NODES = [
@@ -479,6 +480,7 @@
   let studentData = null;
   let studentLookup = {};  // code → subject object
   let nodeProgress = {};   // nodeId → { done, total, pct }
+  let serverNodeState = {}; // nodeId -> backend calculated state
 
   // ── DOM helpers ────────────────────────────────────────────────────────
   function $id(id) { return document.getElementById(id); }
@@ -496,6 +498,25 @@
 
   // ── Progress calculation ───────────────────────────────────────────────
   function calcProgress() {
+    if (progress && progress.tree && Array.isArray(progress.tree.nodes) && progress.tree.nodes.length) {
+      nodeProgress = {};
+      serverNodeState = {};
+      for (const node of progress.tree.nodes) {
+        nodeProgress[node.id] = {
+          done: node.done || 0,
+          cursando: node.cursando || 0,
+          total: node.total || 1,
+          pct: node.pct || 0,
+        };
+        serverNodeState[node.id] = {
+          unlocked: !!node.unlocked,
+          completed: !!node.completed,
+        };
+      }
+      return;
+    }
+
+    serverNodeState = {};
     for (const node of CAREER_NODES) {
       const done  = node.subjects.filter(c => (studentLookup[c]||{}).status === 'aprovada').length;
       const cursando = node.subjects.filter(c => (studentLookup[c]||{}).status === 'cursando').length;
@@ -506,10 +527,14 @@
   }
 
   function isUnlocked(node) {
+    if (serverNodeState[node.id]) return serverNodeState[node.id].unlocked;
     if (!node.prerequisite) return true;
     return (nodeProgress[node.prerequisite] || {}).pct > 0;
   }
-  function isCompleted(node) { return (nodeProgress[node.id]||{}).pct >= 100; }
+  function isCompleted(node) {
+    if (serverNodeState[node.id]) return serverNodeState[node.id].completed;
+    return (nodeProgress[node.id]||{}).pct >= 100;
+  }
 
   // ── Build a single career node card ───────────────────────────────────
   function buildNode(node) {
@@ -617,17 +642,23 @@
   // ── Render career paths ────────────────────────────────────────────────
   function renderCareerPaths() {
     const row = $id('career-paths-row');
-    row.innerHTML = CAREER_PATHS.map(path => {
-      const total = path.nodes.length;
-      const done  = path.nodes.filter(id => (nodeProgress[id]||{}).pct > 0).length;
-      const pct   = Math.round(done / total * 100);
+    const sourcePaths = (progress && progress.tree && Array.isArray(progress.tree.paths) && progress.tree.paths.length)
+      ? progress.tree.paths
+      : CAREER_PATHS.map(path => {
+          const total = path.nodes.length;
+          const done  = path.nodes.filter(id => (nodeProgress[id]||{}).pct > 0).length;
+          const pct   = Math.round(done / total * 100);
+          return { ...path, compatibilityPct: pct };
+        });
+
+    row.innerHTML = sourcePaths.map(path => {
       return `<div class="col-md-4">
         <div class="path-card">
           <div class="path-icon"><i class="bi ${path.icon}"></i></div>
           <h6>${path.title}</h6>
           <p>${path.desc}</p>
           <div class="path-compat">
-            <i class="bi bi-star-fill"></i> ${pct}% compatível
+            <i class="bi bi-star-fill"></i> ${path.compatibilityPct}% compatível
           </div>
         </div>
       </div>`;

@@ -7,6 +7,7 @@ from django.shortcuts import render, get_object_or_404
 from django.views.decorators.http import require_GET
 
 from core.models import Aluno
+from core.progress import calcular_progresso_aluno
 from core.serializers import serializar_aluno, serializar_aluno_resumo, serializar_egresso_publico
 
 
@@ -45,10 +46,13 @@ def _aluno_context(request):
     aluno = _get_aluno_from_request(request)
     if aluno:
         aluno_data = serializar_aluno(aluno)
+        progresso = calcular_progresso_aluno(aluno_data)
     else:
         aluno_data = None
+        progresso = None
     return {
         'aluno_json': json.dumps(aluno_data, ensure_ascii=False),
+        'progress_json': json.dumps(progresso, ensure_ascii=False),
         'aluno': aluno,
     }
 
@@ -138,13 +142,17 @@ def perfil(request):
             aluno_data['registration'] = None
             aluno_data['totalCourseWorkload'] = None
             aluno_data['completedWorkload'] = None
+            progresso = None
         else:
             aluno_data = serializar_aluno(aluno)
+            progresso = calcular_progresso_aluno(aluno_data)
     else:
         aluno_data = None
+        progresso = None
 
     context = {
         'aluno_json': json.dumps(aluno_data, ensure_ascii=False),
+        'progress_json': json.dumps(progresso, ensure_ascii=False),
         'aluno': aluno,
         'is_public_profile': is_public_profile,
     }

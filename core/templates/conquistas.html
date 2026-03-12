@@ -171,6 +171,8 @@
 
 <script>
 (function () {
+    const progress = {{ progress_json|default:"null"|safe }};
+
     const STATUS_CLASSES = {
         ativo:    'bg-success',
         trancado: 'bg-warning text-dark',
@@ -178,177 +180,16 @@
         formado:  'bg-primary',
     };
 
-    function approved(subs, code) {
-        return subs.some(x => x.code === code && x.status === 'aprovada');
-    }
-    function countApproved(subs, codes) {
-        return codes.filter(c => approved(subs, c)).length;
-    }
-
-    function buildAchievements(s) {
-        const subs        = s.subjects || [];
-        const wl          = s.completedWorkload || 0;
-        const twl         = s.totalCourseWorkload || 1;
-        const wlPct       = wl / twl;
-        const approvedN   = subs.filter(x => x.status === 'aprovada').length;
-        // Count mandatory subjects as denominator for "Primeiro Passo" progress; fall back to total
-        const mandatorySubs = subs.filter(x => x.type !== 'optativa');
-        const totalSubs   = (mandatorySubs.length || subs.length) || 1;
-        const maxAttend   = subs.filter(x => x.status === 'aprovada')
-                               .reduce((m, x) => Math.max(m, x.attendance || 0), 0);
-
-        return [
-            // ── Acadêmica ──────────────────────────────────────────────
-            {
-                id: 'primeiro_passo', name: 'Primeiro Passo', category: 'Acadêmica',
-                icon: 'bi-mortarboard', xp: 50,
-                desc: 'Aprovado em alguma disciplina',
-                unlocked: subs.some(x => x.status === 'aprovada'),
-                progress: Math.min(1, approvedN / totalSubs),
-            },
-            {
-                id: 'dedicado', name: 'Dedicado', category: 'Acadêmica',
-                icon: 'bi-book-half', xp: 100,
-                desc: 'CR igual ou acima de 7,0',
-                unlocked: s.gpa >= 7.0,
-                progress: Math.min(1, s.gpa / 7.0),
-            },
-            {
-                id: 'aluno_destaque', name: 'Aluno Destaque', category: 'Acadêmica',
-                icon: 'bi-trophy', xp: 200,
-                desc: 'CR igual ou acima de 9,0',
-                unlocked: s.gpa >= 9.0,
-                progress: Math.min(1, s.gpa / 9.0),
-            },
-            {
-                id: 'nota_10', name: 'Nota 10', category: 'Acadêmica',
-                icon: 'bi-star-fill', xp: 150,
-                desc: 'Obteve nota 10,0 em alguma disciplina',
-                unlocked: subs.some(x => x.grade === 10.0),
-                progress: subs.some(x => x.grade === 10.0) ? 1 : 0,
-            },
-            {
-                id: 'sem_faltas', name: 'Sem Faltas', category: 'Acadêmica',
-                icon: 'bi-person-check', xp: 75,
-                desc: '100% de presença em alguma disciplina',
-                unlocked: subs.some(x => x.status === 'aprovada' && x.attendance === 100),
-                progress: Math.min(1, maxAttend / 100),
-            },
-            {
-                id: 'metade_jornada', name: 'Metade da Jornada', category: 'Acadêmica',
-                icon: 'bi-pie-chart', xp: 300,
-                desc: 'Completou 50% da carga horária total',
-                unlocked: wlPct >= 0.5,
-                progress: Math.min(1, wlPct),
-            },
-            {
-                id: 'quase_formado', name: 'Quase Formado', category: 'Acadêmica',
-                icon: 'bi-hourglass-bottom', xp: 500,
-                desc: 'Completou 75% da carga horária total',
-                unlocked: wlPct >= 0.75,
-                progress: Math.min(1, wlPct),
-            },
-            {
-                id: 'formado', name: 'Formado!', category: 'Acadêmica',
-                icon: 'bi-patch-check-fill', xp: 1000,
-                desc: 'Concluiu o curso completamente',
-                unlocked: s.status === 'formado',
-                progress: Math.min(1, wlPct),
-            },
-            // ── Programação ────────────────────────────────────────────
-            {
-                id: 'programador', name: 'Programador', category: 'Programação',
-                icon: 'bi-code-slash', xp: 100,
-                desc: 'Aprovado em Programação Orientada a Objetos',
-                unlocked: approved(subs, 'CC2POO'),
-                progress: approved(subs, 'CC2POO') ? 1 : 0,
-            },
-            {
-                id: 'mestre_algoritmos', name: 'Mestre dos Algoritmos', category: 'Programação',
-                icon: 'bi-diagram-3', xp: 200,
-                desc: 'Aprovado nas 3 disciplinas de Algoritmos e Estrutura de Dados',
-                unlocked: countApproved(subs, ['CC1AED1','CC2AED2','CC3AED3']) === 3,
-                progress: countApproved(subs, ['CC1AED1','CC2AED2','CC3AED3']) / 3,
-            },
-            {
-                id: 'arquiteto', name: 'Arquiteto de Software', category: 'Programação',
-                icon: 'bi-layers', xp: 150,
-                desc: 'Aprovado em Engenharia de Requisitos e Engenharia de Software',
-                unlocked: countApproved(subs, ['CC2ER','CC3ES']) === 2,
-                progress: countApproved(subs, ['CC2ER','CC3ES']) / 2,
-            },
-            {
-                id: 'guru_bd', name: 'Guru de Banco de Dados', category: 'Programação',
-                icon: 'bi-database-fill', xp: 150,
-                desc: 'Aprovado em Modelagem e Lab de Banco de Dados',
-                unlocked: countApproved(subs, ['CC1MBD','CC4LBD']) === 2,
-                progress: countApproved(subs, ['CC1MBD','CC4LBD']) / 2,
-            },
-            // ── Infraestrutura ─────────────────────────────────────────
-            {
-                id: 'esp_redes', name: 'Especialista em Redes', category: 'Infraestrutura',
-                icon: 'bi-hdd-network', xp: 150,
-                desc: 'Aprovado nas duas disciplinas de Redes',
-                unlocked: countApproved(subs, ['CC4RC','CC6TRC']) === 2,
-                progress: countApproved(subs, ['CC4RC','CC6TRC']) / 2,
-            },
-            {
-                id: 'guardiao', name: 'Guardião Digital', category: 'Infraestrutura',
-                icon: 'bi-shield-lock', xp: 200,
-                desc: 'Aprovado em Cibersegurança',
-                unlocked: approved(subs, 'CC7CS'),
-                progress: approved(subs, 'CC7CS') ? 1 : 0,
-            },
-            // ── IA ─────────────────────────────────────────────────────
-            {
-                id: 'cientista', name: 'Cientista de Dados', category: 'IA',
-                icon: 'bi-graph-up-arrow', xp: 200,
-                desc: 'Aprovado em IA, Big Data e IA Aplicada',
-                unlocked: countApproved(subs, ['CC6FIA','CC6IBDDA','CC7IAA']) === 3,
-                progress: countApproved(subs, ['CC6FIA','CC6IBDDA','CC7IAA']) / 3,
-            },
-            {
-                id: 'visao', name: 'Visão de Futuro', category: 'IA',
-                icon: 'bi-eye', xp: 200,
-                desc: 'Aprovado em Visão Computacional',
-                unlocked: approved(subs, 'CC7VC'),
-                progress: approved(subs, 'CC7VC') ? 1 : 0,
-            },
-            // ── Marcos ─────────────────────────────────────────────────
-            {
-                id: 'estagiario', name: 'Estagiário', category: 'Marcos',
-                icon: 'bi-briefcase', xp: 300,
-                desc: 'Completou o Estágio Obrigatório',
-                unlocked: approved(subs, 'EO11'),
-                progress: approved(subs, 'EO11') ? 1 : 0,
-            },
-            {
-                id: 'tcc', name: 'TCC Concluído', category: 'Marcos',
-                icon: 'bi-file-earmark-text', xp: 500,
-                desc: 'Concluiu o Trabalho de Conclusão de Curso',
-                unlocked: approved(subs, 'TCC2'),
-                progress: approved(subs, 'TCC2') ? 1 : 0,
-            },
-            {
-                id: 'pi1', name: 'Projeto Integrador', category: 'Marcos',
-                icon: 'bi-puzzle', xp: 150,
-                desc: 'Aprovado no Projeto Integrador I',
-                unlocked: approved(subs, 'CC3PI1'),
-                progress: approved(subs, 'CC3PI1') ? 1 : 0,
-            },
-            {
-                id: 'trilha_pi', name: 'Trilha Completa de Projetos', category: 'Marcos',
-                icon: 'bi-diagram-2', xp: 400,
-                desc: 'Aprovado nos 3 Projetos Integradores',
-                unlocked: countApproved(subs, ['CC3PI1','CC5PI2','CC7PI3']) === 3,
-                progress: countApproved(subs, ['CC3PI1','CC5PI2','CC7PI3']) / 3,
-            },
-        ];
-    }
-
     // ── Rendering ─────────────────────────────────────────────────────
 
     let allAchievements = [];
+
+    function norm(str) {
+        return (str || '')
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase();
+    }
 
     function renderCard(a) {
         const pct    = Math.round(a.progress * 100);
@@ -381,7 +222,7 @@
         let list = [...allAchievements];
         if      (filter === 'desbloqueadas') list = list.filter(a => a.unlocked);
         else if (filter === 'bloqueadas')    list = list.filter(a => !a.unlocked);
-        else if (filter !== 'todas')         list = list.filter(a => a.category === filter);
+        else if (filter !== 'todas')         list = list.filter(a => norm(a.category) === norm(filter));
 
         // Sort: unlocked achievements first, then locked ones ordered by progress % descending
         list.sort((a, b) => (a.unlocked === b.unlocked) ? b.progress - a.progress : a.unlocked ? -1 : 1);
@@ -420,12 +261,12 @@
     // ── Load & populate ───────────────────────────────────────────────
 
     function populatePage(student) {
-        allAchievements = buildAchievements(student);
+        allAchievements = (progress && progress.achievements) ? [...progress.achievements] : [];
 
         const unlockedList = allAchievements.filter(a => a.unlocked);
-        const totalXp      = unlockedList.reduce((s, a) => s + a.xp, 0);
-        const nextAch      = allAchievements.filter(a => !a.unlocked)
-                                            .sort((a, b) => b.progress - a.progress)[0];
+        const totalXp      = progress && progress.xp ? progress.xp.total : unlockedList.reduce((s, a) => s + a.xp, 0);
+        const nextAchName  = progress && progress.xp ? progress.xp.nextAchievement : null;
+        const nextAch      = nextAchName ? { name: nextAchName } : allAchievements.filter(a => !a.unlocked).sort((a, b) => b.progress - a.progress)[0];
 
         const badge = document.getElementById('status-badge');
         badge.textContent = student.status;
@@ -434,7 +275,8 @@
             `${student.name} — ${student.course}`;
 
         document.getElementById('stat-xp').textContent    = totalXp.toLocaleString('pt-BR');
-        document.getElementById('stat-count').textContent = `${unlockedList.length}/20`;
+        const totalAchievements = progress && progress.xp ? progress.xp.totalAchievements : 20;
+        document.getElementById('stat-count').textContent = `${unlockedList.length}/${totalAchievements}`;
         document.getElementById('stat-next').textContent  = nextAch ? nextAch.name : '🎉 Todas!';
 
         renderGrid('todas');
