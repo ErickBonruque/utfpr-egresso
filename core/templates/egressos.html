@@ -6,192 +6,369 @@
 
 {% block content %}
 <style>
-  .page-header { padding: 2rem 0 1rem; }
-  .page-header h2 { font-size: 1.75rem; font-weight: 700; color: var(--text-primary); }
-  .page-header p  { color: var(--text-secondary); }
+  .egressos-page { padding: 2rem 0 3rem; }
 
-  .stat-card { border: none; border-radius: 14px; background: var(--bg-card); box-shadow: var(--card-shadow); padding: 1.25rem 1.5rem; }
-  .stat-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
-  .stat-value { font-size: 1.75rem; font-weight: 700; color: var(--text-primary); line-height: 1; }
-  .stat-label { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+  .mentor-hero {
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(26, 26, 46, 0.95), rgba(45, 45, 68, 0.92));
+    color: #fff;
+    padding: 1.7rem;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 1.25rem;
+  }
 
-  .filter-card { border: none; border-radius: 14px; background: var(--bg-card); box-shadow: var(--card-shadow); padding: 1.25rem 1.5rem; }
-  .filter-card .form-control,
-  .filter-card .form-select { background: var(--input-bg); border-color: var(--input-border); color: var(--text-primary); border-radius: 8px; }
-  .filter-card .form-control:focus,
-  .filter-card .form-select:focus { border-color: var(--accent-color); box-shadow: var(--input-focus-shadow); }
+  [data-theme="dark"] .mentor-hero {
+    background: linear-gradient(135deg, rgba(38, 42, 64, 0.98), rgba(31, 34, 51, 0.95));
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+  }
 
-  .status-btn-group .btn { border-radius: 20px !important; font-size: 0.82rem; padding: 0.3rem 0.9rem; border-color: var(--border-color); color: var(--text-secondary); background: var(--bg-card); }
-  .status-btn-group .btn.active { background: var(--utfpr-yellow); border-color: var(--utfpr-yellow); color: var(--utfpr-black); font-weight: 600; }
-  .status-btn-group .btn:hover:not(.active) { background: var(--hover-bg); }
+  .mentor-hero h2 {
+    margin: 0;
+    font-size: 1.7rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
 
-  .student-card { border: none; border-radius: 14px; background: var(--bg-card); box-shadow: var(--card-shadow); transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; height: 100%; display: flex; flex-direction: column; }
-  .student-card:hover { transform: translateY(-4px); box-shadow: var(--card-shadow-hover); }
-  .student-card.is-me { border: 2px solid var(--utfpr-yellow); }
-  .student-card-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
+  .mentor-hero p {
+    margin: 0.45rem 0 0;
+    color: rgba(255, 255, 255, 0.8);
+  }
 
-  .student-name { font-weight: 600; font-size: 1rem; color: var(--text-primary); }
-  .student-meta { font-size: 0.8rem; color: var(--text-secondary); }
+  .policy-box {
+    border-radius: 14px;
+    background: rgba(255, 199, 44, 0.12);
+    border: 1px solid rgba(255, 199, 44, 0.3);
+    color: #fff7d8;
+    padding: 0.75rem 0.9rem;
+    font-size: 0.8rem;
+  }
 
-  .progress { height: 6px; border-radius: 4px; background: var(--border-color); }
-  .progress-bar { border-radius: 4px; background: var(--utfpr-yellow); }
+  .stats-grid { margin-bottom: 1.2rem; }
 
-  .card-footer-actions { padding: 0.75rem 1.25rem; border-top: 1px solid var(--border-color); display: flex; gap: 0.5rem; }
-  .card-footer-actions .btn { font-size: 0.8rem; border-radius: 8px; }
+  .stat-card {
+    border: none;
+    border-radius: 14px;
+    background: var(--bg-card);
+    box-shadow: var(--card-shadow);
+    padding: 1rem 1.1rem;
+    height: 100%;
+  }
+
+  .stat-value {
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--text-primary);
+  }
+
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    margin-top: 0.3rem;
+  }
+
+  .search-card {
+    border: none;
+    border-radius: 14px;
+    background: var(--bg-card);
+    box-shadow: var(--card-shadow);
+    padding: 1rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .search-card .form-control {
+    border-radius: 10px;
+    border-color: var(--input-border);
+    background: var(--input-bg);
+    color: var(--text-primary);
+  }
+
+  .search-card .form-control:focus {
+    border-color: var(--accent-color);
+    box-shadow: var(--input-focus-shadow);
+  }
+
+  .mentor-card {
+    border: none;
+    border-radius: 16px;
+    background: var(--bg-card);
+    box-shadow: var(--card-shadow);
+    height: 100%;
+    overflow: hidden;
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+  }
+
+  .mentor-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--card-shadow-hover);
+  }
+
+  .mentor-top {
+    padding: 1.1rem 1.1rem 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .mentor-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 199, 44, 0.16);
+    color: #6d4f00;
+    font-weight: 700;
+    font-size: 0.82rem;
+    border: 1px solid rgba(255, 199, 44, 0.3);
+    flex-shrink: 0;
+  }
+
+  .mentor-name {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .mentor-sub {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+    margin-top: 0.2rem;
+  }
+
+  .mentor-body {
+    padding: 0.9rem 1.1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 170px;
+  }
+
+  .mentor-focus {
+    font-size: 0.83rem;
+    line-height: 1.45;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+  }
+
+  .mentor-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .mentor-meta span {
+    font-size: 0.72rem;
+    border-radius: 999px;
+    padding: 0.22rem 0.6rem;
+    background: var(--badge-bg);
+    color: var(--badge-text);
+  }
+
+  .mentor-actions {
+    margin-top: auto;
+    display: flex;
+    gap: 0.55rem;
+  }
+
+  .btn-contact {
+    flex: 1;
+    border: none;
+    border-radius: 10px;
+    background: var(--utfpr-yellow);
+    color: #000;
+    font-size: 0.8rem;
+    font-weight: 700;
+    padding: 0.52rem 0.7rem;
+    text-decoration: none;
+    text-align: center;
+    transition: all 0.22s ease;
+  }
+
+  .btn-contact:hover {
+    background: #e7b730;
+    color: #000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 199, 44, 0.25);
+  }
+
+  .btn-contact:disabled,
+  .btn-contact[aria-disabled="true"] {
+    background: var(--badge-bg);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+
+  [data-theme="dark"] .btn-contact {
+    background: #FFD04A;
+    color: #000;
+  }
+
+  [data-theme="dark"] .btn-contact:hover {
+    background: #e7b730;
+    color: #000;
+  }
+
+  [data-theme="dark"] .btn-contact:disabled,
+  [data-theme="dark"] .btn-contact[aria-disabled="true"] {
+    background: #2c3050;
+    color: #6d748a;
+    opacity: 0.5;
+  }
+
+  .btn-profile {
+    border-radius: 10px;
+    font-size: 0.8rem;
+    padding: 0.52rem 0.7rem;
+  }
 
   #spinner-overlay { display: none; }
-  #spinner-overlay.show { display: flex; align-items: center; justify-content: center; min-height: 200px; }
+  #spinner-overlay.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 180px;
+  }
 
-  #empty-state { display: none; text-align: center; padding: 3rem 1rem; }
+  #empty-state { display: none; text-align: center; padding: 2.8rem 1rem; }
   #empty-state.show { display: block; }
 
-  .pagination .page-link { border-radius: 8px !important; margin: 0 2px; color: var(--text-primary); border-color: var(--border-color); background: var(--bg-card); }
-  .pagination .page-item.active .page-link { background: var(--utfpr-yellow); border-color: var(--utfpr-yellow); color: var(--utfpr-black); font-weight: 600; }
-  .pagination .page-item.disabled .page-link { opacity: 0.45; }
+  @media (max-width: 768px) {
+    .mentor-hero {
+      padding: 1.25rem;
+    }
+  }
 </style>
 
-<div class="container pb-5">
-  <!-- Header -->
-  <div class="page-header">
-    <h2><i class="bi bi-people-fill me-2" style="color:var(--utfpr-yellow)"></i>Alunos &amp; Egressos</h2>
-    <p>Acompanhe todos os alunos do curso de Ciência da Computação</p>
-  </div>
-
-  <!-- Stats row -->
-  <div class="row g-3 mb-4" id="stats-row">
-    <div class="col-6 col-md-3">
-      <div class="stat-card d-flex align-items-center gap-3">
-        <div class="stat-icon" style="background:#f0f4ff"><i class="bi bi-people" style="color:#4361ee"></i></div>
-        <div><div class="stat-value" id="st-total">—</div><div class="stat-label">Total Alunos</div></div>
+<div class="container egressos-page">
+  <div class="mentor-hero">
+    <div class="d-flex flex-column flex-md-row align-items-start align-items-md-center gap-3">
+      <div class="flex-grow-1">
+        <h2><i class="bi bi-people-fill me-2"></i>Rede de Egressos UTFPR</h2>
+        <p>Converse com ex-alunos formados e receba orientação de carreira por e-mail.</p>
       </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="stat-card d-flex align-items-center gap-3">
-        <div class="stat-icon" style="background:#e8f8f0"><i class="bi bi-check-circle" style="color:#2d9e5f"></i></div>
-        <div><div class="stat-value" id="st-active">—</div><div class="stat-label">Ativos <span class="badge bg-success ms-1" style="font-size:.65rem">ativo</span></div></div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="stat-card d-flex align-items-center gap-3">
-        <div class="stat-icon" style="background:#e8f0ff"><i class="bi bi-mortarboard" style="color:#4361ee"></i></div>
-        <div><div class="stat-value" id="st-graduated">—</div><div class="stat-label">Formados <span class="badge bg-primary ms-1" style="font-size:.65rem">formado</span></div></div>
-      </div>
-    </div>
-    <div class="col-6 col-md-3">
-      <div class="stat-card d-flex align-items-center gap-3">
-        <div class="stat-icon" style="background:#fffbe8"><i class="bi bi-exclamation-triangle" style="color:#c79a00"></i></div>
-        <div><div class="stat-value" id="st-other">—</div><div class="stat-label">Evadidos/Trancados <span class="badge bg-warning text-dark ms-1" style="font-size:.65rem">⚠</span></div></div>
-      </div>
-    </div>
-    <div class="col-12 col-md-3">
-      <div class="stat-card d-flex align-items-center gap-3">
-        <div class="stat-icon" style="background:#fff0e8"><i class="bi bi-bar-chart" style="color:#e07000"></i></div>
-        <div><div class="stat-value" id="st-gpa">—</div><div class="stat-label">CR Médio</div></div>
+      <div class="policy-box">
+        <i class="bi bi-shield-lock me-1"></i>
+        Esta vitrine exibe apenas perfis públicos de egressos. Notas e histórico acadêmico de terceiros não são compartilhados.
       </div>
     </div>
   </div>
 
-  <!-- Filters -->
-  <div class="filter-card mb-4">
+  <!-- Dados Gerais do Curso -->
+  <div class="row g-3 stats-grid">
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-value" id="st-total">—</div>
+        <div class="stat-label">Total de Alunos</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-value" id="st-active" style="color: #2196F3;">—</div>
+        <div class="stat-label">Alunos Ativos</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-value" id="st-graduated" style="color: #4CAF50;">—</div>
+        <div class="stat-label">Egressos (Formados)</div>
+      </div>
+    </div>
+    <div class="col-6 col-lg-3">
+      <div class="stat-card">
+        <div class="stat-value" id="st-evadidos" style="color: #f44336;">—</div>
+        <div class="stat-label">Evadidos</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Busca e Filtros -->
+  <div class="search-card">
     <div class="row g-3 align-items-end">
-      <div class="col-12 col-md-5">
-        <label class="form-label small fw-semibold" style="color:var(--text-secondary)">Buscar por nome</label>
-        <div class="input-group">
-          <span class="input-group-text" style="background:var(--input-bg);border-color:var(--input-border)"><i class="bi bi-search" style="color:var(--text-muted)"></i></span>
-          <input type="text" id="search-input" class="form-control" placeholder="Nome do aluno...">
+      <div class="col-12 col-md-8">
+        <label class="form-label small fw-semibold mb-2" style="color:var(--text-secondary)">Buscar egresso por nome</label>
+        <input type="text" id="search-input" class="form-control" placeholder="Ex.: Maria, Lucas, Fernanda...">
+      </div>
+      <div class="col-12">
+        <div class="small" style="color:var(--text-muted);">
+          <i class="bi bi-funnel me-1"></i>Filtros (opcionais)
         </div>
       </div>
-      <div class="col-6 col-md-3">
-        <label class="form-label small fw-semibold" style="color:var(--text-secondary)">Período</label>
-        <select id="period-filter" class="form-select">
-          <option value="">Todos os Períodos</option>
-          <option value="1">1º Período</option>
-          <option value="2">2º Período</option>
-          <option value="3">3º Período</option>
-          <option value="4">4º Período</option>
-          <option value="5">5º Período</option>
-          <option value="6">6º Período</option>
-          <option value="7">7º Período</option>
-          <option value="8">8º Período</option>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <label class="form-label small fw-semibold mb-1" style="color:var(--text-secondary)">Carreira</label>
+        <select id="filter-job-title" class="form-control form-select">
+          <option value="">Todos os cargos</option>
         </select>
       </div>
-      <div class="col-6 col-md-4">
-        <label class="form-label small fw-semibold d-block" style="color:var(--text-secondary)">Status</label>
-        <div class="btn-group status-btn-group flex-wrap gap-1" role="group" id="status-filter">
-          <button type="button" class="btn btn-sm active" data-value="">Todos</button>
-          <button type="button" class="btn btn-sm" data-value="ativo">Ativo</button>
-          <button type="button" class="btn btn-sm" data-value="formado">Formado</button>
-          <button type="button" class="btn btn-sm" data-value="trancado">Trancado</button>
-          <button type="button" class="btn btn-sm" data-value="evadido">Evadido</button>
-        </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <label class="form-label small fw-semibold mb-1" style="color:var(--text-secondary)">Modelo de Trabalho</label>
+        <select id="filter-remote" class="form-control form-select">
+          <option value="">Qualquer modelo</option>
+          <option value="true">Trabalha Remoto</option>
+          <option value="false">Trabalha Presencial</option>
+        </select>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <label class="form-label small fw-semibold mb-1" style="color:var(--text-secondary)">Disponibilidade</label>
+        <select id="filter-availability" class="form-control form-select">
+          <option value="">Qualquer disponibilidade</option>
+          <option value="alta">Muito disponível</option>
+          <option value="media">Moderadamente disponível</option>
+          <option value="baixa">Pouco disponível</option>
+        </select>
+      </div>
+      <div class="col-12 col-sm-6 col-lg-3">
+        <label class="form-label small fw-semibold mb-1" style="color:var(--text-secondary)">Área de Mentoria</label>
+        <select id="filter-area" class="form-control form-select">
+          <option value="">Qualquer área</option>
+        </select>
       </div>
     </div>
   </div>
 
-  <!-- Count line -->
-  <div class="d-flex justify-content-between align-items-center mb-3" id="count-line" style="display:none!important">
-    <span id="range-label" class="small" style="color:var(--text-secondary)"></span>
-  </div>
-
-  <!-- Spinner -->
   <div id="spinner-overlay">
-    <div class="text-center"><div class="spinner-border" style="color:var(--utfpr-yellow)" role="status"><span class="visually-hidden">Carregando...</span></div><p class="mt-2 small" style="color:var(--text-secondary)">Carregando alunos...</p></div>
+    <div class="text-center">
+      <div class="spinner-border" style="color:var(--utfpr-yellow)" role="status"><span class="visually-hidden">Carregando...</span></div>
+      <p class="mt-2 small" style="color:var(--text-secondary)">Carregando egressos...</p>
+    </div>
   </div>
 
-  <!-- Empty state -->
   <div id="empty-state">
     <i class="bi bi-person-x" style="font-size:3rem;color:var(--text-muted)"></i>
-    <h5 class="mt-3" style="color:var(--text-secondary)">Nenhum aluno encontrado</h5>
-    <p class="text-muted small">Tente ajustar os filtros de busca.</p>
+    <h5 class="mt-3" style="color:var(--text-secondary)">Nenhum egresso encontrado</h5>
+    <p class="text-muted small">Tente outro termo de busca.</p>
   </div>
 
-  <!-- Cards grid -->
   <div class="row g-3" id="cards-grid"></div>
-
-  <!-- Pagination -->
-  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-4 gap-2" id="pagination-bar" style="display:none!important">
-    <small id="range-label-bottom" style="color:var(--text-secondary)"></small>
-    <nav><ul class="pagination mb-0" id="pagination-list"></ul></nav>
-  </div>
 </div>
 
 <script>
 (function () {
-  const PAGE_SIZE = 12;
-  const STATUS_LABELS = { ativo: 'Ativo', formado: 'Formado', trancado: 'Trancado', evadido: 'Evadido' };
-  const STATUS_BADGE  = { ativo: 'success', formado: 'primary', trancado: 'warning text-dark', evadido: 'danger' };
+  const PAGE_SIZE = 18;  // Mostra todos os egressos disponíveis
 
   let state = {
-    seed: localStorage.getItem('studentSeed') || '42',
-    count: localStorage.getItem('studentCount') || '50',
-    selectedId: localStorage.getItem('selectedStudentId') || 'stu-001',
-    status: '',
-    period: '',
     search: '',
     page: 1,
-    total: 0,
     debounceTimer: null,
+    allStudents: [],
+    jobTitle: '',
+    remote: '',
+    availability: '',
+    area: '',
   };
 
-  // ── DOM refs ──────────────────────────────────────────────────
-  const grid        = document.getElementById('cards-grid');
-  const spinner     = document.getElementById('spinner-overlay');
-  const emptyState  = document.getElementById('empty-state');
-  const paginationBar = document.getElementById('pagination-bar');
-  const paginationList = document.getElementById('pagination-list');
-  const countLine   = document.getElementById('count-line');
-  const rangeLabel  = document.getElementById('range-label');
-  const rangeLabelB = document.getElementById('range-label-bottom');
+  const grid = document.getElementById('cards-grid');
+  const spinner = document.getElementById('spinner-overlay');
+  const emptyState = document.getElementById('empty-state');
   const searchInput = document.getElementById('search-input');
-  const periodSel   = document.getElementById('period-filter');
-  const statusGroup = document.getElementById('status-filter');
-
-  // ── API helpers ───────────────────────────────────────────────
-  function apiUrl(path, params) {
-    const base = `/api/synthetic${path}?seed=${state.seed}&count=${state.count}`;
-    const qs = params ? '&' + new URLSearchParams(params).toString() : '';
-    return base + qs;
-  }
+  const filterJobTitle = document.getElementById('filter-job-title');
+  const filterRemote = document.getElementById('filter-remote');
+  const filterAvailability = document.getElementById('filter-availability');
+  const filterArea = document.getElementById('filter-area');
 
   async function fetchJSON(url) {
     const r = await fetch(url);
@@ -199,230 +376,186 @@
     return r.json();
   }
 
-  // ── Stats ─────────────────────────────────────────────────────
-  async function loadStats() {
-    try {
-      const d = await fetchJSON(apiUrl('/dashboard/'));
-      document.getElementById('st-total').textContent     = d.totalStudents     ?? '—';
-      document.getElementById('st-active').textContent    = d.activeStudents    ?? '—';
-      document.getElementById('st-graduated').textContent = d.graduatedStudents ?? '—';
-      document.getElementById('st-other').textContent     = ((d.droppedStudents ?? 0) + (d.lockedStudents ?? 0));
-      document.getElementById('st-gpa').textContent       = d.averageGpa != null ? d.averageGpa.toFixed(2) : '—';
-    } catch (_) {}
+  function loadStats() {
+    const d = {{ stats_json|safe }};
+    document.getElementById('st-total').textContent = d.totalStudents ?? '—';
+    document.getElementById('st-active').textContent = d.activeStudents ?? '—';
+    document.getElementById('st-graduated').textContent = d.graduatedStudents ?? '—';
+    document.getElementById('st-evadidos').textContent = d.evadidosStudents ?? '—';
   }
 
-  // ── Students ──────────────────────────────────────────────────
-  async function loadStudents() {
+  function populateFilterDropdowns(students) {
+    const jobs = new Set();
+    const areas = new Set();
+
+    students.forEach(s => {
+      if (s.jobTitle && s.jobTitle !== 'Egresso(a)') jobs.add(s.jobTitle);
+      if (Array.isArray(s.mentoringAreas)) {
+        s.mentoringAreas.forEach(area => {
+          if (area) areas.add(area);
+        });
+      }
+    });
+
+    filterJobTitle.innerHTML = '<option value="">Todos os cargos</option>';
+    filterArea.innerHTML = '<option value="">Qualquer área</option>';
+
+    [...jobs].sort().forEach(job => {
+      const opt = document.createElement('option');
+      opt.value = job;
+      opt.textContent = job;
+      filterJobTitle.appendChild(opt);
+    });
+
+    [...areas].sort().forEach(area => {
+      const opt = document.createElement('option');
+      opt.value = area;
+      opt.textContent = area;
+      filterArea.appendChild(opt);
+    });
+  }
+
+  function applyFiltersAndRender() {
+    let filtered = state.allStudents;
+
+    if (state.jobTitle) {
+      filtered = filtered.filter(s => s.jobTitle === state.jobTitle);
+    }
+
+    if (state.remote !== '') {
+      const isRemote = state.remote === 'true';
+      filtered = filtered.filter(s => Boolean(s.worksRemote) === isRemote);
+    }
+
+    if (state.availability) {
+      filtered = filtered.filter(s => s.availability === state.availability);
+    }
+
+    if (state.area) {
+      filtered = filtered.filter(s => Array.isArray(s.mentoringAreas) && s.mentoringAreas.includes(state.area));
+    }
+
+    renderCards(filtered);
+  }
+
+  async function loadEgressos() {
     setLoading(true);
 
     const params = { page: state.page, page_size: PAGE_SIZE };
-    if (state.status)  params.status        = state.status;
-    if (state.period)  params.currentPeriod = state.period;
-    if (state.search)  params.search        = state.search;
+    if (state.search) params.search = state.search;
+
+    const qs = new URLSearchParams(params).toString();
 
     try {
-      const data = await fetchJSON(apiUrl('/students/', params));
-      const students = data.results ?? data.students ?? data ?? [];
-      state.total = data.count ?? data.total ?? students.length;
-      renderCards(students);
-      renderPagination();
-    } catch (_) {
+      const data = await fetchJSON(`/api/egressos/?${qs}`);
+      state.allStudents = data.results ?? [];
+      populateFilterDropdowns(state.allStudents);
+      applyFiltersAndRender();
+    } catch (e) {
+      console.error('Erro ao carregar egressos:', e);
       renderCards([]);
     } finally {
       setLoading(false);
     }
   }
 
-  // ── Render cards ──────────────────────────────────────────────
   function renderCards(students) {
     grid.innerHTML = '';
 
     if (!students.length) {
       emptyState.classList.add('show');
-      paginationBar.style.display = 'none';
-      countLine.style.display     = 'none';
       return;
     }
 
     emptyState.classList.remove('show');
-    paginationBar.style.removeProperty('display');
-    countLine.style.removeProperty('display');
-
-    const start = (state.page - 1) * PAGE_SIZE + 1;
-    const end   = Math.min(start + students.length - 1, state.total);
-    const msg   = `Mostrando ${start}–${end} de ${state.total} alunos`;
-    rangeLabel.textContent  = msg;
-    rangeLabelB.textContent = msg;
 
     students.forEach(s => {
-      const isMe      = s.id === state.selectedId;
-      const pct       = s.totalCourseWorkload > 0
-        ? Math.round((s.completedWorkload / s.totalCourseWorkload) * 100)
-        : 0;
-      const badgeClass = STATUS_BADGE[s.status] ?? 'secondary';
-      const statusText = STATUS_LABELS[s.status] ?? s.status;
-      const periodText = s.status === 'formado' ? 'Formado' : `${s.currentPeriod}º / 8º Período`;
-      const admYear    = s.admissionDate ? s.admissionDate.slice(0, 4) : (s.curriculumYear ?? '—');
-
       const col = document.createElement('div');
       col.className = 'col-12 col-sm-6 col-xl-4';
 
-      const card = document.createElement('div');
-      card.className = `student-card${isMe ? ' is-me' : ''}`;
-      card.dataset.studentId = s.id;
+      const email = s.email || '';
+      const mailHref = email
+        ? `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent('Mentoria UTFPR - Conexão com egresso')}`
+        : '#';
+      const mailLabel = email ? 'Enviar e-mail' : 'Contato indisponível';
 
-      const body = document.createElement('div');
-      body.className = 'student-card-body';
-      body.innerHTML = `
-        <div class="d-flex justify-content-between align-items-start mb-2">
-          <div style="min-width:0">
-            <div class="student-name text-truncate">${escHtml(s.name)}</div>
-            <div class="student-meta">${escHtml(s.course ?? 'Ciência da Computação')} · ${escHtml(s.campus ?? '')}</div>
+      const availabilityLabel = {
+        'alta': 'Muito disponível',
+        'media': 'Moderadamente disponível',
+        'baixa': 'Pouco disponível'
+      }[s.availability] || s.availability;
+
+      const remoteLabel = s.worksRemote ? '🌍 Remoto' : '🏢 Presencial';
+
+      const card = document.createElement('div');
+      card.className = 'mentor-card';
+      card.innerHTML = `
+        <div class="mentor-top">
+          <div class="mentor-avatar">${escHtml(s.initials || 'EG')}</div>
+          <div>
+            <p class="mentor-name">${escHtml(s.name)}</p>
+            <div class="mentor-sub">${escHtml(s.course || 'Ciência da Computação')} · ${escHtml(s.campus || '')}</div>
           </div>
-          <div class="d-flex flex-column align-items-end gap-1 ms-2 flex-shrink-0">
-            <span class="badge bg-${badgeClass}">${statusText}</span>
-            ${isMe ? '<span class="badge me-badge" style="background:var(--utfpr-yellow);color:var(--utfpr-black)">Este é você</span>' : ''}
+        </div>
+        <div class="mentor-body">
+          <p class="mentor-focus">${escHtml(s.mentoringFocus || 'Disponível para conversar sobre carreira e mercado de trabalho.')}</p>
+          <div class="mentor-meta">
+            <span><i class="bi bi-briefcase me-1"></i>${escHtml(s.jobTitle || 'Egresso(a)')}</span>
+            <span><i class="bi bi-building me-1"></i>${escHtml(s.company || 'Não informado')}</span>
+            <span>${remoteLabel}</span>
+            <span><i class="bi bi-clock me-1"></i>${escHtml(availabilityLabel)}</span>
+            <span><i class="bi bi-mortarboard me-1"></i>Form. ${escHtml(s.graduationYear || '—')}</span>
           </div>
-        </div>
-        <div class="d-flex gap-3 mb-2 flex-wrap">
-          <span class="student-meta"><i class="bi bi-calendar3 me-1"></i>${periodText}</span>
-          <span class="student-meta"><i class="bi bi-graph-up me-1"></i>CR: <strong>${s.gpa != null ? s.gpa.toFixed(1) : '—'}</strong></span>
-        </div>
-        <div class="mb-1 d-flex justify-content-between">
-          <span class="student-meta small">Conclusão</span>
-          <span class="student-meta small fw-semibold">${pct}%</span>
-        </div>
-        <div class="progress mb-2">
-          <div class="progress-bar" style="width:${pct}%"></div>
-        </div>
-        <div class="d-flex gap-3 flex-wrap mt-auto pt-1">
-          <span class="student-meta small"><i class="bi bi-mortarboard me-1"></i>Turma de ${admYear}</span>
-          <span class="student-meta small"><i class="bi bi-book me-1"></i>${s.completedWorkload ?? 0}h / ${s.totalCourseWorkload ?? 0}h</span>
+          <div class="mentor-actions">
+            <a class="btn-contact" href="${mailHref}" ${email ? '' : 'aria-disabled="true"'}>
+              <i class="bi bi-envelope-paper me-1"></i>${mailLabel}
+            </a>
+            <button type="button" class="btn btn-outline-secondary btn-profile" data-view-egresso="${s.id}">
+              <i class="bi bi-person-lines-fill"></i>
+            </button>
+          </div>
         </div>`;
 
-      const footer = document.createElement('div');
-      footer.className = 'card-footer-actions';
-
-      const btnSelect = document.createElement('button');
-      btnSelect.type = 'button';
-      btnSelect.className = 'btn btn-sm btn-outline-secondary flex-fill';
-      btnSelect.innerHTML = '<i class="bi bi-person-check me-1"></i>Selecionar';
-      btnSelect.addEventListener('click', e => { e.stopPropagation(); selectStudent(s.id); });
-
-      const btnView = document.createElement('button');
-      btnView.type = 'button';
-      btnView.className = 'btn btn-sm flex-fill';
-      btnView.style.cssText = 'background:var(--utfpr-yellow);color:var(--utfpr-black);border:none';
-      btnView.innerHTML = '<i class="bi bi-eye me-1"></i>Ver Perfil';
-      btnView.addEventListener('click', e => { e.stopPropagation(); selectAndGo(s.id); });
-
-      footer.appendChild(btnSelect);
-      footer.appendChild(btnView);
-      card.appendChild(body);
-      card.appendChild(footer);
-      card.addEventListener('click', () => selectAndGo(s.id));
       col.appendChild(card);
       grid.appendChild(col);
     });
-  }
 
-  // ── Pagination ────────────────────────────────────────────────
-  function renderPagination() {
-    const totalPages = Math.ceil(state.total / PAGE_SIZE) || 1;
-    paginationList.innerHTML = '';
-
-    const mkItem = (label, page, disabled, active) => {
-      const li = document.createElement('li');
-      li.className = `page-item${disabled ? ' disabled' : ''}${active ? ' active' : ''}`;
-      const a = document.createElement('a');
-      a.className = 'page-link';
-      a.href = '#';
-      a.innerHTML = label;
-      if (!disabled && !active) a.addEventListener('click', e => { e.preventDefault(); state.page = page; loadStudents(); window.scrollTo({top: 0, behavior: 'smooth'}); });
-      li.appendChild(a);
-      return li;
-    };
-
-    paginationList.appendChild(mkItem('<i class="bi bi-chevron-left"></i>', state.page - 1, state.page === 1, false));
-
-    const range = paginationRange(state.page, totalPages);
-    let prev = null;
-    range.forEach(p => {
-      if (prev !== null && p - prev > 1) {
-        const li = document.createElement('li');
-        li.className = 'page-item disabled';
-        li.innerHTML = '<span class="page-link">…</span>';
-        paginationList.appendChild(li);
-      }
-      paginationList.appendChild(mkItem(p, p, false, p === state.page));
-      prev = p;
-    });
-
-    paginationList.appendChild(mkItem('<i class="bi bi-chevron-right"></i>', state.page + 1, state.page === totalPages, false));
-  }
-
-  function paginationRange(cur, total) {
-    const delta = 2, pages = [];
-    for (let i = Math.max(1, cur - delta); i <= Math.min(total, cur + delta); i++) pages.push(i);
-    if (pages[0] > 1) pages.unshift(1);
-    if (pages[pages.length - 1] < total) pages.push(total);
-    return pages;
-  }
-
-  // ── Actions ───────────────────────────────────────────────────
-  function selectStudent(id) {
-    state.selectedId = id;
-    localStorage.setItem('selectedStudentId', id);
-    document.querySelectorAll('.student-card').forEach(c => {
-      const isMeNow = c.dataset.studentId === id;
-      c.classList.toggle('is-me', isMeNow);
-      const existing = c.querySelector('.me-badge');
-      if (isMeNow && !existing) {
-        const badge = document.createElement('span');
-        badge.className = 'badge me-badge';
-        badge.style.cssText = 'background:var(--utfpr-yellow);color:var(--utfpr-black)';
-        badge.textContent = 'Este é você';
-        c.querySelector('.d-flex.flex-column')?.appendChild(badge);
-      } else if (!isMeNow && existing) {
-        existing.remove();
-      }
+    grid.querySelectorAll('[data-view-egresso]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-view-egresso');
+        window.location.href = `/perfil/?target=${encodeURIComponent(targetId)}`;
+      });
     });
   }
-
-  function selectAndGo(id) {
-    localStorage.setItem('selectedStudentId', id);
-    const seed  = localStorage.getItem('studentSeed')  || '42';
-    const count = localStorage.getItem('studentCount') || '50';
-    window.location.href = `/perfil/?id=${encodeURIComponent(id)}&seed=${encodeURIComponent(seed)}&count=${encodeURIComponent(count)}`;
-  }
-
-  // ── Filter events ─────────────────────────────────────────────
-  statusGroup.addEventListener('click', e => {
-    const btn = e.target.closest('[data-value]');
-    if (!btn) return;
-    statusGroup.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.status = btn.dataset.value;
-    state.page   = 1;
-    loadStudents();
-  });
-
-  periodSel.addEventListener('change', () => {
-    state.period = periodSel.value;
-    state.page   = 1;
-    loadStudents();
-  });
 
   searchInput.addEventListener('input', () => {
     clearTimeout(state.debounceTimer);
     state.debounceTimer = setTimeout(() => {
       state.search = searchInput.value.trim();
-      state.page   = 1;
-      loadStudents();
+      loadEgressos();
     }, 400);
   });
 
-  // ── Helpers ───────────────────────────────────────────────────
+  filterJobTitle.addEventListener('change', () => {
+    state.jobTitle = filterJobTitle.value;
+    applyFiltersAndRender();
+  });
+
+  filterRemote.addEventListener('change', () => {
+    state.remote = filterRemote.value;
+    applyFiltersAndRender();
+  });
+
+  filterAvailability.addEventListener('change', () => {
+    state.availability = filterAvailability.value;
+    applyFiltersAndRender();
+  });
+
+  filterArea.addEventListener('change', () => {
+    state.area = filterArea.value;
+    applyFiltersAndRender();
+  });
+
   function setLoading(on) {
     spinner.classList.toggle('show', on);
     grid.style.opacity = on ? '0.35' : '1';
@@ -433,9 +566,8 @@
     return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
-  // ── Init ──────────────────────────────────────────────────────
   loadStats();
-  loadStudents();
+  loadEgressos();
 })();
 </script>
 {% endblock %}

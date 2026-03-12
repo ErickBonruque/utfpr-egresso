@@ -1,48 +1,227 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.http import require_GET
+import json
 import math
 import traceback
 
+from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.views.decorators.http import require_GET
+
+from core.models import Aluno
+from core.serializers import serializar_aluno, serializar_aluno_resumo, serializar_egresso_publico
+
+
+# ── Helpers ───────────────────────────────────────────────────────────────
+
+def _safe_int(value):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _get_aluno_from_request(request):
+    """Obtém o aluno visualizador persistido em sessão."""
+    session_viewer_id = request.session.get('viewer_id')
+    if session_viewer_id:
+        viewer = Aluno.objects.filter(pk=session_viewer_id).first()
+        if viewer:
+            return viewer
+
+    requested_id = _safe_int(request.GET.get('id'))
+    if requested_id:
+        viewer = Aluno.objects.filter(pk=requested_id).first()
+        if viewer:
+            request.session['viewer_id'] = viewer.pk
+            return viewer
+
+    viewer = Aluno.objects.filter(status='ativo').first() or Aluno.objects.first()
+    if viewer:
+        request.session['viewer_id'] = viewer.pk
+    return viewer
+
+
+def _aluno_context(request):
+    """Retorna contexto com dados do aluno serializado em JSON."""
+    aluno = _get_aluno_from_request(request)
+    if aluno:
+        aluno_data = serializar_aluno(aluno)
+    else:
+        aluno_data = None
+    return {
+        'aluno_json': json.dumps(aluno_data, ensure_ascii=False),
+        'aluno': aluno,
+    }
+
+
+# ── Views de páginas ─────────────────────────────────────────────────────
 
 def login(request):
     """View para a página de login"""
     return render(request, 'login.html')
 
 
+def home(request):
+    """View para a página inicial"""
+    return render(request, 'login.html')
+
+
 def dashboard(request):
     """View para o dashboard principal"""
-    return render(request, 'dashboard.html')
+    context = _aluno_context(request)
+    return render(request, 'dashboard.html', context)
 
 
 def egressos(request):
     """View para a página de egressos"""
-    return render(request, 'egressos.html')
+    # Stats gerais do curso
+    total_alunos = Aluno.objects.count()
+    ativos = Aluno.objects.filter(status='ativo').count()
+    formados = Aluno.objects.filter(status='formado').count()
+    evadidos = Aluno.objects.filter(status='evadido').count()
+    trancados = Aluno.objects.filter(status='trancado').count()
+    
+    stats = {
+        'totalStudents': total_alunos,
+        'activeStudents': ativos,
+        'graduatedStudents': formados,
+        'evadidosStudents': evadidos,
+        'trancadosStudents': trancados,
+        'campusCount': Aluno.objects.filter(status='formado').values('campus').distinct().count(),
+        'courseCount': Aluno.objects.filter(status='formado').values('curso').distinct().count(),
+    }
+    public_emails = Aluno.objects.filter(status='formado').exclude(email='').count()
+    stats['publicEmails'] = public_emails
+
+    context = _aluno_context(request)
+    context['stats_json'] = json.dumps(stats, ensure_ascii=False)
+    return render(request, 'egressos.html', context)
 
 
 def vagas(request):
     """View para a página de vagas"""
-    return render(request, 'vagas.html')
+    context = _aluno_context(request)
+    return render(request, 'vagas.html', context)
 
 
 def conquistas(request):
     """View para a página de conquistas"""
-    return render(request, 'conquistas.html')
+    context = _aluno_context(request)
+    return render(request, 'conquistas.html', context)
 
 
 def arvore(request):
     """View para a página da árvore de carreiras"""
-    return render(request, 'arvore.html')
+    context = _aluno_context(request)
+    return render(request, 'arvore.html', context)
 
 
 def perfil(request):
-    """View para a página de perfil de aluno"""
-    return render(request, 'perfil.html')
+    """View para perfil próprio ou perfil público de egresso (sem notas)."""
+    viewer = _get_aluno_from_request(request)
+    target_id = _safe_int(request.GET.get('target'))
+
+    aluno = viewer
+    is_public_profile = False
+
+    if target_id and viewer and target_id != viewer.pk:
+        target = Aluno.objects.filter(pk=target_id, status='formado').first()
+        if target:
+            aluno = target
+            is_public_profile = True
+
+    if aluno:
+        if is_public_profile:
+            aluno_data = serializar_egresso_publico(aluno)
+            aluno_data['subjects'] = []
+            aluno_data['currentPeriod'] = None
+            aluno_data['gpa'] = None
+            aluno_data['registration'] = None
+            aluno_data['totalCourseWorkload'] = None
+            aluno_data['completedWorkload'] = None
+        else:
+            aluno_data = serializar_aluno(aluno)
+    else:
+        aluno_data = None
+
+    context = {
+        'aluno_json': json.dumps(aluno_data, ensure_ascii=False),
+        'aluno': aluno,
+        'is_public_profile': is_public_profile,
+    }
+    return render(request, 'perfil.html', context)
 
 
-def home(request):
-    """View para a página inicial (redireciona para login)"""
-    return render(request, 'login.html')
+# ── API: Listar alunos (para página de egressos) ─────────────────────────
+
+@require_GET
+def api_alunos(request):
+    """Endpoint legado redirecionado para a vitrine pública de egressos."""
+    return api_egressos(request)
+
+
+@require_GET
+def api_aluno_detalhe(request, aluno_id):
+    """
+    GET /api/alunos/<id>/
+
+    Dados completos de um aluno incluindo disciplinas.
+    """
+    viewer = _get_aluno_from_request(request)
+    if not viewer or viewer.pk != aluno_id:
+        return JsonResponse({
+            'error': 'A visualização detalhada é permitida apenas para o próprio aluno.'
+        }, status=403)
+
+    aluno = get_object_or_404(Aluno, pk=aluno_id)
+    return JsonResponse(serializar_aluno(aluno), json_dumps_params={'ensure_ascii': False})
+
+
+@require_GET
+def api_egressos(request):
+    """Retorna uma vitrine curada de egressos com dados públicos para contato."""
+    qs = Aluno.objects.filter(status='formado').order_by('nome')
+
+    search = request.GET.get('search', '').strip()
+    campus = request.GET.get('campus', '').strip()
+
+    if search:
+        qs = qs.filter(nome__icontains=search)
+    if campus:
+        qs = qs.filter(campus=campus)
+
+    # Limite de exposição para a POC: não exibir todos os perfis ao mesmo tempo.
+    max_visible = 18
+    public_list = list(qs[:max_visible])
+    results = [serializar_egresso_publico(a) for a in public_list]
+
+    return JsonResponse({
+        'count': len(results),
+        'maxVisible': max_visible,
+        'results': results,
+    })
+
+
+@require_GET
+def api_alunos_ativos(request):
+    """Lista alunos ativos para seleção no modal de troca de aluno."""
+    qs = Aluno.objects.filter(status='ativo').order_by('nome')
+    search = request.GET.get('search', '').strip()
+
+    if search:
+        qs = qs.filter(nome__icontains=search)
+
+    results = [
+        {
+            'id': a.pk,
+            'name': a.nome,
+            'currentPeriod': a.periodo_atual,
+            'course': a.curso,
+            'campus': a.campus,
+        }
+        for a in qs
+    ]
+
+    return JsonResponse({'count': len(results), 'results': results})
 
 
 @require_GET
@@ -232,198 +411,3 @@ def _safe_number(value):
         return f
     except (ValueError, TypeError):
         return None
-
-
-# ---------------------------------------------------------------------------
-# Synthetic data API endpoints
-# ---------------------------------------------------------------------------
-
-def _parse_seed_count(request):
-    """Parse seed and count query params with safe defaults."""
-    try:
-        seed = int(request.GET.get('seed', 42))
-    except (ValueError, TypeError):
-        seed = 42
-    try:
-        count = min(int(request.GET.get('count', 50)), 500)
-        count = max(count, 1)
-    except (ValueError, TypeError):
-        count = 50
-    return seed, count
-
-
-@require_GET
-def api_synthetic_dashboard(request):
-    """
-    GET /api/synthetic/dashboard
-
-    Aggregate metrics for the synthetic student population.
-
-    Query params:
-        seed  (int, default 42)  – RNG seed for deterministic data
-        count (int, default 50)  – number of students to generate (max 500)
-    """
-    from .synthetic.generator import get_students
-
-    seed, count = _parse_seed_count(request)
-    students = get_students(count=count, seed=seed)
-
-    total = len(students)
-    active = sum(1 for s in students if s['status'] == 'ativo')
-    graduated = sum(1 for s in students if s['status'] == 'formado')
-    locked = sum(1 for s in students if s['status'] == 'trancado')
-    dropped = sum(1 for s in students if s['status'] == 'evadido')
-
-    gpas = [s['gpa'] for s in students if s['gpa'] > 0]
-    avg_gpa = round(sum(gpas) / len(gpas), 2) if gpas else 0.0
-
-    by_period: dict = {}
-    for s in students:
-        key = str(s['currentPeriod'])
-        by_period[key] = by_period.get(key, 0) + 1
-
-    total_course_h = students[0]['totalCourseWorkload'] if students else 0
-    avg_completion = round(
-        sum(s['completedWorkload'] for s in students) / (total * total_course_h) * 100, 1
-    ) if total and total_course_h else 0.0
-
-    return JsonResponse({
-        'totalStudents': total,
-        'activeStudents': active,
-        'graduatedStudents': graduated,
-        'lockedStudents': locked,
-        'droppedStudents': dropped,
-        'averageGpa': avg_gpa,
-        'averageCompletionPercent': avg_completion,
-        'studentsByPeriod': by_period,
-    })
-
-
-@require_GET
-def api_synthetic_students(request):
-    """
-    GET /api/synthetic/students
-
-    Paginated list of synthetic students (without subject detail).
-
-    Query params:
-        seed         (int, default 42)
-        count        (int, default 50, max 500)
-        status       filter by status: ativo | trancado | formado | evadido
-        currentPeriod filter by period number (1-8)
-        curriculumYear filter by admission year
-        page         (int, default 1)
-        page_size    (int, default 20, max 100)
-    """
-    from .synthetic.generator import get_students
-
-    seed, count = _parse_seed_count(request)
-    students = get_students(count=count, seed=seed)
-
-    # Filters
-    status_filter = request.GET.get('status', '').strip()
-    period_filter = request.GET.get('currentPeriod', '').strip()
-    year_filter = request.GET.get('curriculumYear', '').strip()
-
-    filtered = students
-    if status_filter:
-        filtered = [s for s in filtered if s['status'] == status_filter]
-    if period_filter:
-        try:
-            pf = int(period_filter)
-            filtered = [s for s in filtered if s['currentPeriod'] == pf]
-        except ValueError:
-            pass
-    if year_filter:
-        try:
-            yf = int(year_filter)
-            filtered = [s for s in filtered if s['curriculumYear'] == yf]
-        except ValueError:
-            pass
-
-    # Pagination
-    try:
-        page = max(1, int(request.GET.get('page', 1)))
-    except (ValueError, TypeError):
-        page = 1
-    try:
-        page_size = min(100, max(1, int(request.GET.get('page_size', 20))))
-    except (ValueError, TypeError):
-        page_size = 20
-
-    total_count = len(filtered)
-    total_pages = math.ceil(total_count / page_size) if total_count else 1
-    start = (page - 1) * page_size
-    end = start + page_size
-    page_items = filtered[start:end]
-
-    # Return summary (no subjects list)
-    results = [
-        {k: v for k, v in s.items() if k != 'subjects'}
-        for s in page_items
-    ]
-
-    return JsonResponse({
-        'count': total_count,
-        'page': page,
-        'pageSize': page_size,
-        'totalPages': total_pages,
-        'results': results,
-    })
-
-
-@require_GET
-def api_synthetic_student_detail(request, student_id):
-    """
-    GET /api/synthetic/students/<student_id>
-
-    Full student record including subject-progress list.
-
-    Query params:
-        seed  (int, default 42)
-        count (int, default 50)  – must match the list call to find the same id
-    """
-    from .synthetic.generator import get_students
-
-    seed, count = _parse_seed_count(request)
-    students = get_students(count=count, seed=seed)
-
-    student = next((s for s in students if s['id'] == student_id), None)
-    if student is None:
-        return JsonResponse({'error': 'Student not found.'}, status=404)
-
-    return JsonResponse(student)
-
-
-@require_GET
-def api_synthetic_curriculum(request):
-    """
-    GET /api/synthetic/curriculum
-
-    Full parsed curriculum catalog derived from matriz.txt.
-    """
-    from .synthetic.curriculum import get_curriculum
-
-    curriculum = get_curriculum()
-
-    mandatory = [s for s in curriculum if s['type'] == 'obrigatoria']
-    optativas = [s for s in curriculum if s['type'] == 'optativa']
-
-    total_mandatory_h = sum(s['workload'] for s in mandatory)
-
-    # Group optativas by group label
-    opt_groups: dict = {}
-    for s in optativas:
-        g = s.get('group') or 'other'
-        opt_groups.setdefault(g, []).append(s)
-
-    return JsonResponse({
-        'totalMandatoryWorkload': total_mandatory_h,
-        'requiredOptativasWorkload': 75,
-        'totalCourseWorkload': total_mandatory_h + 75,
-        'subjectCount': len(curriculum),
-        'mandatoryCount': len(mandatory),
-        'optativaCount': len(optativas),
-        'optativaGroups': list(opt_groups.keys()),
-        'subjects': curriculum,
-    })

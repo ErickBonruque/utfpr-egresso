@@ -8,34 +8,64 @@
 <style>
     .main-content { padding: 2rem 0; }
 
+    .hero-head {
+        background: linear-gradient(135deg, rgba(26, 26, 46, 0.96), rgba(45, 45, 68, 0.92));
+        color: #fff;
+        border-radius: 16px;
+        padding: 1.2rem 1.3rem;
+        margin-bottom: 1rem;
+        box-shadow: var(--card-shadow);
+    }
+
+    .hero-head p {
+        margin: 0.35rem 0 0;
+        font-size: 0.86rem;
+        color: rgba(255,255,255,0.8);
+    }
+
     .stats-bar {
         background: var(--stats-gradient);
         color: var(--stats-text);
         border-radius: 16px;
         padding: 1.25rem 1.5rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.2rem;
     }
     .stat-item { text-align: center; }
     .stat-value { font-size: 1.6rem; font-weight: 700; line-height: 1.2; }
     .stat-label { font-size: 0.78rem; opacity: 0.75; margin-top: 0.15rem; }
     .stat-next  { font-size: 0.95rem; font-weight: 600; }
 
-    .filter-btns { gap: 0.4rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
-    .filter-btns .btn { border-radius: 20px; font-size: 0.82rem; padding: 0.3rem 0.9rem; }
+    .filter-btns { gap: 0.45rem; flex-wrap: wrap; margin-bottom: 1.35rem; }
+    .filter-btns .btn {
+        border-radius: 999px;
+        font-size: 0.79rem;
+        padding: 0.35rem 0.86rem;
+        border-width: 1px;
+        font-weight: 600;
+    }
 
     .achievement-card {
         background: var(--bg-card);
         border-radius: 14px;
         box-shadow: var(--card-shadow);
-        padding: 1.2rem;
+        padding: 1rem;
         height: 100%;
-        transition: transform 0.25s, box-shadow 0.25s;
+        transition: transform 0.22s, box-shadow 0.22s, border-color 0.22s;
         position: relative;
         display: flex;
         flex-direction: column;
+        border: 1px solid transparent;
     }
-    .achievement-card.unlocked:hover { transform: translateY(-4px); box-shadow: var(--card-shadow-hover); }
-    .achievement-card.locked { opacity: 0.6; filter: grayscale(0.85); }
+    .achievement-card.unlocked:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--card-shadow-hover);
+        border-color: rgba(255, 199, 44, 0.4);
+    }
+    .achievement-card.locked {
+        opacity: 0.72;
+        filter: grayscale(0.4);
+        background: var(--bg-card-alt);
+    }
 
     .ach-icon {
         width: 50px; height: 50px;
@@ -71,9 +101,7 @@
         border-bottom: 1px solid var(--border-color);
     }
 
-    #loading-spinner { padding: 4rem 0; }
-    #error-msg       { display: none; }
-    #conquistas-content { display: none; }
+    #loading-spinner { display: none; }
 </style>
 
 <div class="container main-content">
@@ -87,7 +115,7 @@
     </div>
 
     <!-- Error -->
-    <div id="error-msg" class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+    <div id="error-msg" class="alert alert-danger align-items-center gap-2" role="alert" style="display:none">
         <i class="bi bi-exclamation-triangle-fill fs-5"></i>
         <span id="error-text">Não foi possível carregar os dados do aluno.</span>
     </div>
@@ -95,13 +123,14 @@
     <!-- Content -->
     <div id="conquistas-content">
 
-        <!-- Header -->
-        <div class="d-flex align-items-start flex-wrap gap-2 mb-3">
-            <div class="flex-grow-1">
-                <h1 class="h4 mb-0">Suas Conquistas</h1>
-                <p class="text-muted small mb-0" id="student-subtitle"></p>
+        <div class="hero-head">
+            <div class="d-flex align-items-start flex-wrap gap-2">
+                <div class="flex-grow-1">
+                    <h1 class="h4 mb-0">Suas Conquistas</h1>
+                    <p id="student-subtitle"></p>
+                </div>
+                <span id="status-badge" class="badge fs-6 px-3 py-2"></span>
             </div>
-            <span id="status-badge" class="badge fs-6 px-3 py-2"></span>
         </div>
 
         <!-- Stats bar -->
@@ -142,10 +171,6 @@
 
 <script>
 (function () {
-    const studentId = localStorage.getItem('selectedStudentId') || 'stu-001';
-    const seed      = localStorage.getItem('studentSeed')       || '42';
-    const count     = localStorage.getItem('studentCount')      || '50';
-
     const STATUS_CLASSES = {
         ativo:    'bg-success',
         trancado: 'bg-warning text-dark',
@@ -415,27 +440,14 @@
         renderGrid('todas');
     }
 
-    async function load() {
-        try {
-            const res = await fetch(
-                `/api/synthetic/students/${encodeURIComponent(studentId)}/` +
-                `?seed=${encodeURIComponent(seed)}&count=${encodeURIComponent(count)}`
-            );
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const student = await res.json();
-            populatePage(student);
-            document.getElementById('loading-spinner').style.display    = 'none';
-            document.getElementById('conquistas-content').style.display = 'block';
-        } catch (err) {
-            document.getElementById('loading-spinner').style.display = 'none';
-            document.getElementById('error-text').textContent =
-                'Não foi possível carregar os dados do aluno. Tente novamente mais tarde.';
-            document.getElementById('error-msg').style.display = 'flex';
-            console.error('Conquistas load error:', err);
-        }
-    }
+    const student = {{ aluno_json|safe }};
 
-    load();
+    if (!student) {
+        document.getElementById('error-text').textContent = 'Nenhum aluno encontrado no banco de dados.';
+        document.getElementById('error-msg').style.display = 'flex';
+    } else {
+        populatePage(student);
+    }
 })();
 </script>
 {% endblock %}

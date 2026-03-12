@@ -13,10 +13,8 @@ urlpatterns = [
 
     # API endpoints
     path('api/vagas/', views.api_buscar_vagas, name='api_buscar_vagas'),
-
-    # Synthetic data API
-    path('api/synthetic/dashboard/', views.api_synthetic_dashboard, name='api_synthetic_dashboard'),
-    path('api/synthetic/students/', views.api_synthetic_students, name='api_synthetic_students'),
-    path('api/synthetic/students/<str:student_id>/', views.api_synthetic_student_detail, name='api_synthetic_student_detail'),
-    path('api/synthetic/curriculum/', views.api_synthetic_curriculum, name='api_synthetic_curriculum'),
+    path('api/egressos/', views.api_egressos, name='api_egressos'),
+    path('api/alunos-ativos/', views.api_alunos_ativos, name='api_alunos_ativos'),
+    path('api/alunos/', views.api_alunos, name='api_alunos'),
+    path('api/alunos/<int:aluno_id>/', views.api_aluno_detalhe, name='api_aluno_detalhe'),
 ]

@@ -121,9 +121,9 @@
   .ach-badge.locked { opacity: .45; filter: grayscale(.5); }
 
   /* ── Loading / error ── */
-  #perfil-spinner { padding: 5rem 0; }
+  #perfil-spinner { display: none; }
   #perfil-error   { display: none; }
-  #perfil-content { display: none; }
+  #perfil-content { display: block; }
 
   /* ── Back bar ── */
   .back-bar {
@@ -144,12 +144,9 @@
   </div>
 
   <!-- Error -->
-  <div id="perfil-error" class="alert alert-danger d-flex align-items-center gap-2 mb-3">
+  <div id="perfil-error" class="alert alert-danger align-items-center gap-2 mb-3" style="display:none">
     <i class="bi bi-exclamation-triangle-fill fs-5"></i>
     <span id="perfil-error-msg">Erro ao carregar perfil.</span>
-    <button id="perfil-retry" class="btn btn-sm btn-outline-danger ms-auto">
-      <i class="bi bi-arrow-clockwise me-1"></i>Tentar novamente
-    </button>
   </div>
 
   <!-- Content -->
@@ -250,6 +247,7 @@
 <script>
 (function () {
   'use strict';
+  const isPublicProfile = {% if is_public_profile %}true{% else %}false{% endif %};
 
   // ── Career tracks definition (same as arvore) ─────────────────────────
   const TRACKS = [
@@ -306,7 +304,8 @@
   function $id(id) { return document.getElementById(id); }
   function esc(s)  { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
   function initials(name) {
-    const p = name.trim().split(/\s+/);
+    const base = String(name || 'Egresso UTFPR').trim();
+    const p = base.split(/\s+/);
     return p.length >= 2 ? (p[0][0] + p[p.length-1][0]).toUpperCase() : p[0].slice(0,2).toUpperCase();
   }
   function statusMap(s) {
@@ -318,30 +317,35 @@
 
   // ── Render hero ────────────────────────────────────────────────────────
   function renderHero(st) {
+    const safeName = st.name || 'Egresso UTFPR';
+    const safeCourse = st.course || 'Ciência da Computação';
+    const safeCampus = st.campus || 'UTFPR';
     const pct = st.totalCourseWorkload > 0
       ? Math.round(st.completedWorkload / st.totalCourseWorkload * 100) : 0;
 
-    $id('p-avatar').textContent = initials(st.name || st.id);
-    $id('p-name').textContent   = st.name || st.id;
-    $id('p-sub').textContent    = `${st.course} — ${st.campus}`;
-    $id('page-title').textContent = st.name.split(' ').slice(0,2).join(' ');
+    $id('p-avatar').textContent = initials(safeName);
+    $id('p-name').textContent   = safeName;
+    $id('p-sub').textContent    = `${safeCourse} — ${safeCampus}`;
+    $id('page-title').textContent = safeName.split(' ').slice(0,2).join(' ');
 
     const badge = $id('p-status-badge');
     badge.textContent = statusLabel(st.status);
     badge.className   = `badge fs-6 px-3 py-2 ${statusMap(st.status)}`;
 
     const chips = [
-      `<span class="stat-chip"><i class="bi bi-calendar3"></i> Turma <strong>${st.curriculumYear}</strong></span>`,
-      `<span class="stat-chip"><i class="bi bi-layers"></i> RA: <strong>${st.registration}</strong></span>`,
+      `<span class="stat-chip"><i class="bi bi-calendar3"></i> Turma <strong>${st.curriculumYear ?? '—'}</strong></span>`,
+      isPublicProfile
+        ? `<span class="stat-chip"><i class="bi bi-person-badge"></i> <strong>Egresso(a) UTFPR</strong></span>`
+        : `<span class="stat-chip"><i class="bi bi-layers"></i> RA: <strong>${st.registration}</strong></span>`,
       `<span class="stat-chip"><i class="bi bi-envelope"></i> <strong>${esc(st.email)}</strong></span>`,
     ];
     $id('p-chips').innerHTML = chips.join('');
 
     // Metrics
-    $id('m-gpa').textContent    = (st.gpa||0).toFixed(1);
-    $id('m-aprov').textContent  = (st.subjects||[]).filter(x=>x.status==='aprovada').length;
-    $id('m-pct').textContent    = pct + '%';
-    $id('m-period').textContent = st.status === 'formado' ? '✓' : `${st.currentPeriod}/8`;
+    $id('m-gpa').textContent    = st.gpa != null ? (st.gpa || 0).toFixed(1) : '—';
+    $id('m-aprov').textContent  = isPublicProfile ? '—' : (st.subjects||[]).filter(x=>x.status==='aprovada').length;
+    $id('m-pct').textContent    = isPublicProfile ? '—' : pct + '%';
+    $id('m-period').textContent = isPublicProfile ? '—' : (st.status === 'formado' ? '✓' : `${st.currentPeriod}/8`);
   }
 
   // ── Render career tracks ───────────────────────────────────────────────
@@ -383,6 +387,15 @@
 
   // ── Render periods ─────────────────────────────────────────────────────
   function renderPeriods(subjectLookup, student) {
+    if (isPublicProfile) {
+      $id('periods-container').innerHTML = `
+        <div class="alert alert-secondary mb-0" role="alert" style="border-radius: 12px;">
+          <i class="bi bi-shield-lock me-2"></i>
+          O histórico acadêmico detalhado é privado. Apenas o próprio aluno pode visualizar notas e disciplinas.
+        </div>`;
+      return;
+    }
+
     // Collect all subjects the student has (including optativas not in PERIODS)
     const extraCodes = [];
     const periodCodes = new Set(PERIODS.flatMap(p => p.codes));
@@ -461,53 +474,41 @@
   }
 
   // ── Load student data ──────────────────────────────────────────────────
-  async function loadPerfil() {
-    $id('perfil-error').style.display = 'none';
-    $id('perfil-spinner').style.display = 'block';
-    $id('perfil-content').style.display = 'none';
+  function loadPerfil() {
+    const student = {{ aluno_json|safe }};
 
-    const params = new URLSearchParams(window.location.search);
-    let studentId = params.get('id') || localStorage.getItem('selectedStudentId') || 'stu-001';
-    const seed  = params.get('seed')  || localStorage.getItem('studentSeed')  || '42';
-    const count = params.get('count') || localStorage.getItem('studentCount') || '50';
-
-    // Update localStorage if id came from URL
-    if (params.get('id')) {
-      localStorage.setItem('selectedStudentId', studentId);
+    if (!student) {
+      $id('perfil-error-msg').textContent = 'Nenhum aluno encontrado no banco de dados.';
+      $id('perfil-error').style.display = 'flex';
+      return;
     }
 
-    try {
-      const res = await fetch(
-        `/api/synthetic/students/${encodeURIComponent(studentId)}/?seed=${encodeURIComponent(seed)}&count=${encodeURIComponent(count)}`
-      );
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const student = await res.json();
+    const subjectLookup = {};
+    for (const s of (student.subjects || [])) {
+      subjectLookup[s.code] = s;
+    }
 
-      const subjectLookup = {};
-      for (const s of (student.subjects || [])) {
-        subjectLookup[s.code] = s;
-      }
+    if (!isPublicProfile) {
+      $id('link-arvore').href = `/arvore/?id=${student.id}`;
+      $id('link-dash').href   = `/dashboard/?id=${student.id}`;
+    } else {
+      $id('link-arvore').style.display = 'none';
+      $id('link-dash').style.display = 'none';
+      $id('page-title').textContent = 'Perfil Público de Egresso';
+    }
 
-      // Update navigation links to keep this student selected
-      $id('link-arvore').href = '/arvore/';
-      $id('link-dash').href   = '/dashboard/';
-
-      renderHero(student);
+    renderHero(student);
+    if (!isPublicProfile) {
       renderTracks(subjectLookup);
       renderAchievements(student.subjects || [], student);
-      renderPeriods(subjectLookup, student);
-
-      $id('perfil-spinner').style.display = 'none';
-      $id('perfil-content').style.display = 'block';
-    } catch (err) {
-      $id('perfil-spinner').style.display = 'none';
-      $id('perfil-error-msg').textContent = 'Não foi possível carregar o perfil: ' + err.message;
-      $id('perfil-error').style.display = 'flex';
-      console.error('Perfil load error:', err);
+    } else {
+      $id('tracks-container').innerHTML = '<p class="text-muted small mb-0">As trilhas acadêmicas são visíveis apenas para o próprio aluno.</p>';
+      $id('ach-container').innerHTML = '<span class="ach-badge"><i class="bi bi-envelope-paper"></i>Contato disponível por e-mail</span>';
     }
+    renderPeriods(subjectLookup, student);
+
   }
 
-  $id('perfil-retry').addEventListener('click', loadPerfil);
   loadPerfil();
 })();
 </script>

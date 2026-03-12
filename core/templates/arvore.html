@@ -274,9 +274,8 @@
   }
 
   /* ── Spinner / error ── */
-  #tree-spinner { padding: 4rem 0; }
+  #tree-spinner { display: none; }
   #tree-error   { display: none; }
-  #tree-content { display: none; }
 
   /* ── Responsive ── */
   @media (max-width:768px) {
@@ -307,12 +306,9 @@
   </div>
 
   <!-- Error -->
-  <div id="tree-error" class="alert alert-danger d-flex align-items-center gap-2 mb-3">
+  <div id="tree-error" class="alert alert-danger align-items-center gap-2 mb-3" style="display:none">
     <i class="bi bi-exclamation-triangle-fill fs-5"></i>
     <span id="tree-error-msg">Erro ao carregar dados.</span>
-    <button id="tree-retry-btn" class="btn btn-sm btn-outline-danger ms-auto">
-      <i class="bi bi-arrow-clockwise me-1"></i>Tentar novamente
-    </button>
   </div>
 
   <!-- Main content -->
@@ -650,9 +646,7 @@
     $id('stu-meta').textContent = `${period} • CR: ${(s.gpa||0).toFixed(1)} • ${pct}% concluído`;
 
     const perfilLink = $id('stu-perfil-link');
-    const seed = localStorage.getItem('studentSeed') || '42';
-    const count = localStorage.getItem('studentCount') || '50';
-    perfilLink.href = `/perfil/?id=${encodeURIComponent(s.id)}&seed=${seed}&count=${count}`;
+    perfilLink.href = `/perfil/?id=${encodeURIComponent(s.id)}`;
   }
 
   // ── Tooltip ────────────────────────────────────────────────────────────
@@ -719,44 +713,30 @@
   function closeTooltip() { $id('nodeTooltip').classList.remove('show'); }
 
   // ── Load data ──────────────────────────────────────────────────────────
-  async function loadData() {
+  function loadData() {
     hideError();
-    $id('tree-spinner').style.display = 'block';
-    $id('tree-content').style.display = 'none';
 
-    const studentId = localStorage.getItem('selectedStudentId') || 'stu-001';
-    const seed      = localStorage.getItem('studentSeed')       || '42';
-    const count     = localStorage.getItem('studentCount')      || '50';
+    studentData = {{ aluno_json|safe }};
 
-    try {
-      const res = await fetch(
-        `/api/synthetic/students/${encodeURIComponent(studentId)}/?seed=${encodeURIComponent(seed)}&count=${encodeURIComponent(count)}`
-      );
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      studentData = await res.json();
-
-      // Build lookup
-      studentLookup = {};
-      for (const s of (studentData.subjects || [])) {
-        studentLookup[s.code] = s;
-      }
-
-      calcProgress();
-      renderStudentBar();
-      renderTree();
-      renderCareerPaths();
-
-      $id('tree-spinner').style.display = 'none';
-      $id('tree-content').style.display = 'block';
-    } catch (err) {
-      $id('tree-spinner').style.display = 'none';
-      showError('Não foi possível carregar os dados: ' + err.message);
-      console.error('Arvore load error:', err);
+    if (!studentData) {
+      showError('Nenhum aluno encontrado no banco de dados.');
+      return;
     }
+
+    // Build lookup
+    studentLookup = {};
+    for (const s of (studentData.subjects || [])) {
+      studentLookup[s.code] = s;
+    }
+
+    calcProgress();
+    renderStudentBar();
+    renderTree();
+    renderCareerPaths();
+
   }
 
   // ── Events ─────────────────────────────────────────────────────────────
-  $id('tree-retry-btn').addEventListener('click', loadData);
   $id('tooltip-close-btn').addEventListener('click', closeTooltip);
   document.addEventListener('click', e => {
     if (!e.target.closest('.career-node') && !e.target.closest('.node-tooltip')) {

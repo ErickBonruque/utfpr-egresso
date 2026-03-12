@@ -895,12 +895,12 @@
             <div class="collapse navbar-collapse" id="navbarGlobal">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item">
-                        <a class="nav-link {% block nav_dashboard %}{% endblock %}" href="{% url 'dashboard' %}">
+                        <a class="nav-link {% block nav_dashboard %}{% endblock %}" href="{% url 'dashboard' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
                             <i class="bi bi-grid-fill me-1"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% block nav_arvore %}{% endblock %}" href="{% url 'arvore' %}">
+                        <a class="nav-link {% block nav_arvore %}{% endblock %}" href="{% url 'arvore' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
                             <i class="bi bi-tree me-1"></i> Árvore
                         </a>
                     </li>
@@ -910,7 +910,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% block nav_conquistas %}{% endblock %}" href="{% url 'conquistas' %}">
+                        <a class="nav-link {% block nav_conquistas %}{% endblock %}" href="{% url 'conquistas' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
                             <i class="bi bi-trophy me-1"></i> Conquistas
                         </a>
                     </li>
@@ -934,12 +934,12 @@
                                 <div class="pd-name" id="navDropdownName">Carregando...</div>
                                 <div class="pd-detail" id="navDropdownDetail"></div>
                             </div>
-                            <a class="profile-dropdown-item" href="{% url 'dashboard' %}">
+                            <a class="profile-dropdown-item" href="{% url 'dashboard' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
                                 <i class="bi bi-person"></i> Meu Dashboard
                             </a>
-                            <a class="profile-dropdown-item" href="{% url 'egressos' %}">
+                            <button type="button" class="profile-dropdown-item" id="openStudentSwitcher" style="width:100%; text-align:left; border:none;">
                                 <i class="bi bi-people"></i> Trocar Aluno
-                            </a>
+                            </button>
                             <div class="profile-dropdown-divider"></div>
                             <div class="theme-toggle-row">
                                 <span><i class="bi bi-moon-stars"></i> Tema Escuro</span>
@@ -958,6 +958,26 @@
             </div>
         </div>
     </nav>
+
+    <!-- Modal: Trocar Aluno -->
+    <div class="modal fade" id="studentSwitcherModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-people-fill me-2"></i>Selecionar Aluno Ativo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="student-search-input" class="form-label small fw-semibold">Buscar aluno</label>
+                        <input type="text" id="student-search-input" class="form-control" placeholder="Digite o nome do aluno...">
+                    </div>
+                    <div id="student-list" class="list-group"></div>
+                    <div id="student-list-empty" class="text-muted small mt-3" style="display:none;">Nenhum aluno ativo encontrado.</div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     {% block content %}
     {% endblock %}
@@ -985,12 +1005,16 @@
         })();
 
         // ============================================
-        // NAVBAR: POPULATE STUDENT INFO FROM API
+        // NAVBAR: POPULATE STUDENT INFO FROM DB
         // ============================================
         (function () {
-            const studentId = localStorage.getItem('selectedStudentId') || 'stu-001';
-            const seed = localStorage.getItem('studentSeed') || '42';
-            const count = localStorage.getItem('studentCount') || '50';
+            {% if aluno_json %}
+            const data = {{ aluno_json|safe }};
+            {% else %}
+            const data = null;
+            {% endif %}
+
+            if (!data) return;
 
             function initials(name) {
                 const parts = name.trim().split(/\s+/);
@@ -1002,32 +1026,105 @@
                 return { ativo: 'Ativo', formado: 'Formado', trancado: 'Trancado', evadido: 'Evadido' }[s] || s;
             }
 
-            fetch(`/api/synthetic/students/${studentId}/?seed=${seed}&count=${count}`)
-                .then(r => r.ok ? r.json() : null)
-                .then(data => {
-                    if (!data) return;
-                    const name = data.name || 'Aluno';
-                    const period = data.status === 'formado' ? 'Formado' : `${data.currentPeriod}º Período`;
-                    const gpa = data.gpa != null ? `CR: ${data.gpa.toFixed(1)}` : '';
-                    const pct = data.totalCourseWorkload
-                        ? Math.round(data.completedWorkload / data.totalCourseWorkload * 100) : 0;
-                    const detail = [period, gpa, `${pct}%`].filter(Boolean).join(' • ');
+            const name = data.name || 'Aluno';
+            const period = data.status === 'formado' ? 'Formado' : `${data.currentPeriod}º Período`;
+            const gpa = data.gpa != null ? `CR: ${data.gpa.toFixed(1)}` : '';
+            const pct = data.totalCourseWorkload
+                ? Math.round(data.completedWorkload / data.totalCourseWorkload * 100) : 0;
+            const detail = [period, gpa, `${pct}%`].filter(Boolean).join(' • ');
 
-                    const badge = document.getElementById('navUserBadge');
-                    const uname = document.getElementById('navUserName');
-                    const udetail = document.getElementById('navUserDetail');
-                    const avatar = document.getElementById('userAvatarBtn');
-                    const dname = document.getElementById('navDropdownName');
-                    const ddetail = document.getElementById('navDropdownDetail');
+            const badge = document.getElementById('navUserBadge');
+            const uname = document.getElementById('navUserName');
+            const udetail = document.getElementById('navUserDetail');
+            const avatar = document.getElementById('userAvatarBtn');
+            const dname = document.getElementById('navDropdownName');
+            const ddetail = document.getElementById('navDropdownDetail');
 
-                    if (badge) badge.textContent = `${statusLabel(data.status)} • ${pct}% concluído`;
-                    if (uname) uname.textContent = name;
-                    if (udetail) udetail.textContent = detail;
-                    if (avatar) avatar.textContent = initials(name);
-                    if (dname) dname.textContent = name;
-                    if (ddetail) ddetail.textContent = detail;
-                })
-                .catch(() => {});
+            if (badge) badge.textContent = `${statusLabel(data.status)} • ${pct}% concluído`;
+            if (uname) uname.textContent = name;
+            if (udetail) udetail.textContent = detail;
+            if (avatar) avatar.textContent = initials(name);
+            if (dname) dname.textContent = name;
+            if (ddetail) ddetail.textContent = detail;
+        })();
+
+        // ============================================
+        // TROCAR ALUNO (MODAL COM ALUNOS ATIVOS)
+        // ============================================
+        (function () {
+            const trigger = document.getElementById('openStudentSwitcher');
+            const modalEl = document.getElementById('studentSwitcherModal');
+            const searchInput = document.getElementById('student-search-input');
+            const listEl = document.getElementById('student-list');
+            const emptyEl = document.getElementById('student-list-empty');
+            const dropdown = document.getElementById('profileDropdown');
+            if (!trigger || !modalEl || !searchInput || !listEl || !emptyEl) return;
+
+            const modal = new bootstrap.Modal(modalEl);
+            let debounce = null;
+
+            function esc(text) {
+                const d = document.createElement('div');
+                d.textContent = text || '';
+                return d.innerHTML;
+            }
+
+            function goToStudent(studentId) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('id', studentId);
+                url.searchParams.delete('target');
+                window.location.href = url.pathname + url.search;
+            }
+
+            function renderList(students) {
+                listEl.innerHTML = '';
+                if (!students.length) {
+                    emptyEl.style.display = 'block';
+                    return;
+                }
+                emptyEl.style.display = 'none';
+
+                students.forEach(student => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'list-group-item list-group-item-action d-flex justify-content-between align-items-center';
+                    btn.innerHTML = `
+                        <span>
+                            <strong>${esc(student.name)}</strong>
+                            <small class="d-block text-muted">${esc(student.course || '')} • ${esc(student.currentPeriod)}º período</small>
+                        </span>
+                        <i class="bi bi-arrow-right"></i>
+                    `;
+                    btn.addEventListener('click', () => goToStudent(student.id));
+                    listEl.appendChild(btn);
+                });
+            }
+
+            async function loadStudents(query) {
+                try {
+                    const qs = new URLSearchParams();
+                    if (query) qs.set('search', query);
+                    const res = await fetch(`/api/alunos-ativos/?${qs.toString()}`);
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    const data = await res.json();
+                    renderList(data.results || []);
+                } catch (_) {
+                    renderList([]);
+                }
+            }
+
+            trigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                dropdown.classList.remove('show');
+                searchInput.value = '';
+                modal.show();
+                loadStudents('');
+            });
+
+            searchInput.addEventListener('input', () => {
+                clearTimeout(debounce);
+                debounce = setTimeout(() => loadStudents(searchInput.value.trim()), 250);
+            });
         })();
 
         // ============================================

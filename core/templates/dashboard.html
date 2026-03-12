@@ -23,11 +23,33 @@
         color: white;
     }
     .progress-card .progress {
-        height: 10px;
-        border-radius: 10px;
-        background-color: rgba(255,255,255,0.3);
+        height: 12px;
+        border-radius: 999px;
+        background-color: rgba(255,255,255,0.25);
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
     }
-    .progress-card .progress-bar { border-radius: 10px; background-color: #4CAF50; }
+    .progress-card .progress-bar {
+        border-radius: 999px;
+        background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+        box-shadow: 0 2px 6px rgba(76, 175, 80, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    .progress-card .progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
 
     .achievement-card { text-align: center; padding: 1.2rem 0.5rem; transition: all 0.3s; }
     .achievement-card:hover { transform: scale(1.05); }
@@ -36,8 +58,29 @@
     .achievement-icon.locked { color: var(--text-muted); opacity: 0.4; }
 
     .branch-progress { margin-bottom: 1rem; }
-    .branch-progress .progress { height: 8px; background-color: var(--border-color); border-radius: 8px; }
-    .branch-progress .progress-bar { background: linear-gradient(90deg, #4CAF50, #45a049); border-radius: 8px; }
+    .branch-progress .progress {
+        height: 10px;
+        background-color: var(--border-color);
+        border-radius: 999px;
+        overflow: hidden;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .branch-progress .progress-bar {
+        background: linear-gradient(90deg, #4CAF50, #45a049);
+        border-radius: 999px;
+        box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+        position: relative;
+    }
+    .branch-progress .progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+        animation: shimmer 2s infinite;
+    }
 
     .section-title {
         font-size: 1.3rem;
@@ -57,9 +100,94 @@
         border-radius: 3px;
     }
 
-    #loading-spinner { padding: 4rem 0; }
-    #error-msg { display: none; }
-    #dashboard-content { display: none; }
+    .subjects-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .subject-pill {
+        font-size: 0.78rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: 0.35rem 0.72rem;
+        border: 1px solid transparent;
+        letter-spacing: 0.01em;
+    }
+
+    .subject-pill.approved {
+        color: #1f6f52;
+        background: rgba(34, 139, 96, 0.12);
+        border-color: rgba(34, 139, 96, 0.28);
+    }
+
+    .subject-pill.ongoing {
+        color: #1f5e93;
+        background: rgba(59, 130, 246, 0.11);
+        border-color: rgba(59, 130, 246, 0.28);
+    }
+
+    .subject-pill.failed {
+        color: #8f3d48;
+        background: rgba(220, 53, 69, 0.12);
+        border-color: rgba(220, 53, 69, 0.24);
+    }
+
+    .subject-pill.opt-specific {
+        color: #8a5a00;
+        background: rgba(245, 158, 11, 0.14);
+        border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .subject-pill.opt-human {
+        color: #5b3ea1;
+        background: rgba(139, 92, 246, 0.14);
+        border-color: rgba(139, 92, 246, 0.28);
+    }
+
+    .subject-pill.missing {
+        color: #9a3412;
+        background: rgba(249, 115, 22, 0.13);
+        border-color: rgba(249, 115, 22, 0.28);
+    }
+
+    [data-theme="dark"] .subject-pill.approved {
+        color: #7fd8b0;
+        background: rgba(16, 185, 129, 0.18);
+        border-color: rgba(16, 185, 129, 0.34);
+    }
+
+    [data-theme="dark"] .subject-pill.ongoing {
+        color: #90c5ff;
+        background: rgba(59, 130, 246, 0.2);
+        border-color: rgba(59, 130, 246, 0.35);
+    }
+
+    [data-theme="dark"] .subject-pill.failed {
+        color: #ff9ea9;
+        background: rgba(239, 68, 68, 0.18);
+        border-color: rgba(239, 68, 68, 0.32);
+    }
+
+    [data-theme="dark"] .subject-pill.opt-specific {
+        color: #facc15;
+        background: rgba(245, 158, 11, 0.2);
+        border-color: rgba(245, 158, 11, 0.35);
+    }
+
+    [data-theme="dark"] .subject-pill.opt-human {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.2);
+        border-color: rgba(139, 92, 246, 0.35);
+    }
+
+    [data-theme="dark"] .subject-pill.missing {
+        color: #fdba74;
+        background: rgba(249, 115, 22, 0.2);
+        border-color: rgba(249, 115, 22, 0.35);
+    }
+
+    #loading-spinner { display: none; }
 </style>
 
 <div class="container main-content">
@@ -73,7 +201,7 @@
     </div>
 
     <!-- Error -->
-    <div id="error-msg" class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+    <div id="error-msg" class="alert alert-danger align-items-center gap-2" role="alert" style="display:none">
         <i class="bi bi-exclamation-triangle-fill fs-5"></i>
         <span id="error-text">Não foi possível carregar os dados do aluno.</span>
     </div>
@@ -134,37 +262,52 @@
             </div>
         </div>
 
-        <!-- Approved Subjects -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title section-title" id="approved-title">Disciplinas Aprovadas</h5>
-                        <div class="d-flex flex-wrap gap-2" id="approved-badges"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- In-Progress Subjects -->
         <div class="row mb-4" id="ongoing-section">
             <div class="col-12">
                 <div class="card">
                     <div class="card-body">
                         <h5 class="card-title section-title" id="ongoing-title">Disciplinas em Andamento</h5>
-                        <div class="d-flex flex-wrap gap-2" id="ongoing-badges"></div>
+                        <div class="subjects-cloud" id="ongoing-badges"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Failed Subjects -->
-        <div class="row mb-4" id="failed-section" style="display:none">
-            <div class="col-12">
+        <!-- Subject Categories -->
+        <div class="row mb-4 g-3">
+            <div class="col-12 col-lg-6">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title section-title" id="failed-title">Disciplinas Reprovadas</h5>
-                        <div class="d-flex flex-wrap gap-2" id="failed-badges"></div>
+                        <h5 class="card-title section-title" id="mandatory-done-title">Obrigatórias Feitas</h5>
+                        <div class="subjects-cloud" id="mandatory-done-badges"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title section-title" id="opt-specific-title">Optativas Específicas Feitas</h5>
+                        <div class="subjects-cloud" id="opt-specific-badges"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mb-4 g-3">
+            <div class="col-12 col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title section-title" id="opt-human-title">Optativas Humanísticas Feitas</h5>
+                        <div class="subjects-cloud" id="opt-human-badges"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title section-title" id="mandatory-missing-title">Obrigatórias Faltantes</h5>
+                        <div class="subjects-cloud" id="mandatory-missing-badges"></div>
                     </div>
                 </div>
             </div>
@@ -175,9 +318,14 @@
 
 <script>
 (function () {
-    const studentId = localStorage.getItem('selectedStudentId') || 'stu-001';
-    const seed      = localStorage.getItem('studentSeed')       || '42';
-    const count     = localStorage.getItem('studentCount')      || '50';
+    const student = {{ aluno_json|safe }};
+
+    if (!student) {
+        document.getElementById('loading-spinner').style.display = 'none';
+        document.getElementById('error-text').textContent = 'Nenhum aluno encontrado no banco de dados.';
+        document.getElementById('error-msg').style.display = 'flex';
+        return;
+    }
 
     const ACHIEVEMENTS = [
         { id: 'primeiro_semestre', label: 'Primeiro Semestre', desc: 'Aprovado em alguma disciplina',     icon: 'bi-award',         check: s => s.subjects.some(x => x.status === 'aprovada') },
@@ -240,73 +388,80 @@
         }).join('');
     }
 
-    function renderSubjectBadges(subjects, containerId, statusFilter, bgClass) {
+    function renderSubjectBadges(subjects, containerId, predicate, styleClass, emptyText = 'Nenhuma disciplina.') {
         const el = document.getElementById(containerId);
-        const filtered = subjects.filter(x => x.status === statusFilter);
+        const filtered = subjects.filter(predicate);
         el.innerHTML = filtered.length
-            ? filtered.map(x => `<span class="badge ${bgClass} p-2" title="${x.code}">${x.name}</span>`).join('')
-            : `<span class="text-muted small">Nenhuma disciplina.</span>`;
+            ? filtered.map(x => `<span class="subject-pill ${styleClass}" title="${x.code}">${x.name}</span>`).join('')
+            : `<span class="text-muted small">${emptyText}</span>`;
         return filtered.length;
     }
 
-    function populate(student) {
-        // Welcome
-        document.getElementById('welcome-heading').textContent = `Bem-vindo de volta, ${student.name}!`;
+    // Welcome
+    document.getElementById('welcome-heading').textContent = `Bem-vindo de volta, ${student.name}!`;
 
-        // Progress card
-        const statusBadge = document.getElementById('status-badge');
-        statusBadge.textContent = student.status;
-        statusBadge.className   = `badge fs-6 px-3 py-2 ${statusMap[student.status] || 'bg-secondary'}`;
-        document.getElementById('period-text').textContent = `Período ${student.currentPeriod}/8`;
-        document.getElementById('gpa-text').textContent    = `CR: ${student.gpa.toFixed(1)}`;
-        document.getElementById('campus-text').textContent = `${student.course} — ${student.campus}`;
+    // Progress card
+    const statusBadge = document.getElementById('status-badge');
+    statusBadge.textContent = student.status;
+    statusBadge.className   = `badge fs-6 px-3 py-2 ${statusMap[student.status] || 'bg-secondary'}`;
+    document.getElementById('period-text').textContent = `Período ${student.currentPeriod}/8`;
+    document.getElementById('gpa-text').textContent    = `CR: ${student.gpa.toFixed(1)}`;
+    document.getElementById('campus-text').textContent = `${student.course} — ${student.campus}`;
 
-            const pct = student.totalCourseWorkload > 0
-            ? Math.round(student.completedWorkload / student.totalCourseWorkload * 100) : 0;
-        document.getElementById('workload-text').textContent = `${student.completedWorkload} / ${student.totalCourseWorkload} h concluídas`;
-        document.getElementById('completion-pct').textContent = `${pct}%`;
-        document.getElementById('completion-bar').style.width = `${pct}%`;
+    const pct = student.totalCourseWorkload > 0
+        ? Math.round(student.completedWorkload / student.totalCourseWorkload * 100) : 0;
+    document.getElementById('workload-text').textContent = `${student.completedWorkload} / ${student.totalCourseWorkload} h concluídas`;
+    document.getElementById('completion-pct').textContent = `${pct}%`;
+    document.getElementById('completion-bar').style.width = `${pct}%`;
 
-        // Achievements
-        renderAchievements(student);
+    // Achievements
+    renderAchievements(student);
 
-        // Branches
-        renderBranches(student);
+    // Branches
+    renderBranches(student);
 
-        // Approved subjects
-        const approvedCount = renderSubjectBadges(student.subjects, 'approved-badges', 'aprovada', 'bg-success');
-        document.getElementById('approved-title').textContent = `Disciplinas Aprovadas (${approvedCount})`;
+    // Ongoing subjects (first)
+    const ongoingCount = renderSubjectBadges(student.subjects, 'ongoing-badges', 'cursando', 'ongoing');
+    document.getElementById('ongoing-title').textContent = `Disciplinas em Andamento (${ongoingCount})`;
+    if (!ongoingCount) document.getElementById('ongoing-section').style.display = 'none';
 
-        // Ongoing subjects
-        const ongoingCount = renderSubjectBadges(student.subjects, 'ongoing-badges', 'cursando', 'bg-primary');
-        document.getElementById('ongoing-title').textContent = `Disciplinas em Andamento (${ongoingCount})`;
-        if (!ongoingCount) document.getElementById('ongoing-section').style.display = 'none';
+    // Categoria 1: obrigatórias feitas
+    const mandatoryDoneCount = renderSubjectBadges(
+        student.subjects,
+        'mandatory-done-badges',
+        s => s.type === 'obrigatoria' && s.status === 'aprovada',
+        'approved'
+    );
+    document.getElementById('mandatory-done-title').textContent = `Obrigatórias Feitas (${mandatoryDoneCount})`;
 
-        // Failed subjects
-        const failedCount = renderSubjectBadges(student.subjects, 'failed-badges', 'reprovada', 'bg-danger');
-        document.getElementById('failed-title').textContent = `Disciplinas Reprovadas (${failedCount})`;
-        if (failedCount > 0) document.getElementById('failed-section').style.display = 'block';
-    }
+    // Categoria 2: optativas específicas feitas (grupo [412])
+    const optSpecificCount = renderSubjectBadges(
+        student.subjects,
+        'opt-specific-badges',
+        s => s.group === '[412]' && s.status === 'aprovada',
+        'opt-specific'
+    );
+    document.getElementById('opt-specific-title').textContent = `Optativas Específicas Feitas (${optSpecificCount})`;
 
-    async function loadDashboard() {
-        try {
-            const res = await fetch(`/api/synthetic/students/${encodeURIComponent(studentId)}/?seed=${encodeURIComponent(seed)}&count=${encodeURIComponent(count)}`);
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const student = await res.json();
+    // Categoria 3: optativas humanísticas feitas (grupo [413])
+    const optHumanCount = renderSubjectBadges(
+        student.subjects,
+        'opt-human-badges',
+        s => s.group === '[413]' && s.status === 'aprovada',
+        'opt-human'
+    );
+    document.getElementById('opt-human-title').textContent = `Optativas Humanísticas Feitas (${optHumanCount})`;
 
-            populate(student);
+    // Categoria 4: obrigatórias faltantes
+    const mandatoryMissingCount = renderSubjectBadges(
+        student.subjects,
+        'mandatory-missing-badges',
+        s => s.type === 'obrigatoria' && s.status !== 'aprovada',
+        'missing',
+        'Nenhuma pendência nas obrigatórias.'
+    );
+    document.getElementById('mandatory-missing-title').textContent = `Obrigatórias Faltantes (${mandatoryMissingCount})`;
 
-            document.getElementById('loading-spinner').style.display  = 'none';
-            document.getElementById('dashboard-content').style.display = 'block';
-        } catch (err) {
-            document.getElementById('loading-spinner').style.display = 'none';
-            document.getElementById('error-text').textContent = 'Não foi possível carregar os dados do aluno. Tente novamente mais tarde.';
-            console.error('Dashboard load error:', err);
-            document.getElementById('error-msg').style.display = 'flex';
-        }
-    }
-
-    loadDashboard();
 })();
 </script>
 {% endblock %}
