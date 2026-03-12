@@ -12,4 +12,10 @@ urlpatterns = [
 
     # API endpoints
     path('api/vagas/', views.api_buscar_vagas, name='api_buscar_vagas'),
+
+    # Synthetic data API
+    path('api/synthetic/dashboard/', views.api_synthetic_dashboard, name='api_synthetic_dashboard'),
+    path('api/synthetic/students/', views.api_synthetic_students, name='api_synthetic_students'),
+    path('api/synthetic/students/<str:student_id>/', views.api_synthetic_student_detail, name='api_synthetic_student_detail'),
+    path('api/synthetic/curriculum/', views.api_synthetic_curriculum, name='api_synthetic_curriculum'),
 ]

@@ -88,3 +88,40 @@ utfpr_egresso/
 - O sistema está configurado para português do Brasil (pt-br)
 - Fuso horário configurado para America/Sao_Paulo
 - Layout responsivo para dispositivos móveis
+
+## API de Dados Sintéticos
+
+O sistema inclui uma camada de geração de dados sintéticos determinística que simula uma turma completa da graduação em Ciência da Computação, usando a **matriz curricular real** (`matriz.txt`) como fonte de disciplinas.
+
+### Módulo `core/synthetic/`
+
+| Arquivo | Responsabilidade |
+|---------|-----------------|
+| `curriculum.py` | Faz o parse de `matriz.txt` e retorna o catálogo de disciplinas |
+| `names.py` | Listas de nomes PT-BR para geração realista de estudantes |
+| `generator.py` | Gera estudantes sintéticos com regras de negócio coerentes |
+
+### Endpoints JSON
+
+Todos os endpoints aceitam os parâmetros opcionais `seed` (int, padrão `42`) e `count` (int, padrão `50`, máx `500`) para controle do gerador.
+
+#### `GET /api/synthetic/dashboard/`
+Métricas agregadas: totalStudents, activeStudents, graduatedStudents, lockedStudents, droppedStudents, averageGpa, averageCompletionPercent, studentsByPeriod.
+
+#### `GET /api/synthetic/students/`
+Lista paginada. Parâmetros: `status`, `currentPeriod`, `curriculumYear`, `page`, `page_size`.
+
+#### `GET /api/synthetic/students/<id>/`
+Detalhes completos com lista `subjects` (aprovada / cursando / reprovada / nao_iniciada). Retorna 404 se não encontrado.
+
+#### `GET /api/synthetic/curriculum/`
+Catálogo completo de disciplinas de `matriz.txt` com workloads e grupos de optativas.
+
+### Regras de Negócio
+
+| Status | Comportamento |
+|--------|--------------|
+| `ativo` | Períodos passados aprovados (85%) / reprovados (15%). Período atual: cursando. Futuros: nao_iniciada. |
+| `trancado` | Períodos 1..P-1 concluídos sem cursando. P+ nao_iniciada. currentSemesterWorkload = 0. |
+| `evadido` | Período 1..P-1 com maior taxa de reprovação (35%). P+: nao_iniciada. |
+| `formado` | Todas as obrigatórias aprovadas + optativas ≥ 75h. missingWorkload = 0. |
