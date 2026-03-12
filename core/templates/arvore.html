@@ -1,897 +1,405 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Árvore de Carreiras - Sistema CEA{% endblock %}
+{% block title %}Grade Curricular - Sistema CEA{% endblock %}
 {% block nav_arvore %}active{% endblock %}
 
 {% block content %}
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-
-    body {
-        font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
-    /* Variável local da página */
-    :root {
-        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    /* ============================================
-       HEADER
-       ============================================ */
-    .page-header {
-        padding: 2rem 0 1rem;
-    }
-
-    .page-header h1 {
-        font-weight: 800;
-        font-size: 1.8rem;
-        color: var(--primary-color);
-        letter-spacing: -0.5px;
-    }
-
-    /* ============================================
-       ÁRVORE - CONTAINER PRINCIPAL
-       ============================================ */
-    .tree-visual-container {
-        background: linear-gradient(180deg, #e8ecf4 0%, #d5dce8 40%, #c9b99a 85%, #a08060 100%);
-        border-radius: 20px;
-        padding: 3rem 2rem 2rem;
-        position: relative;
-        overflow: hidden;
-        min-height: 520px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    /* Decoração de fundo */
-    .tree-visual-container::before {
-        content: '';
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 80px;
-        background: linear-gradient(to top, rgba(101, 67, 33, 0.3), transparent);
-    }
-
-    /* ============================================
-       ÁRVORE - ESTRUTURA EM GRID
-       ============================================ */
-    .tree-levels {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0;
-        width: 100%;
-        max-width: 900px;
-        position: relative;
-        z-index: 2;
-    }
-
-    /* Nível da árvore - cada fileira */
-    .tree-level {
-        display: flex;
-        justify-content: center;
-        gap: 1.5rem;
-        width: 100%;
-        position: relative;
-    }
-
-    /* Conectores verticais entre níveis */
-    .tree-connector {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 50px;
-        position: relative;
-    }
-
-    .tree-connector-line {
-        width: 4px;
-        height: 100%;
-        background: linear-gradient(to bottom, #8B6914, #6B4F10);
-        border-radius: 2px;
-        position: relative;
-    }
-
-    /* Ramificações horizontais */
-    .tree-branch-lines {
-        position: relative;
-        height: 40px;
-        width: 100%;
-        max-width: 700px;
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-    }
-
-    .tree-branch-lines::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 4px;
-        height: 20px;
-        background: linear-gradient(to bottom, #8B6914, #6B4F10);
-        border-radius: 2px;
-    }
-
-    .tree-branch-lines .h-line {
-        position: absolute;
-        top: 20px;
-        height: 4px;
-        background: linear-gradient(to right, #8B6914, #6B4F10);
-        border-radius: 2px;
-    }
-
-    /* Branch para 2 elementos */
-    .tree-branch-lines.branch-2 .h-line {
-        width: 50%;
-        left: 25%;
-    }
-
-    .tree-branch-lines.branch-2 .v-left,
-    .tree-branch-lines.branch-2 .v-right {
-        position: absolute;
-        width: 4px;
-        height: 16px;
-        top: 24px;
-        background: linear-gradient(to bottom, #8B6914, #6B4F10);
-        border-radius: 2px;
-    }
-
-    .tree-branch-lines.branch-2 .v-left {
-        left: 25%;
-    }
-
-    .tree-branch-lines.branch-2 .v-right {
-        right: 25%;
-    }
-
-    /* Branch para 3 elementos */
-    .tree-branch-lines.branch-3 .h-line {
-        width: 66%;
-        left: 17%;
-    }
-
-    .tree-branch-lines.branch-3 .v-left,
-    .tree-branch-lines.branch-3 .v-center,
-    .tree-branch-lines.branch-3 .v-right {
-        position: absolute;
-        width: 4px;
-        height: 16px;
-        top: 24px;
-        background: linear-gradient(to bottom, #8B6914, #6B4F10);
-        border-radius: 2px;
-    }
-
-    .tree-branch-lines.branch-3 .v-left {
-        left: 17%;
-    }
-
-    .tree-branch-lines.branch-3 .v-center {
-        left: 50%;
-        transform: translateX(-50%);
-    }
-
-    .tree-branch-lines.branch-3 .v-right {
-        right: 17%;
-    }
-
-    /* ============================================
-       TRONCO DA ÁRVORE
-       ============================================ */
-    .tree-trunk-svg {
-        width: 80px;
-        height: 100px;
-        position: relative;
-        z-index: 1;
-    }
-
-    /* ============================================
-       NÓS DA CARREIRA
-       ============================================ */
-    .career-node {
-        background: white;
-        border-radius: 16px;
-        padding: 1.25rem 1rem;
-        text-align: center;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-        transition: var(--transition-smooth);
-        cursor: pointer;
-        width: 180px;
-        min-width: 160px;
-        position: relative;
-        border: 2px solid transparent;
-    }
-
-    .career-node:hover {
-        transform: translateY(-6px) scale(1.03);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    }
-
-    /* Estado: desbloqueado */
-    .career-node.unlocked {
-        border-color: var(--utfpr-yellow);
-    }
-
-    .career-node.unlocked .node-icon {
-        background: rgba(255, 199, 44, 0.12);
-        color: #b8860b;
-    }
-
-    /* Estado: bloqueado */
-    .career-node.locked {
-        opacity: 0.65;
-        filter: grayscale(0.3);
-        border-color: #d0d0d0;
-    }
-
-    .career-node.locked .node-icon {
-        background: #f0f0f0;
-        color: #999;
-    }
-
-    .career-node.locked::after {
-        content: '\f47b';
-        /* bi-lock */
-        font-family: 'bootstrap-icons';
-        position: absolute;
-        top: -8px;
-        right: -8px;
-        width: 24px;
-        height: 24px;
-        background: #888;
-        color: white;
-        border-radius: 50%;
-        font-size: 0.65rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    }
-
-    /* Estado: destaque (topo) */
-    .career-node.master {
-        border-color: #8b5cf6;
-        background: linear-gradient(135deg, #faf5ff, #f3e8ff);
-    }
-
-    .career-node.master .node-icon {
-        background: rgba(139, 92, 246, 0.12);
-        color: #7c3aed;
-    }
-
-    .node-icon {
-        width: 48px;
-        height: 48px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 0.75rem;
-        font-size: 1.4rem;
-        transition: var(--transition-smooth);
-    }
-
-    .node-title {
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: var(--primary-color);
-        margin-bottom: 2px;
-        line-height: 1.2;
-    }
-
-    .node-subtitle {
-        font-size: 0.75rem;
-        color: var(--text-muted);
-        margin-bottom: 0.6rem;
-    }
-
-    /* Barra de progresso do nó */
-    .node-progress {
-        height: 6px;
-        background: #e9ecef;
-        border-radius: 4px;
-        overflow: hidden;
-    }
-
-    .node-progress-bar {
-        height: 100%;
-        border-radius: 4px;
-        transition: width 1s ease;
-    }
-
-    .node-progress-bar.green {
-        background: linear-gradient(90deg, #10b981, #34d399);
-    }
-
-    .node-progress-bar.yellow {
-        background: linear-gradient(90deg, #f59e0b, #fbbf24);
-    }
-
-    .node-progress-bar.red {
-        background: linear-gradient(90deg, #ef4444, #f87171);
-    }
-
-    .node-progress-bar.purple {
-        background: linear-gradient(90deg, #8b5cf6, #a78bfa);
-    }
-
-    .node-percent {
-        font-size: 0.7rem;
-        font-weight: 700;
-        color: var(--text-muted);
-        margin-top: 4px;
-    }
-
-    /* ============================================
-       SEÇÕES ABAIXO DA ÁRVORE
-       ============================================ */
-    .section-title {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: var(--primary-color);
-        margin-bottom: 1.25rem;
-        position: relative;
-        padding-left: 18px;
-    }
-
-    .section-title::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 5px;
-        height: 22px;
-        background: var(--primary-color);
-        border-radius: 3px;
-    }
-
-    /* Cards de caminho recomendado */
-    .path-card {
-        background: var(--gradient-dark);
-        color: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        height: 100%;
-        transition: var(--transition-smooth);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .path-card::before {
-        content: '';
-        position: absolute;
-        top: -20px;
-        right: -20px;
-        width: 80px;
-        height: 80px;
-        background: rgba(255, 199, 44, 0.1);
-        border-radius: 50%;
-    }
-
-    .path-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--card-shadow-hover);
-    }
-
-    .path-card .path-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 12px;
-        background: rgba(255, 255, 255, 0.1);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.3rem;
-        margin-bottom: 1rem;
-    }
-
-    .path-card h6 {
-        font-weight: 700;
-        font-size: 1rem;
-        margin-bottom: 0.4rem;
-    }
-
-    .path-card p {
-        font-size: 0.85rem;
-        opacity: 0.75;
-        margin-bottom: 1rem;
-    }
-
-    .path-compatibility {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: rgba(255, 255, 255, 0.12);
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-    }
-
-    .path-compatibility i {
-        color: var(--utfpr-yellow);
-    }
-
-    /* Cards de informação */
-    .info-card {
-        background: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        box-shadow: var(--card-shadow);
-        height: 100%;
-        transition: var(--transition-smooth);
-    }
-
-    .info-card:hover {
-        transform: translateY(-3px);
-        box-shadow: var(--card-shadow-hover);
-    }
-
-    .info-card h6 {
-        font-weight: 700;
-        font-size: 0.95rem;
-        color: var(--primary-color);
-    }
-
-    .info-card h6 i {
-        color: var(--utfpr-yellow);
-    }
-
-    /* Tooltip popup quando clica em um nó */
-    .node-tooltip {
-        position: fixed;
-        background: white;
-        border-radius: 16px;
-        padding: 1.5rem;
-        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
-        z-index: 9999;
-        width: 320px;
-        max-width: 90vw;
-        border: 2px solid var(--utfpr-yellow);
-        display: none;
-    }
-
-    .node-tooltip.show {
-        display: block;
-    }
-
-    .node-tooltip .tooltip-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 1rem;
-    }
-
-    .node-tooltip .tooltip-close {
-        position: absolute;
-        top: 10px;
-        right: 14px;
-        background: none;
-        border: none;
-        font-size: 1.2rem;
-        color: var(--text-muted);
-        cursor: pointer;
-    }
-
-    .tooltip-skills {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
-        margin-bottom: 1rem;
-    }
-
-    .tooltip-skill-tag {
-        background: var(--badge-bg);
-        padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 0.75rem;
-        font-weight: 500;
-        color: var(--badge-text);
-    }
-
-    /* ============================================
-       RESPONSIVIDADE
-       ============================================ */
-    @media (max-width: 768px) {
-        .tree-visual-container {
-            padding: 2rem 1rem;
-        }
-
-        .career-node {
-            width: 140px;
-            min-width: 130px;
-            padding: 1rem 0.75rem;
-        }
-
-        .node-title {
-            font-size: 0.85rem;
-        }
-
-        .tree-level {
-            gap: 0.75rem;
-        }
-
-        .tree-branch-lines {
-            max-width: 90%;
-        }
-
-        .path-card {
-            margin-bottom: 1rem;
-        }
-    }
-
-    @media (max-width: 576px) {
-        .tree-level {
-            flex-wrap: wrap;
-            gap: 0.75rem;
-        }
-
-        .career-node {
-            width: 130px;
-            min-width: 120px;
-        }
-    }
-
-    /* Animação de entrada */
-    @keyframes fadeInUp {
-        from {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .animate-in {
-        opacity: 0;
-        animation: fadeInUp 0.5s ease forwards;
-    }
+  /* ── Status colours ── */
+  .st-aprovada   { background: #28a745; color: #fff; }
+  .st-cursando   { background: #0d6efd; color: #fff; }
+  .st-reprovada  { background: #dc3545; color: #fff; }
+  .st-nao_iniciada { background: #e9ecef; color: #495057; }
+
+  /* ── Layout ── */
+  .curriculum-board { gap: 0.75rem; }
+  .period-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    box-shadow: var(--card-shadow);
+    min-width: 140px;
+    flex: 1 1 140px;
+  }
+  .period-header {
+    background: var(--primary-color);
+    color: #fff;
+    border-radius: 11px 11px 0 0;
+    padding: 0.45rem 0.75rem;
+    font-size: 0.78rem;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .period-body { padding: 0.6rem; }
+
+  /* ── Subject chip ── */
+  .subj-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    border-radius: 6px;
+    padding: 0.28rem 0.5rem;
+    margin-bottom: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: default;
+    position: relative;
+    letter-spacing: 0.02em;
+    transition: filter 0.15s;
+  }
+  .subj-chip:hover { filter: brightness(0.9); }
+  .subj-chip .chip-icon { font-size: 0.65rem; flex-shrink: 0; }
+  .subj-chip .chip-code { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .subj-chip .chip-grade { font-size: 0.65rem; opacity: 0.9; white-space: nowrap; }
+
+  /* ── Tooltip ── */
+  .subj-chip [data-bs-toggle="tooltip"] { cursor: default; }
+
+  /* ── Stats bar ── */
+  .stats-bar {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 0.75rem 1.25rem;
+    box-shadow: var(--card-shadow);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 2rem;
+    align-items: center;
+  }
+  .stat-item { display: flex; flex-direction: column; line-height: 1.2; }
+  .stat-value { font-size: 1.25rem; font-weight: 800; color: var(--primary-color); }
+  .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); }
+
+  /* ── Progress bar ── */
+  .completion-bar { height: 6px; border-radius: 3px; overflow: hidden; background: var(--border-color); }
+  .completion-fill { height: 100%; background: #28a745; border-radius: 3px; transition: width 0.6s ease; }
+
+  /* ── Legend ── */
+  .legend-dot {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.78rem; font-weight: 500;
+  }
+  .legend-swatch {
+    width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0;
+  }
+
+  /* ── Optional section ── */
+  .opt-group-title {
+    font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.4rem;
+  }
+  .opt-chips { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+  .opt-chips .subj-chip { margin-bottom: 0; }
+
+  /* ── Spinner overlay ── */
+  #loadingOverlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.35);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999;
+  }
+  #loadingOverlay.d-none { display: none !important; }
+
+  /* ── Error ── */
+  #errorBanner { display: none; }
+  #errorBanner.show { display: block; }
+
+  /* ── Horizontal scroll on mobile ── */
+  @media (max-width: 767px) {
+    .curriculum-board { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 0.5rem; }
+    .period-card { min-width: 130px; flex: 0 0 130px; }
+  }
 </style>
 
-<!-- Main Content -->
-<div class="container" style="padding: 2rem 0;">
-    <!-- Header -->
-    <div class="page-header">
-        <h1>Sua Árvore de Carreiras</h1>
-        <p class="text-muted">Explore diferentes caminhos profissionais e descubra seu potencial</p>
-    </div>
-
-    <!-- Árvore Visual -->
-    <div class="tree-visual-container mb-4">
-
-        <!-- Nível 1: Topo (Arquiteto) -->
-        <div class="tree-level animate-in" style="animation-delay: 0.1s;">
-            <div class="career-node master locked" data-node="arquiteto"
-                data-desc="Domine todas as áreas e torne-se um Arquiteto de Sistemas completo."
-                data-skills="System Design,Microservices,Cloud,Leadership,Scalability" data-progress="20">
-                <div class="node-icon"><i class="bi bi-stars"></i></div>
-                <div class="node-title">Arquiteto de Sistemas</div>
-                <div class="node-subtitle">Nível Avançado</div>
-                <div class="node-progress">
-                    <div class="node-progress-bar purple" style="width: 20%"></div>
-                </div>
-                <div class="node-percent">20%</div>
-            </div>
-        </div>
-
-        <!-- Conector: Nível 1 → Nível 2 -->
-        <div class="tree-branch-lines branch-2" style="max-width: 500px;">
-            <div class="h-line"></div>
-            <div class="v-left"></div>
-            <div class="v-right"></div>
-        </div>
-
-        <!-- Nível 2: Segurança e IA Avançada -->
-        <div class="tree-level animate-in" style="animation-delay: 0.2s; gap: 6rem;">
-            <div class="career-node locked" data-node="seguranca"
-                data-desc="Proteja sistemas e dados com técnicas avançadas de segurança cibernética."
-                data-skills="Cybersecurity,Pen Testing,Firewalls,OWASP,LGPD" data-progress="30">
-                <div class="node-icon"><i class="bi bi-shield-check"></i></div>
-                <div class="node-title">Segurança</div>
-                <div class="node-subtitle">Cybersecurity</div>
-                <div class="node-progress">
-                    <div class="node-progress-bar red" style="width: 30%"></div>
-                </div>
-                <div class="node-percent">30%</div>
-            </div>
-            <div class="career-node locked" data-node="ia-avancada"
-                data-desc="Domine técnicas avançadas de IA, incluindo Deep Learning e redes neurais."
-                data-skills="Deep Learning,NLP,Computer Vision,TensorFlow,PyTorch" data-progress="40">
-                <div class="node-icon"><i class="bi bi-robot"></i></div>
-                <div class="node-title">IA Avançada</div>
-                <div class="node-subtitle">Deep Learning</div>
-                <div class="node-progress">
-                    <div class="node-progress-bar red" style="width: 40%"></div>
-                </div>
-                <div class="node-percent">40%</div>
-            </div>
-        </div>
-
-        <!-- Conector: Nível 2 → Nível 3 -->
-        <div class="tree-branch-lines branch-2" style="max-width: 700px;">
-            <div class="h-line"></div>
-            <div class="v-left"></div>
-            <div class="v-right"></div>
-        </div>
-
-        <!-- Nível 3: Data Science e Cloud & DevOps -->
-        <div class="tree-level animate-in" style="animation-delay: 0.3s; gap: 10rem;">
-            <div class="career-node unlocked" data-node="data-science"
-                data-desc="Análise de dados, machine learning e inteligência artificial para decisões baseadas em dados."
-                data-skills="Python,Pandas,Scikit-learn,SQL,Estatística,Jupyter" data-progress="75">
-                <div class="node-icon"><i class="bi bi-graph-up"></i></div>
-                <div class="node-title">Data Science</div>
-                <div class="node-subtitle">ML, IA, Analytics</div>
-                <div class="node-progress">
-                    <div class="node-progress-bar green" style="width: 75%"></div>
-                </div>
-                <div class="node-percent">75%</div>
-            </div>
-            <div class="career-node unlocked" data-node="cloud-devops"
-                data-desc="Infraestrutura como código, containers e pipelines de deployment contínuo."
-                data-skills="AWS,Docker,Kubernetes,CI/CD,Terraform,Linux" data-progress="60">
-                <div class="node-icon"><i class="bi bi-cloud"></i></div>
-                <div class="node-title">Cloud & DevOps</div>
-                <div class="node-subtitle">AWS, Docker, K8s</div>
-                <div class="node-progress">
-                    <div class="node-progress-bar yellow" style="width: 60%"></div>
-                </div>
-                <div class="node-percent">60%</div>
-            </div>
-        </div>
-
-        <!-- Conector: Nível 3 → Nível 4 -->
-        <div class="tree-branch-lines branch-2" style="max-width: 600px;">
-            <div class="h-line"></div>
-            <div class="v-left"></div>
-            <div class="v-right"></div>
-        </div>
-
-        <!-- Nível 4: Banco de Dados e Desenvolvimento -->
-        <div class="tree-level animate-in" style="animation-delay: 0.4s; gap: 8rem;">
-            <div class="career-node unlocked" data-node="banco-dados"
-                data-desc="Modelagem, consultas e administração de bancos de dados relacionais e NoSQL."
-                data-skills="PostgreSQL,MySQL,MongoDB,Redis,SQL,Modelagem" data-progress="85">
-                <div class="node-icon"><i class="bi bi-database"></i></div>
-                <div class="node-title">Banco de Dados</div>
-                <div class="node-subtitle">SQL, NoSQL</div>
-                <div class="node-progress">
-                    <div class="node-progress-bar green" style="width: 85%"></div>
-                </div>
-                <div class="node-percent">85%</div>
-            </div>
-            <div class="career-node unlocked" data-node="desenvolvimento"
-                data-desc="Desenvolvimento fullstack com frameworks modernos para web e aplicações."
-                data-skills="React,Node.js,Django,TypeScript,REST APIs,Git" data-progress="75">
-                <div class="node-icon"><i class="bi bi-code-slash"></i></div>
-                <div class="node-title">Desenvolvimento</div>
-                <div class="node-subtitle">Frontend, Backend</div>
-                <div class="node-progress">
-                    <div class="node-progress-bar green" style="width: 75%"></div>
-                </div>
-                <div class="node-percent">75%</div>
-            </div>
-        </div>
-
-        <!-- Tronco -->
-        <div class="tree-connector">
-            <div class="tree-connector-line"></div>
-        </div>
-
-        <!-- Tronco visual SVG -->
-        <svg class="tree-trunk-svg" viewBox="0 0 80 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M30 0 L30 40 Q30 50 25 55 L15 65 Q10 70 15 72 Q20 74 25 70 L30 65 Q32 60 35 55 L35 100"
-                fill="#8B6914" />
-            <path d="M50 0 L50 40 Q50 50 55 55 L65 65 Q70 70 65 72 Q60 74 55 70 L50 65 Q48 60 45 55 L45 100"
-                fill="#7A5B10" />
-            <path d="M35 0 L35 100" fill="#6B4F10" />
-            <path d="M45 0 L45 100" fill="#6B4F10" />
-            <rect x="35" y="0" width="10" height="100" fill="#6B4F10" rx="2" />
-        </svg>
-    </div>
-
-    <!-- Caminhos Recomendados -->
-    <div class="row mb-4">
-        <div class="col-12 mb-3">
-            <h5 class="section-title">Caminhos Recomendados</h5>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="path-card">
-                <div class="path-icon"><i class="bi bi-cpu"></i></div>
-                <h6>Engenheiro de Machine Learning</h6>
-                <p>Especialize-se em IA e Machine Learning para criar modelos inteligentes.</p>
-                <div class="path-compatibility">
-                    <i class="bi bi-star-fill"></i> 85% compatível
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="path-card">
-                <div class="path-icon"><i class="bi bi-server"></i></div>
-                <h6>Arquiteto de Cloud</h6>
-                <p>Domine infraestrutura em nuvem e containers com AWS e K8s.</p>
-                <div class="path-compatibility">
-                    <i class="bi bi-star-fill"></i> 75% compatível
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="path-card">
-                <div class="path-icon"><i class="bi bi-code-square"></i></div>
-                <h6>Full Stack Senior</h6>
-                <p>Torne-se um desenvolvedor completo dominando front e backend.</p>
-                <div class="path-compatibility">
-                    <i class="bi bi-star-fill"></i> 70% compatível
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Info Cards -->
-    <div class="row mb-4">
-        <div class="col-md-4 mb-3">
-            <div class="info-card">
-                <h6 class="mb-3">
-                    <i class="bi bi-lightbulb me-2"></i>Como Funciona
-                </h6>
-                <p class="small text-muted mb-2">
-                    A Árvore de Carreiras mostra seu progresso em diferentes áreas da tecnologia.
-                </p>
-                <p class="small text-muted mb-0">
-                    Complete disciplinas, projetos e desafios para desbloquear novos ramos!
-                </p>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="info-card">
-                <h6 class="mb-3">
-                    <i class="bi bi-trophy me-2"></i>Próximos Desafios
-                </h6>
-                <ul class="small mb-0" style="padding-left: 1.2rem;">
-                    <li class="mb-1">Completar projeto de Data Science</li>
-                    <li class="mb-1">Obter certificação AWS</li>
-                    <li>Participar de hackathon</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="col-md-4 mb-3">
-            <div class="info-card">
-                <h6 class="mb-3">
-                    <i class="bi bi-graph-up-arrow me-2"></i>Seu Progresso
-                </h6>
-                <div class="mb-2">
-                    <div class="d-flex justify-content-between small mb-1">
-                        <span>Ramos Explorados</span>
-                        <strong>4/7</strong>
-                    </div>
-                    <div class="progress" style="height: 8px; border-radius: 4px;">
-                        <div class="progress-bar"
-                            style="width: 57%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 4px;">
-                        </div>
-                    </div>
-                </div>
-                <p class="small text-muted mb-0">
-                    Continue explorando para desbloquear todos os caminhos!
-                </p>
-            </div>
-        </div>
-    </div>
+<!-- Loading overlay -->
+<div id="loadingOverlay">
+  <div class="text-center text-white">
+    <div class="spinner-border mb-2" role="status"></div>
+    <div class="fw-semibold">Carregando grade…</div>
+  </div>
 </div>
 
-<!-- Tooltip popup para detalhes do nó -->
-<div class="node-tooltip" id="nodeTooltip">
-    <button class="tooltip-close" onclick="fecharTooltip()">&times;</button>
-    <div class="tooltip-header">
-        <div class="node-icon" id="tooltipIcon" style="margin: 0;"></div>
-        <div>
-            <div style="font-weight: 700; font-size: 1.05rem;" id="tooltipTitle"></div>
-            <div style="font-size: 0.8rem; color: var(--text-muted);" id="tooltipSubtitle"></div>
-        </div>
+<div class="container-fluid px-3 py-3" style="max-width:1400px;">
+
+  <!-- Error banner -->
+  <div id="errorBanner" class="alert alert-danger d-flex align-items-center gap-2 mb-3" role="alert">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <span id="errorMsg">Erro ao carregar dados.</span>
+    <button class="btn btn-sm btn-outline-danger ms-auto" onclick="loadData()">
+      <i class="bi bi-arrow-clockwise"></i> Tentar novamente
+    </button>
+  </div>
+
+  <!-- Page header -->
+  <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3">
+    <div>
+      <h1 class="fw-800 mb-0" style="font-size:1.5rem;color:var(--primary-color);">
+        <i class="bi bi-journal-text me-2"></i>Grade Curricular
+      </h1>
+      <p class="text-muted mb-0" style="font-size:0.82rem;">
+        Aluno: <strong id="studentName">—</strong>
+        &bull; <span id="studentPeriod">—</span>
+        &bull; CR: <strong id="studentGpa">—</strong>
+        &bull; Conclusão: <strong id="studentCompletion">—</strong>
+      </p>
     </div>
-    <p class="small text-muted mb-3" id="tooltipDesc"></p>
-    <div class="mb-2" style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">Habilidades:</div>
-    <div class="tooltip-skills" id="tooltipSkills"></div>
-    <div class="mb-1 d-flex justify-content-between small">
-        <span>Progresso</span>
-        <strong id="tooltipPercent"></strong>
+    <a href="/alunos/" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-person-lines-fill me-1"></i>Trocar Aluno
+    </a>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar mb-3" id="statsBar" style="display:none;">
+    <div class="stat-item">
+      <span class="stat-value text-success" id="statAprovada">0h</span>
+      <span class="stat-label">Aprovadas</span>
     </div>
-    <div class="node-progress" style="height: 8px;">
-        <div class="node-progress-bar green" id="tooltipProgressBar" style="width: 0%"></div>
+    <div class="stat-item">
+      <span class="stat-value text-primary" id="statCursando">0h</span>
+      <span class="stat-label">Em Curso</span>
     </div>
+    <div class="stat-item">
+      <span class="stat-value text-danger" id="statReprovada">0h</span>
+      <span class="stat-label">Reprovadas</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-value text-secondary" id="statMissing">0h</span>
+      <span class="stat-label">Restantes</span>
+    </div>
+    <div class="flex-grow-1" style="min-width:140px;">
+      <div class="d-flex justify-content-between mb-1" style="font-size:0.72rem;">
+        <span class="text-muted">Progresso obrigatórias</span>
+        <span id="statPct" class="fw-700">0%</span>
+      </div>
+      <div class="completion-bar">
+        <div class="completion-fill" id="completionFill" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Legend -->
+  <div class="d-flex flex-wrap gap-3 mb-3">
+    <span class="legend-dot"><span class="legend-swatch" style="background:#28a745"></span>Aprovada</span>
+    <span class="legend-dot"><span class="legend-swatch" style="background:#0d6efd"></span>Cursando</span>
+    <span class="legend-dot"><span class="legend-swatch" style="background:#dc3545"></span>Reprovada</span>
+    <span class="legend-dot"><span class="legend-swatch" style="background:#e9ecef;border:1px solid #ced4da"></span>Não Iniciada</span>
+  </div>
+
+  <!-- Curriculum board (periods 1-8) -->
+  <div class="curriculum-board d-flex mb-4" id="curriculumBoard"></div>
+
+  <!-- Optional subjects -->
+  <div id="optSection" style="display:none;">
+    <h6 class="fw-700 mb-2" style="font-size:0.85rem;color:var(--text-secondary);">
+      <i class="bi bi-layers me-1"></i>Disciplinas Optativas
+    </h6>
+    <div class="row g-3" id="optGroupsContainer"></div>
+  </div>
+
 </div>
 
 <script>
-    // Clique nos nós da árvore para abrir tooltip com detalhes
-    document.querySelectorAll('.career-node').forEach(node => {
-        node.addEventListener('click', function (e) {
-            const tooltip = document.getElementById('nodeTooltip');
-            const title = this.querySelector('.node-title').textContent;
-            const subtitle = this.querySelector('.node-subtitle').textContent;
-            const icon = this.querySelector('.node-icon i').className;
-            const desc = this.dataset.desc || '';
-            const skills = (this.dataset.skills || '').split(',');
-            const progress = this.dataset.progress || '0';
-            const isLocked = this.classList.contains('locked');
+(function () {
+  'use strict';
 
-            document.getElementById('tooltipTitle').textContent = title;
-            document.getElementById('tooltipSubtitle').textContent = isLocked ? '🔒 Bloqueado' : subtitle;
-            document.getElementById('tooltipIcon').innerHTML = `<i class="${icon}"></i>`;
-            document.getElementById('tooltipDesc').textContent = isLocked
-                ? 'Este ramo ainda está bloqueado. Complete mais desafios e disciplinas para desbloqueá-lo!'
-                : desc;
+  // ── Curriculum definition (periods 1-8, mandatory codes) ──────────────
+  const PERIODS = [
+    { n: 1, codes: ['CC1AED1','CC1ICC','CC1MBD','HU1LA','MA1FM','MA1LM'] },
+    { n: 2, codes: ['CC2AED2','CC2CLD','CC2ER','CC2POO','MA2MA'] },
+    { n: 3, codes: ['CC3AED3','CC3AOC','CC3ES','CC3PI1','MA3AL','MA3CA'] },
+    { n: 4, codes: ['CC4IHC','CC4LBD','CC4PO','CC4RC','CC4SO','MA4PE'] },
+    { n: 5, codes: ['CC5AG','CC5PI2','CC5PLDS','CC5QS','CC5SDT','EO11','MA5MN'] },
+    { n: 6, codes: ['CC6FIA','CC6IBDDA','CC6LFTC','CC6PDSW','CC6TRC','MA6PO','TCC1'] },
+    { n: 7, codes: ['CC7C','CC7CS','CC7IAA','CC7PI3','CC7VC'] },
+    { n: 8, codes: ['CC8CG','TCC2'] },
+  ];
 
-            // Skills
-            document.getElementById('tooltipSkills').innerHTML = skills
-                .filter(s => s.trim())
-                .map(s => `<span class="tooltip-skill-tag">${s.trim()}</span>`)
-                .join('');
+  const STATUS_ICON  = { aprovada:'✓', cursando:'▶', reprovada:'✕', nao_iniciada:'' };
+  const STATUS_CLASS = { aprovada:'st-aprovada', cursando:'st-cursando', reprovada:'st-reprovada', nao_iniciada:'st-nao_iniciada' };
 
-            // Progresso
-            document.getElementById('tooltipPercent').textContent = progress + '%';
-            const bar = document.getElementById('tooltipProgressBar');
-            bar.style.width = progress + '%';
-            bar.className = 'node-progress-bar';
-            const p = parseInt(progress);
-            if (p >= 70) bar.classList.add('green');
-            else if (p >= 40) bar.classList.add('yellow');
-            else bar.classList.add('red');
+  // ── State ──────────────────────────────────────────────────────────────
+  let subjectLookup   = {};   // code → curriculum subject (name, workload, …)
+  let studentLookup   = {};   // code → student progress entry (status, grade, …)
+  let curriculumData  = null;
+  let studentData     = null;
 
-            // Posicionar tooltip perto do nó
-            const rect = this.getBoundingClientRect();
-            const tooltipW = 320;
-            let left = rect.left + rect.width / 2 - tooltipW / 2;
-            let top = rect.bottom + 12;
+  // ── Helpers ───────────────────────────────────────────────────────────
+  const $  = id => document.getElementById(id);
+  const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 
-            // Ajustar se sai da tela
-            if (left < 10) left = 10;
-            if (left + tooltipW > window.innerWidth - 10) left = window.innerWidth - tooltipW - 10;
-            if (top + 300 > window.innerHeight) top = rect.top - 300;
+  function showError(msg) {
+    $('errorMsg').textContent = msg;
+    $('errorBanner').classList.add('show');
+  }
 
-            tooltip.style.left = left + 'px';
-            tooltip.style.top = top + 'px';
-            tooltip.classList.add('show');
-        });
+  function hideError() { $('errorBanner').classList.remove('show'); }
+
+  function setLoading(on) {
+    $('loadingOverlay').classList.toggle('d-none', !on);
+  }
+
+  // ── Chip builder ──────────────────────────────────────────────────────
+  function buildChip(code) {
+    const curr   = subjectLookup[code] || { name: code, workload: 0 };
+    const prog   = studentLookup[code];
+    const status = prog ? prog.status : 'nao_iniciada';
+    const cls    = STATUS_CLASS[status] || STATUS_CLASS.nao_iniciada;
+    const icon   = STATUS_ICON[status]  || '';
+
+    // Tooltip: plain text only to avoid HTML-injection / double-escaping
+    let tip = `${curr.name} — ${curr.workload}h`;
+    if (prog && prog.grade != null)      tip += ` | Nota: ${prog.grade.toFixed(1)}`;
+    if (prog && prog.attendance != null) tip += ` | Freq: ${prog.attendance}%`;
+    if (prog && prog.completedAt)        tip += ` | ${prog.completedAt}`;
+
+    const gradeSpan = (prog && prog.grade != null)
+      ? `<span class="chip-grade">${prog.grade.toFixed(1)}</span>` : '';
+
+    return `<div class="subj-chip ${cls}"
+                 data-bs-toggle="tooltip"
+                 data-bs-placement="top"
+                 title="${esc(tip)}">
+              ${icon ? `<span class="chip-icon">${icon}</span>` : ''}
+              <span class="chip-code">${esc(code)}</span>
+              ${gradeSpan}
+            </div>`;
+  }
+
+  // ── Period card builder ───────────────────────────────────────────────
+  function buildPeriodCard(period) {
+    const periodSubjects = period.codes.map(c => {
+      const curr = subjectLookup[c] || { workload: 0 };
+      return { code: c, workload: curr.workload };
     });
+    const totalH = periodSubjects.reduce((s, x) => s + x.workload, 0);
 
-    function fecharTooltip() {
-        document.getElementById('nodeTooltip').classList.remove('show');
+    const chips = period.codes.map(buildChip).join('');
+
+    return `<div class="period-card">
+      <div class="period-header">
+        <span>${period.n}º Período</span>
+        <span style="opacity:.75;font-weight:400;">${totalH}h</span>
+      </div>
+      <div class="period-body">${chips}</div>
+    </div>`;
+  }
+
+  // ── Optional subjects renderer ────────────────────────────────────────
+  function renderOptionals(subjects) {
+    const groups = {};
+    for (const s of subjects) {
+      if (s.type !== 'optativa') continue;
+      const g = s.group || 'Outras';
+      (groups[g] = groups[g] || []).push(s);
     }
+    const keys = Object.keys(groups);
+    if (!keys.length) return;
 
-    // Fechar ao clicar fora
-    document.addEventListener('click', function (e) {
-        if (!e.target.closest('.career-node') && !e.target.closest('.node-tooltip')) {
-            fecharTooltip();
-        }
+    const container = $('optGroupsContainer');
+    container.innerHTML = '';
+    for (const key of keys) {
+      const chips = groups[key].map(s => buildChip(s.code)).join('');
+      const col = document.createElement('div');
+      col.className = 'col-12 col-md-6 col-xl-4';
+      col.innerHTML = `
+        <div class="period-card p-0">
+          <div class="period-header">
+            <span>Optativas ${esc(key)}</span>
+            <span style="opacity:.75;font-weight:400;">${groups[key].length} disciplinas</span>
+          </div>
+          <div class="period-body">
+            <div class="opt-chips">${chips}</div>
+          </div>
+        </div>`;
+      container.appendChild(col);
+    }
+    $('optSection').style.display = '';
+  }
+
+  // ── Render full board ─────────────────────────────────────────────────
+  function render() {
+    // Board
+    $('curriculumBoard').innerHTML = PERIODS.map(buildPeriodCard).join('');
+
+    // Stats
+    const subjects = studentData.subjects || [];
+    const hAprovada   = subjects.filter(s => s.status === 'aprovada').reduce((a, s) => a + s.workload, 0);
+    const hCursando   = subjects.filter(s => s.status === 'cursando').reduce((a, s) => a + s.workload, 0);
+    const hReprovada  = subjects.filter(s => s.status === 'reprovada').reduce((a, s) => a + s.workload, 0);
+    const totalMandH  = curriculumData.totalMandatoryWorkload || 1;
+    const pct         = Math.round((hAprovada / totalMandH) * 100);
+    const hMissing    = Math.max(0, totalMandH - hAprovada);
+
+    $('statAprovada').textContent  = hAprovada  + 'h';
+    $('statCursando').textContent  = hCursando  + 'h';
+    $('statReprovada').textContent = hReprovada + 'h';
+    $('statMissing').textContent   = hMissing   + 'h';
+    $('statPct').textContent       = pct + '%';
+    $('completionFill').style.width = pct + '%';
+    $('statsBar').style.display = '';
+
+    // Optionals
+    renderOptionals(curriculumData.subjects || []);
+
+    // Tooltips
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+      new bootstrap.Tooltip(el, { trigger: 'hover focus' });
     });
+  }
 
-    // Fechar ao fazer scroll
-    window.addEventListener('scroll', function () {
-        fecharTooltip();
-    }, { passive: true });
+  // ── Student header ────────────────────────────────────────────────────
+  function renderHeader() {
+    const s = studentData;
+    $('studentName').textContent       = s.name || s.id;
+    $('studentPeriod').textContent     = s.currentPeriod ? `${s.currentPeriod}º período` : '—';
+    $('studentGpa').textContent        = s.gpa != null ? s.gpa.toFixed(2) : '—';
+    $('studentCompletion').textContent = s.completionPct != null ? s.completionPct + '%' : '—';
+  }
 
-    // Animar barras de progresso ao carregar
-    window.addEventListener('load', function () {
-        document.querySelectorAll('.node-progress-bar').forEach(bar => {
-            const width = bar.style.width;
-            bar.style.width = '0%';
-            setTimeout(() => { bar.style.width = width; }, 300);
-        });
-    });
+  // ── Data loading ──────────────────────────────────────────────────────
+  async function loadData() {
+    hideError();
+    setLoading(true);
+
+    const studentId = localStorage.getItem('selectedStudentId') || 'stu-001';
+    const seed      = localStorage.getItem('studentSeed')       || '42';
+    const count     = localStorage.getItem('studentCount')      || '50';
+
+    try {
+      const [currRes, stuRes] = await Promise.all([
+        fetch('/api/synthetic/curriculum/'),
+        fetch(`/api/synthetic/students/${encodeURIComponent(studentId)}/?seed=${encodeURIComponent(seed)}&count=${encodeURIComponent(count)}`),
+      ]);
+
+      if (!currRes.ok) throw new Error(`Currículo: HTTP ${currRes.status}`);
+      if (!stuRes.ok)  throw new Error(`Aluno: HTTP ${stuRes.status}`);
+
+      curriculumData = await currRes.json();
+      studentData    = await stuRes.json();
+
+      // Build lookup tables
+      subjectLookup = {};
+      for (const s of (curriculumData.subjects || [])) {
+        subjectLookup[s.code] = s;
+      }
+      studentLookup = {};
+      for (const s of (studentData.subjects || [])) {
+        studentLookup[s.code] = s;
+      }
+
+      renderHeader();
+      render();
+    } catch (err) {
+      showError('Não foi possível carregar os dados: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  loadData();
+})();
 </script>
 {% endblock %}
