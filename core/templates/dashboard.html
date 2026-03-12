@@ -6,9 +6,7 @@
 
 {% block content %}
 <style>
-    .main-content {
-        padding: 2rem 0;
-    }
+    .main-content { padding: 2rem 0; }
 
     .card {
         border: none;
@@ -18,263 +16,297 @@
         transition: transform 0.3s, box-shadow 0.3s;
         height: 100%;
     }
-
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--card-shadow-hover);
-    }
+    .card:hover { transform: translateY(-5px); box-shadow: var(--card-shadow-hover); }
 
     .progress-card {
         background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
         color: white;
     }
-
-    .progress {
+    .progress-card .progress {
         height: 10px;
         border-radius: 10px;
-        background-color: rgba(255, 255, 255, 0.3);
+        background-color: rgba(255,255,255,0.3);
     }
+    .progress-card .progress-bar { border-radius: 10px; background-color: #4CAF50; }
 
-    .progress-bar {
-        border-radius: 10px;
-        background-color: #4CAF50;
-    }
+    .achievement-card { text-align: center; padding: 1.2rem 0.5rem; transition: all 0.3s; }
+    .achievement-card:hover { transform: scale(1.05); }
+    .achievement-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .achievement-icon.unlocked { color: var(--accent-color); }
+    .achievement-icon.locked { color: var(--text-muted); opacity: 0.4; }
 
-    .achievement-card {
-        text-align: center;
-        padding: 1.5rem;
-        transition: all 0.3s;
-    }
-
-    .achievement-card:hover {
-        transform: scale(1.05);
-    }
-
-    .achievement-icon {
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        color: var(--primary-color);
-    }
-
-    .branch-progress {
-        margin-bottom: 1rem;
-    }
-
-    .branch-progress .progress {
-        height: 8px;
-        background-color: var(--border-color);
-    }
-
-    .branch-progress .progress-bar {
-        background: linear-gradient(90deg, #4CAF50, #45a049);
-    }
-
-    .stat-card {
-        text-align: center;
-        padding: 1.5rem;
-    }
-
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: var(--primary-color);
-    }
-
-    .stat-label {
-        color: var(--text-secondary);
-        font-size: 0.9rem;
-        margin-top: 0.5rem;
-    }
-
-    .alumni-card {
-        padding: 1.5rem;
-        border-left: 4px solid var(--accent-color);
-    }
-
-    .alumni-name {
-        font-weight: 600;
-        color: var(--primary-color);
-        margin-bottom: 0.5rem;
-    }
-
-    .tag-employed {
-        background-color: var(--accent-color);
-        color: white;
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
-
-    .rating {
-        color: #ffc107;
-    }
+    .branch-progress { margin-bottom: 1rem; }
+    .branch-progress .progress { height: 8px; background-color: var(--border-color); border-radius: 8px; }
+    .branch-progress .progress-bar { background: linear-gradient(90deg, #4CAF50, #45a049); border-radius: 8px; }
 
     .section-title {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
         font-weight: 600;
         color: var(--primary-color);
-        margin-bottom: 1.5rem;
+        margin-bottom: 1.2rem;
         position: relative;
-        padding-left: 20px;
+        padding-left: 16px;
     }
-
     .section-title::before {
         content: '';
         position: absolute;
-        left: 0;
-        top: 50%;
+        left: 0; top: 50%;
         transform: translateY(-50%);
-        width: 5px;
-        height: 25px;
+        width: 4px; height: 22px;
         background: var(--accent-color);
         border-radius: 3px;
     }
+
+    #loading-spinner { padding: 4rem 0; }
+    #error-msg { display: none; }
+    #dashboard-content { display: none; }
 </style>
 
-<!-- Main Content -->
 <div class="container main-content">
-    <!-- Welcome Section -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h1 class="h3 mb-1">Bem-vindo de volta, Alex Silva Demo!</h1>
-            <p class="text-muted">Continue crescendo em sua jornada profissional</p>
+
+    <!-- Loading -->
+    <div id="loading-spinner" class="text-center">
+        <div class="spinner-border text-warning" role="status" style="width:3rem;height:3rem;">
+            <span class="visually-hidden">Carregando...</span>
         </div>
+        <p class="mt-3 text-muted">Carregando dados do aluno…</p>
     </div>
 
-    <!-- Progress Section -->
-    <div class="row mb-4">
-        <div class="col-md-4">
-            <div class="card progress-card">
-                <div class="card-body">
-                    <h5 class="card-title">Seu Progresso</h5>
-                    <h2 class="mb-3">Nível 7</h2>
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span>1450 / 3500 XP</span>
-                            <span>Expert</span>
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: 41%"></div>
-                        </div>
-                    </div>
-                    <p class="mb-2"><strong>Próximo nível:</strong> Mestre</p>
-                    <p class="mb-0"><i class="bi bi-patch-check-fill me-1"></i> Certificado + acesso vitalício</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title section-title">Conquistas Recentes</h5>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="achievement-card">
-                                <i class="bi bi-calculator achievement-icon"></i>
-                                <h6>Matemático</h6>
-                                <p class="text-muted small">Nota acima de 9.0 em Cálculo II</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="achievement-card">
-                                <i class="bi bi-microscope achievement-icon"></i>
-                                <h6>Pesquisador Iniciante</h6>
-                                <p class="text-muted small">Iniciou projeto de IC</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="achievement-card">
-                                <i class="bi bi-handshake achievement-icon"></i>
-                                <h6>Networker</h6>
-                                <p class="text-muted small">Realizou 5+ mentorias</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Error -->
+    <div id="error-msg" class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+        <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+        <span id="error-text">Não foi possível carregar os dados do aluno.</span>
     </div>
 
-    <!-- Branches and Suggestions -->
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title section-title">Ramos Iluminados</h5>
-                    <p class="text-muted mb-3">Áreas alinhadas com seu perfil</p>
+    <!-- Dashboard Content -->
+    <div id="dashboard-content">
 
-                    <div class="branch-progress">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span>Data Science</span>
-                            <span>75%</span>
+        <!-- Welcome -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="h3 mb-1" id="welcome-heading">Bem-vindo de volta!</h1>
+                <p class="text-muted">Continue crescendo em sua jornada profissional</p>
+            </div>
+        </div>
+
+        <!-- Progress + Achievements -->
+        <div class="row mb-4">
+            <div class="col-md-4 mb-3 mb-md-0">
+                <div class="card progress-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title fw-semibold mb-3">Seu Progresso</h5>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span id="status-badge" class="badge fs-6 px-3 py-2">ativo</span>
+                            <span id="period-text" class="opacity-75 small">Período —/8</span>
                         </div>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: 75%"></div>
+                        <div class="mb-1 d-flex justify-content-between small">
+                            <span id="workload-text">— / — h concluídas</span>
+                            <span id="completion-pct">—%</span>
                         </div>
+                        <div class="progress mb-3">
+                            <div id="completion-bar" class="progress-bar" style="width:0%"></div>
+                        </div>
+                        <p class="mb-1 small"><i class="bi bi-mortarboard-fill me-1"></i> <span id="gpa-text">CR: —</span></p>
+                        <p class="mb-0 small opacity-75" id="campus-text"></p>
                     </div>
+                </div>
+            </div>
 
-                    <div class="branch-progress">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span>MI Engineer</span>
-                            <span>60%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: 60%"></div>
-                        </div>
-                    </div>
-
-                    <div class="branch-progress">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span>Backend</span>
-                            <span>40%</span>
-                        </div>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: 40%"></div>
-                        </div>
+            <div class="col-md-8">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title section-title">Conquistas Recentes</h5>
+                        <div class="row g-2" id="achievements-row"></div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title section-title">Sugestão da Semana</h5>
-                    <p class="mb-3">Com base no seu perfil, você pode se interessar por Machine Learning. Explore o ramo
-                        de IA e veja perfis de egressos que trabalham com isso!</p>
-                    <div class="alert alert-info mb-3">
-                        <i class="bi bi-info-circle me-2"></i>
-                        Você está a apenas <strong>550 XP</strong> do próximo nível.
-                    </div>
-                    <button class="btn btn-primary">
-                        <i class="bi bi-arrow-right-circle me-2"></i> Explorar Machine Learning
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Completed Subjects -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title section-title">Disciplinas Concluídas (8)</h5>
-                    <div class="d-flex flex-wrap gap-2">
-                        <span class="badge bg-primary p-2">Introdução à Programação</span>
-                        <span class="badge bg-primary p-2">Cálculo I</span>
-                        <span class="badge bg-primary p-2">Cálculo II</span>
-                        <span class="badge bg-primary p-2">Estruturas de Dados</span>
-                        <span class="badge bg-primary p-2">POO</span>
-                        <span class="badge bg-primary p-2">Estatística</span>
-                        <span class="badge bg-primary p-2">Probabilidade</span>
-                        <span class="badge bg-primary p-2">Banco de Dados</span>
+        <!-- Career Branches -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title section-title">Ramos de Conhecimento</h5>
+                        <div class="row" id="branches-row"></div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
+        <!-- Approved Subjects -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title section-title" id="approved-title">Disciplinas Aprovadas</h5>
+                        <div class="d-flex flex-wrap gap-2" id="approved-badges"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- In-Progress Subjects -->
+        <div class="row mb-4" id="ongoing-section">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title section-title" id="ongoing-title">Disciplinas em Andamento</h5>
+                        <div class="d-flex flex-wrap gap-2" id="ongoing-badges"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Failed Subjects -->
+        <div class="row mb-4" id="failed-section" style="display:none">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title section-title" id="failed-title">Disciplinas Reprovadas</h5>
+                        <div class="d-flex flex-wrap gap-2" id="failed-badges"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- /dashboard-content -->
 </div>
+
+<script>
+(function () {
+    const studentId = localStorage.getItem('selectedStudentId') || 'stu-001';
+    const seed      = localStorage.getItem('studentSeed')       || '42';
+    const count     = localStorage.getItem('studentCount')      || '50';
+
+    const ACHIEVEMENTS = [
+        { id: 'primeiro_semestre', label: 'Primeiro Semestre', desc: 'Aprovado em alguma disciplina',     icon: 'bi-award',         check: s => s.subjects.some(x => x.status === 'aprovada') },
+        { id: 'nota_10',           label: 'Nota 10',           desc: 'Nota máxima em alguma disciplina',  icon: 'bi-star-fill',     check: s => s.subjects.some(x => x.grade === 10) },
+        { id: 'dedicado',          label: 'Dedicado',          desc: 'CR acima de 8.0',                   icon: 'bi-book-half',     check: s => s.gpa > 8.0 },
+        { id: 'programador',       label: 'Programador',       desc: 'CC2POO aprovada',                   icon: 'bi-code-slash',    check: s => s.subjects.some(x => x.code === 'CC2POO' && x.status === 'aprovada') },
+        { id: 'banco_dados',       label: 'Banco de Dados',    desc: 'CC1MBD aprovada',                   icon: 'bi-database-fill', check: s => s.subjects.some(x => x.code === 'CC1MBD' && x.status === 'aprovada') },
+    ];
+
+    const BRANCHES = [
+        { label: 'Fundamentos',            check: s => ({ done: s.subjects.filter(x => x.period <= 2 && x.status === 'aprovada').length, total: s.subjects.filter(x => x.period <= 2).length || 1 }) },
+        { label: 'Engenharia de Software', codes: ['CC2ER','CC3ES','CC5QS','CC6PDSW'] },
+        { label: 'Inteligência Artificial', codes: ['CC6FIA','CC7IAA','CC7VC'] },
+        { label: 'Sistemas',               codes: ['CC4RC','CC4SO','CC6TRC','CC7CS'] },
+        { label: 'Banco de Dados',         codes: ['CC1MBD','CC4LBD','CC6IBDDA'] },
+    ];
+
+    const statusMap = { ativo: 'bg-success', trancado: 'bg-warning text-dark', evadido: 'bg-danger', formado: 'bg-primary' };
+
+    function renderAchievements(student) {
+        const unlocked = ACHIEVEMENTS.filter(a => a.check(student));
+        const locked   = ACHIEVEMENTS.filter(a => !a.check(student));
+        const shown    = unlocked.length >= 3 ? unlocked.slice(0, 3) : [...unlocked, ...locked].slice(0, 3);
+        const row = document.getElementById('achievements-row');
+        row.innerHTML = shown.map(a => {
+            const isUnlocked = unlocked.includes(a);
+            return `<div class="col-4">
+              <div class="achievement-card">
+                <i class="bi ${a.icon} achievement-icon ${isUnlocked ? 'unlocked' : 'locked'}"></i>
+                <h6 class="mb-1 small fw-semibold ${isUnlocked ? '' : 'text-muted'}">${a.label}</h6>
+                <p class="text-muted" style="font-size:.75rem;margin:0">${a.desc}</p>
+                ${!isUnlocked ? '<span class="badge bg-secondary mt-1" style="font-size:.65rem">Bloqueada</span>' : ''}
+              </div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderBranches(student) {
+        const row = document.getElementById('branches-row');
+        row.innerHTML = BRANCHES.map(b => {
+            let done, total;
+            if (b.check) {
+                ({ done, total } = b.check(student));
+            } else {
+                total = b.codes.length;
+                done  = b.codes.filter(c => student.subjects.some(x => x.code === c && x.status === 'aprovada')).length;
+            }
+            const pct = total > 0 ? Math.round(done / total * 100) : 0;
+            return `<div class="col-md-6">
+              <div class="branch-progress">
+                <div class="d-flex justify-content-between mb-1 small">
+                  <span>${b.label}</span>
+                  <span>${done}/${total} (${pct}%)</span>
+                </div>
+                <div class="progress">
+                  <div class="progress-bar" style="width:${pct}%"></div>
+                </div>
+              </div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderSubjectBadges(subjects, containerId, statusFilter, bgClass) {
+        const el = document.getElementById(containerId);
+        const filtered = subjects.filter(x => x.status === statusFilter);
+        el.innerHTML = filtered.length
+            ? filtered.map(x => `<span class="badge ${bgClass} p-2" title="${x.code}">${x.name}</span>`).join('')
+            : `<span class="text-muted small">Nenhuma disciplina.</span>`;
+        return filtered.length;
+    }
+
+    function populate(student) {
+        // Welcome
+        document.getElementById('welcome-heading').textContent = `Bem-vindo de volta, ${student.name}!`;
+
+        // Progress card
+        const statusBadge = document.getElementById('status-badge');
+        statusBadge.textContent = student.status;
+        statusBadge.className   = `badge fs-6 px-3 py-2 ${statusMap[student.status] || 'bg-secondary'}`;
+        document.getElementById('period-text').textContent = `Período ${student.currentPeriod}/8`;
+        document.getElementById('gpa-text').textContent    = `CR: ${student.gpa.toFixed(1)}`;
+        document.getElementById('campus-text').textContent = `${student.course} — ${student.campus}`;
+
+            const pct = student.totalCourseWorkload > 0
+            ? Math.round(student.completedWorkload / student.totalCourseWorkload * 100) : 0;
+        document.getElementById('workload-text').textContent = `${student.completedWorkload} / ${student.totalCourseWorkload} h concluídas`;
+        document.getElementById('completion-pct').textContent = `${pct}%`;
+        document.getElementById('completion-bar').style.width = `${pct}%`;
+
+        // Achievements
+        renderAchievements(student);
+
+        // Branches
+        renderBranches(student);
+
+        // Approved subjects
+        const approvedCount = renderSubjectBadges(student.subjects, 'approved-badges', 'aprovada', 'bg-success');
+        document.getElementById('approved-title').textContent = `Disciplinas Aprovadas (${approvedCount})`;
+
+        // Ongoing subjects
+        const ongoingCount = renderSubjectBadges(student.subjects, 'ongoing-badges', 'cursando', 'bg-primary');
+        document.getElementById('ongoing-title').textContent = `Disciplinas em Andamento (${ongoingCount})`;
+        if (!ongoingCount) document.getElementById('ongoing-section').style.display = 'none';
+
+        // Failed subjects
+        const failedCount = renderSubjectBadges(student.subjects, 'failed-badges', 'reprovada', 'bg-danger');
+        document.getElementById('failed-title').textContent = `Disciplinas Reprovadas (${failedCount})`;
+        if (failedCount > 0) document.getElementById('failed-section').style.display = 'block';
+    }
+
+    async function loadDashboard() {
+        try {
+            const res = await fetch(`/api/synthetic/students/${encodeURIComponent(studentId)}/?seed=${encodeURIComponent(seed)}&count=${encodeURIComponent(count)}`);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const student = await res.json();
+
+            populate(student);
+
+            document.getElementById('loading-spinner').style.display  = 'none';
+            document.getElementById('dashboard-content').style.display = 'block';
+        } catch (err) {
+            document.getElementById('loading-spinner').style.display = 'none';
+            document.getElementById('error-text').textContent = 'Não foi possível carregar os dados do aluno. Tente novamente mais tarde.';
+            console.error('Dashboard load error:', err);
+            document.getElementById('error-msg').style.display = 'flex';
+        }
+    }
+
+    loadDashboard();
+})();
+</script>
 {% endblock %}
