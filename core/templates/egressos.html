@@ -1,382 +1,428 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Egressos - Árvore de Carreiras{% endblock %}
+{% block title %}Alunos & Egressos - Sistema CEA{% endblock %}
 {% block nav_egressos %}active{% endblock %}
 
 {% block content %}
 <style>
-    .main-content {
-        padding: 2rem 0;
-    }
+  .page-header { padding: 2rem 0 1rem; }
+  .page-header h2 { font-size: 1.75rem; font-weight: 700; color: var(--text-primary); }
+  .page-header p  { color: var(--text-secondary); }
 
-    .card {
-        border: none;
-        border-radius: 15px;
-        background: var(--bg-card);
-        box-shadow: var(--card-shadow);
-        transition: transform 0.3s, box-shadow 0.3s;
-        height: 100%;
-    }
+  .stat-card { border: none; border-radius: 14px; background: var(--bg-card); box-shadow: var(--card-shadow); padding: 1.25rem 1.5rem; }
+  .stat-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+  .stat-value { font-size: 1.75rem; font-weight: 700; color: var(--text-primary); line-height: 1; }
+  .stat-label { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
 
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--card-shadow-hover);
-    }
+  .filter-card { border: none; border-radius: 14px; background: var(--bg-card); box-shadow: var(--card-shadow); padding: 1.25rem 1.5rem; }
+  .filter-card .form-control,
+  .filter-card .form-select { background: var(--input-bg); border-color: var(--input-border); color: var(--text-primary); border-radius: 8px; }
+  .filter-card .form-control:focus,
+  .filter-card .form-select:focus { border-color: var(--accent-color); box-shadow: var(--input-focus-shadow); }
 
-    .stat-card {
-        text-align: center;
-        padding: 1.5rem;
-    }
+  .status-btn-group .btn { border-radius: 20px !important; font-size: 0.82rem; padding: 0.3rem 0.9rem; border-color: var(--border-color); color: var(--text-secondary); background: var(--bg-card); }
+  .status-btn-group .btn.active { background: var(--utfpr-yellow); border-color: var(--utfpr-yellow); color: var(--utfpr-black); font-weight: 600; }
+  .status-btn-group .btn:hover:not(.active) { background: var(--hover-bg); }
 
-    .stat-number {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: var(--text-primary);
-    }
+  .student-card { border: none; border-radius: 14px; background: var(--bg-card); box-shadow: var(--card-shadow); transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; height: 100%; display: flex; flex-direction: column; }
+  .student-card:hover { transform: translateY(-4px); box-shadow: var(--card-shadow-hover); }
+  .student-card.is-me { border: 2px solid var(--utfpr-yellow); }
+  .student-card-body { padding: 1.25rem; flex: 1; display: flex; flex-direction: column; }
 
-    .stat-label {
-        color: var(--text-secondary);
-        font-size: 0.9rem;
-        margin-top: 0.5rem;
-    }
+  .student-name { font-weight: 600; font-size: 1rem; color: var(--text-primary); }
+  .student-meta { font-size: 0.8rem; color: var(--text-secondary); }
 
-    .alumni-card {
-        padding: 1.5rem;
-        border-left: 4px solid var(--accent-color);
-    }
+  .progress { height: 6px; border-radius: 4px; background: var(--border-color); }
+  .progress-bar { border-radius: 4px; background: var(--utfpr-yellow); }
 
-    .alumni-name {
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 0.5rem;
-    }
+  .card-footer-actions { padding: 0.75rem 1.25rem; border-top: 1px solid var(--border-color); display: flex; gap: 0.5rem; }
+  .card-footer-actions .btn { font-size: 0.8rem; border-radius: 8px; }
 
-    .tag-employed {
-        background-color: var(--accent-color);
-        color: white;
-        padding: 5px 15px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: 600;
-    }
+  #spinner-overlay { display: none; }
+  #spinner-overlay.show { display: flex; align-items: center; justify-content: center; min-height: 200px; }
 
-    .rating {
-        color: #ffc107;
-    }
+  #empty-state { display: none; text-align: center; padding: 3rem 1rem; }
+  #empty-state.show { display: block; }
 
-    .section-title {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 1.5rem;
-        position: relative;
-        padding-left: 20px;
-    }
-
-    .section-title::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 5px;
-        height: 25px;
-        background: var(--accent-color);
-        border-radius: 3px;
-    }
+  .pagination .page-link { border-radius: 8px !important; margin: 0 2px; color: var(--text-primary); border-color: var(--border-color); background: var(--bg-card); }
+  .pagination .page-item.active .page-link { background: var(--utfpr-yellow); border-color: var(--utfpr-yellow); color: var(--utfpr-black); font-weight: 600; }
+  .pagination .page-item.disabled .page-link { opacity: 0.45; }
 </style>
 
-<!-- Main Content -->
-<div class="container main-content">
-    <!-- Alumni Statistics -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <h5 class="section-title">Acompanhamento de Egressos</h5>
-            <p class="text-muted mb-3">Dados atualizados sobre a situação profissional dos ex-alunos</p>
-        </div>
+<div class="container pb-5">
+  <!-- Header -->
+  <div class="page-header">
+    <h2><i class="bi bi-people-fill me-2" style="color:var(--utfpr-yellow)"></i>Alunos &amp; Egressos</h2>
+    <p>Acompanhe todos os alunos do curso de Ciência da Computação</p>
+  </div>
 
-        <div class="col-md-3">
-            <div class="card stat-card">
-                <div class="stat-number">10</div>
-                <div class="stat-label">Total de Egressos</div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card stat-card">
-                <div class="stat-number">80%</div>
-                <div class="stat-label">Taxa de Empregabilidade</div>
-                <div class="progress mt-2">
-                    <div class="progress-bar" style="width: 80%"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card stat-card">
-                <div class="stat-number">4.4/5</div>
-                <div class="stat-label">Satisfação Média</div>
-                <div class="rating mt-2">
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-fill"></i>
-                    <i class="bi bi-star-half"></i>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card stat-card">
-                <div class="stat-number">100%</div>
-                <div class="stat-label">Recomendam o Curso</div>
-                <div class="progress mt-2">
-                    <div class="progress-bar" style="width: 100%"></div>
-                </div>
-            </div>
-        </div>
+  <!-- Stats row -->
+  <div class="row g-3 mb-4" id="stats-row">
+    <div class="col-6 col-md-3">
+      <div class="stat-card d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#f0f4ff"><i class="bi bi-people" style="color:#4361ee"></i></div>
+        <div><div class="stat-value" id="st-total">—</div><div class="stat-label">Total Alunos</div></div>
+      </div>
     </div>
-
-    <!-- Professional Distribution -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <i class="bi bi-briefcase-fill text-success" style="font-size: 2rem;"></i>
-                    <h6 class="mt-2">Empregado</h6>
-                    <h4 class="text-success">7</h4>
-                    <small class="text-muted">70%</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <i class="bi bi-person-x text-danger" style="font-size: 2rem;"></i>
-                    <h6 class="mt-2">Desempregado</h6>
-                    <h4 class="text-danger">1</h4>
-                    <small class="text-muted">10%</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <i class="bi bi-rocket text-warning" style="font-size: 2rem;"></i>
-                    <h6 class="mt-2">Empreendedor</h6>
-                    <h4 class="text-warning">1</h4>
-                    <small class="text-muted">10%</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="card text-center">
-                <div class="card-body">
-                    <i class="bi bi-mortarboard text-info" style="font-size: 2rem;"></i>
-                    <h6 class="mt-2">Pós-graduação</h6>
-                    <h4 class="text-info">1</h4>
-                    <small class="text-muted">10%</small>
-                </div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#e8f8f0"><i class="bi bi-check-circle" style="color:#2d9e5f"></i></div>
+        <div><div class="stat-value" id="st-active">—</div><div class="stat-label">Ativos <span class="badge bg-success ms-1" style="font-size:.65rem">ativo</span></div></div>
+      </div>
     </div>
-
-    <!-- Filters -->
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">Filtros</h5>
-                    <div class="row g-3">
-                        <div class="col-md-4">
-                            <input type="text" class="form-control" placeholder="Buscar por nome, empresa...">
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select">
-                                <option>Todas as situações</option>
-                                <option>Empregado</option>
-                                <option>Desempregado</option>
-                                <option>Empreendedor</option>
-                                <option>Pós-graduação</option>
-                            </select>
-                        </div>
-                        <div class="col-md-3">
-                            <select class="form-select">
-                                <option>Todos os anos</option>
-                                <option>2023</option>
-                                <option>2022</option>
-                                <option>2021</option>
-                                <option>2020</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <button class="btn btn-primary w-100">
-                                <i class="bi bi-search me-1"></i> Buscar
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#e8f0ff"><i class="bi bi-mortarboard" style="color:#4361ee"></i></div>
+        <div><div class="stat-value" id="st-graduated">—</div><div class="stat-label">Formados <span class="badge bg-primary ms-1" style="font-size:.65rem">formado</span></div></div>
+      </div>
     </div>
-
-    <!-- Alumni List -->
-    <div class="row">
-        <div class="col-12">
-            <h5 class="mb-3">10 egressos encontrados</h5>
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <div class="card alumni-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <h6 class="alumni-name">Ana Paula Silva</h6>
-                            <p class="text-muted mb-1">Formada: 2020</p>
-                        </div>
-                        <span class="tag-employed">Empregado</span>
-                    </div>
-                    <p class="mb-1"><strong>Desenvolvedora Senior</strong> at Tech Company</p>
-                    <p class="text-muted small mb-2">
-                        <i class="bi bi-geo-alt me-1"></i> São Paulo, SP •
-                        <i class="bi bi-currency-dollar me-1"></i> R$ 10k-15k •
-                        <i class="bi bi-laptop me-1"></i> Híbrido
-                    </p>
-                    <div class="mb-2">
-                        <span class="badge bg-light text-dark me-1">React Native</span>
-                        <span class="badge bg-light text-dark me-1">TypeScript</span>
-                        <span class="badge bg-light text-dark me-1">Python</span>
-                        <span class="badge bg-light text-dark">TensorFlow</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <a href="#" class="text-decoration-none small">Recomenda o curso</a>
-                        <div class="rating small">
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                        </div>
-                    </div>
-                    <small class="text-muted">Última atualização: 2 dias atrás</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <div class="card alumni-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <h6 class="alumni-name">Carlos Alberto</h6>
-                            <p class="text-muted mb-1">Formado: 2019</p>
-                        </div>
-                        <span class="tag-employed">Empregado</span>
-                    </div>
-                    <p class="mb-1"><strong>Data Scientist</strong> at Analytics Corp</p>
-                    <p class="text-muted small mb-2">
-                        <i class="bi bi-geo-alt me-1"></i> Curitiba, PR •
-                        <i class="bi bi-currency-dollar me-1"></i> R$ 12k-18k •
-                        <i class="bi bi-house me-1"></i> Remoto
-                    </p>
-                    <div class="mb-2">
-                        <span class="badge bg-light text-dark me-1">Python</span>
-                        <span class="badge bg-light text-dark me-1">R</span>
-                        <span class="badge bg-light text-dark me-1">Machine Learning</span>
-                        <span class="badge bg-light text-dark">Deep Learning</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <a href="#" class="text-decoration-none small">Recomenda o curso</a>
-                        <div class="rating small">
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star"></i>
-                        </div>
-                    </div>
-                    <small class="text-muted">Última atualização: 1 semana atrás</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <div class="card alumni-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <h6 class="alumni-name">Mariana Santos</h6>
-                            <p class="text-muted mb-1">Formada: 2021</p>
-                        </div>
-                        <span class="tag-employed">Empregado</span>
-                    </div>
-                    <p class="mb-1"><strong>Backend Developer</strong> at StartupTech</p>
-                    <p class="text-muted small mb-2">
-                        <i class="bi bi-geo-alt me-1"></i> Belo Horizonte, MG •
-                        <i class="bi bi-currency-dollar me-1"></i> R$ 8k-12k •
-                        <i class="bi bi-house me-1"></i> Remoto
-                    </p>
-                    <div class="mb-2">
-                        <span class="badge bg-light text-dark me-1">Java</span>
-                        <span class="badge bg-light text-dark me-1">Spring Boot</span>
-                        <span class="badge bg-light text-dark me-1">PostgreSQL</span>
-                        <span class="badge bg-light text-dark">Docker</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <a href="#" class="text-decoration-none small">Recomenda o curso</a>
-                        <div class="rating small">
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                        </div>
-                    </div>
-                    <small class="text-muted">Última atualização: 3 dias atrás</small>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-6 mb-3">
-            <div class="card alumni-card">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <h6 class="alumni-name">Pedro Henrique</h6>
-                            <p class="text-muted mb-1">Formado: 2020</p>
-                        </div>
-                        <span class="badge bg-warning text-dark">Empreendedor</span>
-                    </div>
-                    <p class="mb-1"><strong>CEO & Founder</strong> at InovaTech</p>
-                    <p class="text-muted small mb-2">
-                        <i class="bi bi-geo-alt me-1"></i> Florianópolis, SC •
-                        <i class="bi bi-currency-dollar me-1"></i> R$ 15k-20k •
-                        <i class="bi bi-building me-1"></i> Presencial
-                    </p>
-                    <div class="mb-2">
-                        <span class="badge bg-light text-dark me-1">React</span>
-                        <span class="badge bg-light text-dark me-1">Node.js</span>
-                        <span class="badge bg-light text-dark me-1">AWS</span>
-                        <span class="badge bg-light text-dark">Business</span>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <a href="#" class="text-decoration-none small">Recomenda o curso</a>
-                        <div class="rating small">
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-fill"></i>
-                            <i class="bi bi-star-half"></i>
-                        </div>
-                    </div>
-                    <small class="text-muted">Última atualização: 5 dias atrás</small>
-                </div>
-            </div>
-        </div>
+    <div class="col-6 col-md-3">
+      <div class="stat-card d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#fffbe8"><i class="bi bi-exclamation-triangle" style="color:#c79a00"></i></div>
+        <div><div class="stat-value" id="st-other">—</div><div class="stat-label">Evadidos/Trancados <span class="badge bg-warning text-dark ms-1" style="font-size:.65rem">⚠</span></div></div>
+      </div>
     </div>
+    <div class="col-12 col-md-3">
+      <div class="stat-card d-flex align-items-center gap-3">
+        <div class="stat-icon" style="background:#fff0e8"><i class="bi bi-bar-chart" style="color:#e07000"></i></div>
+        <div><div class="stat-value" id="st-gpa">—</div><div class="stat-label">CR Médio</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-card mb-4">
+    <div class="row g-3 align-items-end">
+      <div class="col-12 col-md-5">
+        <label class="form-label small fw-semibold" style="color:var(--text-secondary)">Buscar por nome</label>
+        <div class="input-group">
+          <span class="input-group-text" style="background:var(--input-bg);border-color:var(--input-border)"><i class="bi bi-search" style="color:var(--text-muted)"></i></span>
+          <input type="text" id="search-input" class="form-control" placeholder="Nome do aluno...">
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <label class="form-label small fw-semibold" style="color:var(--text-secondary)">Período</label>
+        <select id="period-filter" class="form-select">
+          <option value="">Todos os Períodos</option>
+          <option value="1">1º Período</option>
+          <option value="2">2º Período</option>
+          <option value="3">3º Período</option>
+          <option value="4">4º Período</option>
+          <option value="5">5º Período</option>
+          <option value="6">6º Período</option>
+          <option value="7">7º Período</option>
+          <option value="8">8º Período</option>
+        </select>
+      </div>
+      <div class="col-6 col-md-4">
+        <label class="form-label small fw-semibold d-block" style="color:var(--text-secondary)">Status</label>
+        <div class="btn-group status-btn-group flex-wrap gap-1" role="group" id="status-filter">
+          <button type="button" class="btn btn-sm active" data-value="">Todos</button>
+          <button type="button" class="btn btn-sm" data-value="ativo">Ativo</button>
+          <button type="button" class="btn btn-sm" data-value="formado">Formado</button>
+          <button type="button" class="btn btn-sm" data-value="trancado">Trancado</button>
+          <button type="button" class="btn btn-sm" data-value="evadido">Evadido</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Count line -->
+  <div class="d-flex justify-content-between align-items-center mb-3" id="count-line" style="display:none!important">
+    <span id="range-label" class="small" style="color:var(--text-secondary)"></span>
+  </div>
+
+  <!-- Spinner -->
+  <div id="spinner-overlay">
+    <div class="text-center"><div class="spinner-border" style="color:var(--utfpr-yellow)" role="status"><span class="visually-hidden">Carregando...</span></div><p class="mt-2 small" style="color:var(--text-secondary)">Carregando alunos...</p></div>
+  </div>
+
+  <!-- Empty state -->
+  <div id="empty-state">
+    <i class="bi bi-person-x" style="font-size:3rem;color:var(--text-muted)"></i>
+    <h5 class="mt-3" style="color:var(--text-secondary)">Nenhum aluno encontrado</h5>
+    <p class="text-muted small">Tente ajustar os filtros de busca.</p>
+  </div>
+
+  <!-- Cards grid -->
+  <div class="row g-3" id="cards-grid"></div>
+
+  <!-- Pagination -->
+  <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center mt-4 gap-2" id="pagination-bar" style="display:none!important">
+    <small id="range-label-bottom" style="color:var(--text-secondary)"></small>
+    <nav><ul class="pagination mb-0" id="pagination-list"></ul></nav>
+  </div>
 </div>
+
+<script>
+(function () {
+  const PAGE_SIZE = 12;
+  const STATUS_LABELS = { ativo: 'Ativo', formado: 'Formado', trancado: 'Trancado', evadido: 'Evadido' };
+  const STATUS_BADGE  = { ativo: 'success', formado: 'primary', trancado: 'warning text-dark', evadido: 'danger' };
+
+  let state = {
+    seed: localStorage.getItem('studentSeed') || '42',
+    count: localStorage.getItem('studentCount') || '50',
+    selectedId: localStorage.getItem('selectedStudentId') || 'stu-001',
+    status: '',
+    period: '',
+    search: '',
+    page: 1,
+    total: 0,
+    debounceTimer: null,
+  };
+
+  // ── DOM refs ──────────────────────────────────────────────────
+  const grid        = document.getElementById('cards-grid');
+  const spinner     = document.getElementById('spinner-overlay');
+  const emptyState  = document.getElementById('empty-state');
+  const paginationBar = document.getElementById('pagination-bar');
+  const paginationList = document.getElementById('pagination-list');
+  const countLine   = document.getElementById('count-line');
+  const rangeLabel  = document.getElementById('range-label');
+  const rangeLabelB = document.getElementById('range-label-bottom');
+  const searchInput = document.getElementById('search-input');
+  const periodSel   = document.getElementById('period-filter');
+  const statusGroup = document.getElementById('status-filter');
+
+  // ── API helpers ───────────────────────────────────────────────
+  function apiUrl(path, params) {
+    const base = `/api/synthetic${path}?seed=${state.seed}&count=${state.count}`;
+    const qs = params ? '&' + new URLSearchParams(params).toString() : '';
+    return base + qs;
+  }
+
+  async function fetchJSON(url) {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    return r.json();
+  }
+
+  // ── Stats ─────────────────────────────────────────────────────
+  async function loadStats() {
+    try {
+      const d = await fetchJSON(apiUrl('/dashboard/'));
+      document.getElementById('st-total').textContent     = d.totalStudents     ?? '—';
+      document.getElementById('st-active').textContent    = d.activeStudents    ?? '—';
+      document.getElementById('st-graduated').textContent = d.graduatedStudents ?? '—';
+      document.getElementById('st-other').textContent     = ((d.droppedStudents ?? 0) + (d.lockedStudents ?? 0));
+      document.getElementById('st-gpa').textContent       = d.averageGpa != null ? d.averageGpa.toFixed(2) : '—';
+    } catch (_) {}
+  }
+
+  // ── Students ──────────────────────────────────────────────────
+  async function loadStudents() {
+    setLoading(true);
+
+    const params = { page: state.page, page_size: PAGE_SIZE };
+    if (state.status)  params.status        = state.status;
+    if (state.period)  params.currentPeriod = state.period;
+    if (state.search)  params.search        = state.search;
+
+    try {
+      const data = await fetchJSON(apiUrl('/students/', params));
+      const students = data.results ?? data.students ?? data ?? [];
+      state.total = data.count ?? data.total ?? students.length;
+      renderCards(students);
+      renderPagination();
+    } catch (_) {
+      renderCards([]);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // ── Render cards ──────────────────────────────────────────────
+  function renderCards(students) {
+    grid.innerHTML = '';
+
+    if (!students.length) {
+      emptyState.classList.add('show');
+      paginationBar.style.display = 'none';
+      countLine.style.display     = 'none';
+      return;
+    }
+
+    emptyState.classList.remove('show');
+    paginationBar.style.removeProperty('display');
+    countLine.style.removeProperty('display');
+
+    const start = (state.page - 1) * PAGE_SIZE + 1;
+    const end   = Math.min(start + students.length - 1, state.total);
+    const msg   = `Mostrando ${start}–${end} de ${state.total} alunos`;
+    rangeLabel.textContent  = msg;
+    rangeLabelB.textContent = msg;
+
+    students.forEach(s => {
+      const isMe      = s.id === state.selectedId;
+      const pct       = s.totalCourseWorkload > 0
+        ? Math.round((s.completedWorkload / s.totalCourseWorkload) * 100)
+        : 0;
+      const badgeClass = STATUS_BADGE[s.status] ?? 'secondary';
+      const statusText = STATUS_LABELS[s.status] ?? s.status;
+      const periodText = s.status === 'formado' ? 'Formado' : `${s.currentPeriod}º / 8º Período`;
+      const admYear    = s.admissionDate ? s.admissionDate.slice(0, 4) : (s.curriculumYear ?? '—');
+
+      const col = document.createElement('div');
+      col.className = 'col-12 col-sm-6 col-xl-4';
+      col.innerHTML = `
+        <div class="student-card${isMe ? ' is-me' : ''}" onclick="selectAndGo('${s.id}')">
+          <div class="student-card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div style="min-width:0">
+                <div class="student-name text-truncate">${escHtml(s.name)}</div>
+                <div class="student-meta">${escHtml(s.course ?? 'Ciência da Computação')} · ${escHtml(s.campus ?? '')}</div>
+              </div>
+              <div class="d-flex flex-column align-items-end gap-1 ms-2 flex-shrink-0">
+                <span class="badge bg-${badgeClass}">${statusText}</span>
+                ${isMe ? '<span class="badge" style="background:var(--utfpr-yellow);color:var(--utfpr-black)">Este é você</span>' : ''}
+              </div>
+            </div>
+
+            <div class="d-flex gap-3 mb-2 flex-wrap">
+              <span class="student-meta"><i class="bi bi-calendar3 me-1"></i>${periodText}</span>
+              <span class="student-meta"><i class="bi bi-graph-up me-1"></i>CR: <strong>${s.gpa != null ? s.gpa.toFixed(1) : '—'}</strong></span>
+            </div>
+
+            <div class="mb-1 d-flex justify-content-between">
+              <span class="student-meta small">Conclusão</span>
+              <span class="student-meta small fw-semibold">${pct}%</span>
+            </div>
+            <div class="progress mb-2">
+              <div class="progress-bar" style="width:${pct}%"></div>
+            </div>
+
+            <div class="d-flex gap-3 flex-wrap mt-auto pt-1">
+              <span class="student-meta small"><i class="bi bi-mortarboard me-1"></i>Turma de ${admYear}</span>
+              <span class="student-meta small"><i class="bi bi-book me-1"></i>${s.completedWorkload ?? 0}h / ${s.totalCourseWorkload ?? 0}h</span>
+            </div>
+          </div>
+          <div class="card-footer-actions">
+            <button class="btn btn-sm btn-outline-secondary flex-fill" onclick="event.stopPropagation();selectStudent('${s.id}')">
+              <i class="bi bi-person-check me-1"></i>Selecionar
+            </button>
+            <button class="btn btn-sm flex-fill" style="background:var(--utfpr-yellow);color:var(--utfpr-black);border:none" onclick="event.stopPropagation();selectAndGo('${s.id}')">
+              <i class="bi bi-eye me-1"></i>Ver Perfil
+            </button>
+          </div>
+        </div>`;
+      grid.appendChild(col);
+    });
+  }
+
+  // ── Pagination ────────────────────────────────────────────────
+  function renderPagination() {
+    const totalPages = Math.ceil(state.total / PAGE_SIZE) || 1;
+    paginationList.innerHTML = '';
+
+    const mkItem = (label, page, disabled, active) => {
+      const li = document.createElement('li');
+      li.className = `page-item${disabled ? ' disabled' : ''}${active ? ' active' : ''}`;
+      const a = document.createElement('a');
+      a.className = 'page-link';
+      a.href = '#';
+      a.innerHTML = label;
+      if (!disabled && !active) a.addEventListener('click', e => { e.preventDefault(); state.page = page; loadStudents(); window.scrollTo({top: 0, behavior: 'smooth'}); });
+      li.appendChild(a);
+      return li;
+    };
+
+    paginationList.appendChild(mkItem('<i class="bi bi-chevron-left"></i>', state.page - 1, state.page === 1, false));
+
+    const range = paginationRange(state.page, totalPages);
+    let prev = null;
+    range.forEach(p => {
+      if (prev !== null && p - prev > 1) {
+        const li = document.createElement('li');
+        li.className = 'page-item disabled';
+        li.innerHTML = '<span class="page-link">…</span>';
+        paginationList.appendChild(li);
+      }
+      paginationList.appendChild(mkItem(p, p, false, p === state.page));
+      prev = p;
+    });
+
+    paginationList.appendChild(mkItem('<i class="bi bi-chevron-right"></i>', state.page + 1, state.page === totalPages, false));
+  }
+
+  function paginationRange(cur, total) {
+    const delta = 2, pages = [];
+    for (let i = Math.max(1, cur - delta); i <= Math.min(total, cur + delta); i++) pages.push(i);
+    if (pages[0] > 1) pages.unshift(1);
+    if (pages[pages.length - 1] < total) pages.push(total);
+    return pages;
+  }
+
+  // ── Actions ───────────────────────────────────────────────────
+  window.selectStudent = function(id) {
+    state.selectedId = id;
+    localStorage.setItem('selectedStudentId', id);
+    // Highlight the card without navigating
+    document.querySelectorAll('.student-card').forEach(c => {
+      const isMeNow = c.getAttribute('onclick')?.includes(`'${id}'`);
+      c.classList.toggle('is-me', !!isMeNow);
+    });
+    document.querySelectorAll('.student-card').forEach(c => {
+      const isMeNow = c.getAttribute('onclick')?.includes(`'${id}'`);
+      const existing = c.querySelector('.badge[style*="utfpr-yellow"]');
+      if (isMeNow && !existing) {
+        const badge = document.createElement('span');
+        badge.className = 'badge';
+        badge.style.cssText = 'background:var(--utfpr-yellow);color:var(--utfpr-black)';
+        badge.textContent = 'Este é você';
+        c.querySelector('.d-flex.flex-column')?.appendChild(badge);
+      } else if (!isMeNow && existing) {
+        existing.remove();
+      }
+    });
+  };
+
+  window.selectAndGo = function(id) {
+    localStorage.setItem('selectedStudentId', id);
+    window.location.href = '/dashboard/';
+  };
+
+  // ── Filter events ─────────────────────────────────────────────
+  statusGroup.addEventListener('click', e => {
+    const btn = e.target.closest('[data-value]');
+    if (!btn) return;
+    statusGroup.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.status = btn.dataset.value;
+    state.page   = 1;
+    loadStudents();
+  });
+
+  periodSel.addEventListener('change', () => {
+    state.period = periodSel.value;
+    state.page   = 1;
+    loadStudents();
+  });
+
+  searchInput.addEventListener('input', () => {
+    clearTimeout(state.debounceTimer);
+    state.debounceTimer = setTimeout(() => {
+      state.search = searchInput.value.trim();
+      state.page   = 1;
+      loadStudents();
+    }, 400);
+  });
+
+  // ── Helpers ───────────────────────────────────────────────────
+  function setLoading(on) {
+    spinner.classList.toggle('show', on);
+    grid.style.opacity = on ? '0.35' : '1';
+  }
+
+  function escHtml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Init ──────────────────────────────────────────────────────
+  loadStats();
+  loadStudents();
+})();
+</script>
 {% endblock %}
