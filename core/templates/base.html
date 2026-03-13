@@ -1071,7 +1071,25 @@
             }
 
             function goToStudent(studentId) {
-                window.location.href = '/dashboard/?id=' + studentId;
+                // Usa POST para trocar sessão e redireciona para a página atual com ?id=
+                const currentPath = window.location.pathname;
+                fetch('/api/trocar-aluno/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: studentId, redirect: currentPath }),
+                })
+                .then(r => r.json())
+                .then(data => {
+                    if (data.redirect) {
+                        window.location.href = data.redirect;
+                    } else {
+                        window.location.href = currentPath + '?id=' + studentId;
+                    }
+                })
+                .catch(() => {
+                    // Fallback direto caso fetch falhe
+                    window.location.href = currentPath + '?id=' + studentId;
+                });
             }
 
             function renderList(students) {

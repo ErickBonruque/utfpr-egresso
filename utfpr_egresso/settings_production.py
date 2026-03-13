@@ -92,6 +92,11 @@ STORAGES = {
 # WhiteNoise serve arquivos diretamente de STATICFILES_DIRS quando STATIC_ROOT não existe
 WHITENOISE_USE_FINDERS = True
 
+# Sessões via cookie (não depende de DB, funciona no Vercel serverless)
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

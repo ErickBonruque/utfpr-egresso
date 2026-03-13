@@ -156,11 +156,12 @@
             <button class="btn btn-dark active" data-filter="todas">Todas</button>
             <button class="btn btn-outline-success"   data-filter="desbloqueadas">Desbloqueadas</button>
             <button class="btn btn-outline-secondary" data-filter="bloqueadas">Bloqueadas</button>
-            <button class="btn btn-outline-primary"   data-filter="Acadêmica">Acadêmica</button>
-            <button class="btn btn-outline-primary"   data-filter="Programação">Programação</button>
+            <button class="btn btn-outline-primary"   data-filter="Academica">Academica</button>
+            <button class="btn btn-outline-primary"   data-filter="Programacao">Programacao</button>
             <button class="btn btn-outline-primary"   data-filter="Infraestrutura">Infraestrutura</button>
             <button class="btn btn-outline-primary"   data-filter="IA">IA</button>
             <button class="btn btn-outline-primary"   data-filter="Marcos">Marcos</button>
+            <button class="btn btn-outline-primary"   data-filter="Humoristica">Humoristica</button>
         </div>
 
         <!-- Achievement grid -->
@@ -277,7 +278,7 @@
         document.getElementById('stat-xp').textContent    = totalXp.toLocaleString('pt-BR');
         const totalAchievements = progress && progress.xp ? progress.xp.totalAchievements : 20;
         document.getElementById('stat-count').textContent = `${unlockedList.length}/${totalAchievements}`;
-        document.getElementById('stat-next').textContent  = nextAch ? nextAch.name : '🎉 Todas!';
+        document.getElementById('stat-next').textContent  = nextAch ? nextAch.name : 'Todas!';
 
         renderGrid('todas');
     }

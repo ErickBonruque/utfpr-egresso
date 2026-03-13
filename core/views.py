@@ -4,7 +4,8 @@ import traceback
 
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404
-from django.views.decorators.http import require_GET
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET, require_POST
 
 from core.models import Aluno
 from core.progress import calcular_progresso_aluno
@@ -21,13 +22,8 @@ def _safe_int(value):
 
 
 def _get_aluno_from_request(request):
-    """Obtém o aluno visualizador persistido em sessão."""
-    session_viewer_id = request.session.get('viewer_id')
-    if session_viewer_id:
-        viewer = Aluno.objects.filter(pk=session_viewer_id).first()
-        if viewer:
-            return viewer
-
+    """Obtém o aluno visualizador. Prioridade: ?id= > sessão > fallback."""
+    # 1) Parâmetro explícito na URL sempre tem prioridade
     requested_id = _safe_int(request.GET.get('id'))
     if requested_id:
         viewer = Aluno.objects.filter(pk=requested_id).first()
@@ -35,6 +31,14 @@ def _get_aluno_from_request(request):
             request.session['viewer_id'] = viewer.pk
             return viewer
 
+    # 2) Sessão persistida
+    session_viewer_id = request.session.get('viewer_id')
+    if session_viewer_id:
+        viewer = Aluno.objects.filter(pk=session_viewer_id).first()
+        if viewer:
+            return viewer
+
+    # 3) Fallback: primeiro aluno ativo
     viewer = Aluno.objects.filter(status='ativo').first() or Aluno.objects.first()
     if viewer:
         request.session['viewer_id'] = viewer.pk
@@ -213,6 +217,32 @@ def api_egressos(request):
         'maxVisible': max_visible,
         'results': results,
     })
+
+
+@csrf_exempt
+@require_POST
+def api_trocar_aluno(request):
+    """Troca o aluno da sessão e retorna a URL de redirecionamento."""
+    try:
+        body = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({'error': 'JSON inválido.'}, status=400)
+
+    aluno_id = _safe_int(body.get('id'))
+    if not aluno_id:
+        return JsonResponse({'error': 'ID do aluno é obrigatório.'}, status=400)
+
+    aluno = Aluno.objects.filter(pk=aluno_id).first()
+    if not aluno:
+        return JsonResponse({'error': 'Aluno não encontrado.'}, status=404)
+
+    request.session['viewer_id'] = aluno.pk
+
+    # Redirecionar para a página atual ou dashboard
+    redirect_to = body.get('redirect', '/dashboard/')
+    redirect_to = f"{redirect_to.split('?')[0]}?id={aluno.pk}"
+
+    return JsonResponse({'ok': True, 'redirect': redirect_to, 'name': aluno.nome})
 
 
 @require_GET
