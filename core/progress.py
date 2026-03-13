@@ -418,9 +418,9 @@ def _build_achievements(student: dict[str, Any]) -> list[dict[str, Any]]:
             "progress": _count_approved(subs, ["MA1FM", "MA1LM", "MA2MA", "MA3CA", "MA3AL", "MA4PE", "MA5MN", "MA6PO"]) / 8.0,
         },
 
-        # ── Humoristicas ────────────────────────────────────────────────
+        # ── Diversos ─────────────────────────────────────────────────
         {
-            "id": "sobrevivente_aed", "name": "Sobrevivente de AED", "category": "Humoristica",
+            "id": "sobrevivente_aed", "name": "Sobrevivente de AED", "category": "Diversos",
             "icon": "bi-fire", "xp": 75,
             "desc": "Passou por AED I, II e III sem reprovar em nenhuma",
             "unlocked": (
@@ -433,35 +433,35 @@ def _build_achievements(student: dict[str, Any]) -> list[dict[str, Any]]:
             "progress": _count_approved(subs, ["CC1AED1", "CC2AED2", "CC3AED3"]) / 3.0,
         },
         {
-            "id": "cafe_compilando", "name": "Cafe Compilando...", "category": "Humoristica",
+            "id": "cafe_compilando", "name": "Cafe Compilando...", "category": "Diversos",
             "icon": "bi-cup-hot", "xp": 50,
             "desc": "Aprovado em 10+ disciplinas (voce ja perdeu a conta dos cafes)",
             "unlocked": approved_n >= 10,
             "progress": min(1.0, approved_n / 10.0),
         },
         {
-            "id": "madrugador", "name": "Madrugador Profissional", "category": "Humoristica",
+            "id": "madrugador", "name": "Madrugador Profissional", "category": "Diversos",
             "icon": "bi-moon-stars", "xp": 75,
             "desc": "Aprovado em 20+ disciplinas (quantas noites sem dormir?)",
             "unlocked": approved_n >= 20,
             "progress": min(1.0, approved_n / 20.0),
         },
         {
-            "id": "veterano", "name": "Veterano de Guerra", "category": "Humoristica",
+            "id": "veterano", "name": "Veterano de Guerra", "category": "Diversos",
             "icon": "bi-shield-exclamation", "xp": 100,
             "desc": "Aprovado em 30+ disciplinas (voce ja viu de tudo)",
             "unlocked": approved_n >= 30,
             "progress": min(1.0, approved_n / 30.0),
         },
         {
-            "id": "fenix", "name": "Fenix Academica", "category": "Humoristica",
+            "id": "fenix", "name": "Fenix Academica", "category": "Diversos",
             "icon": "bi-arrow-repeat", "xp": 100,
             "desc": "Reprovado e depois aprovado na mesma disciplina (a volta por cima!)",
             "unlocked": _has_phoenix(subs),
             "progress": 1.0 if _has_phoenix(subs) else 0.0,
         },
         {
-            "id": "nota_raspando", "name": "Nota Raspando", "category": "Humoristica",
+            "id": "nota_raspando", "name": "Nota Raspando", "category": "Diversos",
             "icon": "bi-emoji-sunglasses", "xp": 50,
             "desc": "Aprovado com nota entre 6,0 e 6,5 em alguma disciplina",
             "unlocked": any(
@@ -474,28 +474,28 @@ def _build_achievements(student: dict[str, Any]) -> list[dict[str, Any]]:
             ) else 0.0,
         },
         {
-            "id": "colecionador_reprov", "name": "Colecionador de Experiencias", "category": "Humoristica",
+            "id": "colecionador_reprov", "name": "Colecionador de Experiencias", "category": "Diversos",
             "icon": "bi-emoji-dizzy", "xp": 50,
             "desc": "Reprovado em 3+ disciplinas (e tudo bem, faz parte!)",
             "unlocked": failed_n >= 3,
             "progress": min(1.0, failed_n / 3.0),
         },
         {
-            "id": "speedrunner", "name": "Speedrunner", "category": "Humoristica",
+            "id": "speedrunner", "name": "Speedrunner", "category": "Diversos",
             "icon": "bi-lightning-charge", "xp": 150,
             "desc": "Cursando 5+ disciplinas ao mesmo tempo (calma, respira!)",
             "unlocked": cursando_n >= 5,
             "progress": min(1.0, cursando_n / 5.0),
         },
         {
-            "id": "humanista", "name": "Humanista Tech", "category": "Humoristica",
+            "id": "humanista", "name": "Humanista Tech", "category": "Diversos",
             "icon": "bi-heart", "xp": 75,
             "desc": "Aprovado em 2+ optativas humanisticas",
             "unlocked": opt_412 >= 2,
             "progress": min(1.0, opt_412 / 2.0),
         },
         {
-            "id": "bug_free", "name": "Bug Free (mentira)", "category": "Humoristica",
+            "id": "bug_free", "name": "Bug Free (mentira)", "category": "Diversos",
             "icon": "bi-bug", "xp": 100,
             "desc": "CR acima de 8 e nenhuma reprovacao",
             "unlocked": gpa >= 8.0 and failed_n == 0,
