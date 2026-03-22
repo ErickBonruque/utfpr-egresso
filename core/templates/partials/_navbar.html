@@ -1,0 +1,100 @@
+<!-- Navbar Global -->
+    <nav class="navbar-cea navbar navbar-expand-lg sticky-top">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="{% url 'dashboard' %}">
+                <img id="navbarLogo" src="{% static 'img/logo_UTFPR_cor.png' %}"
+                    data-light="{% static 'img/logo_UTFPR_cor.png' %}"
+                    data-dark="{% static 'img/logo_UTFPR_cor_branco.png' %}" alt="UTFPR" style="height: 42px;">
+                <span class="ms-2">Sistema CEA</span>
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarGlobal">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarGlobal">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {% block nav_dashboard %}{% endblock %}" href="{% url 'dashboard' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
+                            <i class="bi bi-grid-fill me-1"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% block nav_arvore %}{% endblock %}" href="{% url 'arvore' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
+                            <i class="bi bi-tree me-1"></i> Árvore
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% block nav_egressos %}{% endblock %}" href="{% url 'egressos' %}">
+                            <i class="bi bi-people me-1"></i> Egressos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% block nav_conquistas %}{% endblock %}" href="{% url 'conquistas' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
+                            <i class="bi bi-trophy me-1"></i> Conquistas
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% block nav_vagas %}{% endblock %}" href="{% url 'vagas' %}">
+                            <i class="bi bi-briefcase me-1"></i> Vagas
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="navbar-user-section">
+                    <div class="user-level-badge" id="navUserBadge">...</div>
+                    <div class="user-name-group d-none d-lg-block">
+                        <div class="u-name" id="navUserName">Carregando...</div>
+                        <div class="u-detail" id="navUserDetail"></div>
+                    </div>
+                    <div style="position: relative;">
+                        <button class="user-avatar-btn" id="userAvatarBtn" aria-label="Menu do perfil">?</button>
+                        <div class="profile-dropdown" id="profileDropdown">
+                            <div class="profile-dropdown-header">
+                                <div class="pd-name" id="navDropdownName">Carregando...</div>
+                                <div class="pd-detail" id="navDropdownDetail"></div>
+                            </div>
+                            <a class="profile-dropdown-item" href="{% url 'dashboard' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
+                                <i class="bi bi-person"></i> Meu Dashboard
+                            </a>
+                            <button type="button" class="profile-dropdown-item" id="openStudentSwitcher" style="width:100%; text-align:left; border:none;">
+                                <i class="bi bi-people"></i> Trocar Aluno
+                            </button>
+                            <div class="profile-dropdown-divider"></div>
+                            <div class="theme-toggle-row">
+                                <span><i class="bi bi-moon-stars"></i> Tema Escuro</span>
+                                <label class="theme-switch">
+                                    <input type="checkbox" id="themeToggle" aria-label="Alternar tema claro e escuro">
+                                    <span class="theme-slider"></span>
+                                </label>
+                            </div>
+                            <div class="profile-dropdown-divider"></div>
+                            <a class="profile-dropdown-item" href="{% url 'login' %}" style="color: #ef4444;">
+                                <i class="bi bi-box-arrow-right" style="color: #ef4444;"></i> Sair
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Modal: Trocar Aluno -->
+    <div class="modal fade" id="studentSwitcherModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><i class="bi bi-people-fill me-2"></i>Selecionar Aluno Ativo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="student-search-input" class="form-label small fw-semibold">Buscar aluno</label>
+                        <input type="text" id="student-search-input" class="form-control" placeholder="Digite o nome do aluno...">
+                    </div>
+                    <div id="student-list" class="list-group"></div>
+                    <div id="student-list-empty" class="text-muted small mt-3" style="display:none;">Nenhum aluno ativo encontrado.</div>
+                </div>
+            </div>
+        </div>
+    </div>

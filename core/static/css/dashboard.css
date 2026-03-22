@@ -1,0 +1,182 @@
+.main-content { padding: 2rem 0; }
+
+    .card {
+        border: none;
+        border-radius: 15px;
+        background: var(--bg-card);
+        box-shadow: var(--card-shadow);
+        transition: transform 0.3s, box-shadow 0.3s;
+        height: 100%;
+    }
+    .card:hover { transform: translateY(-5px); box-shadow: var(--card-shadow-hover); }
+
+    .progress-card {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+    }
+    .progress-card .progress {
+        height: 12px;
+        border-radius: 999px;
+        background-color: rgba(255,255,255,0.25);
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .progress-card .progress-bar {
+        border-radius: 999px;
+        background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+        box-shadow: 0 2px 6px rgba(76, 175, 80, 0.35), inset 0 1px 0 rgba(255,255,255,0.2);
+        position: relative;
+        overflow: hidden;
+    }
+    .progress-card .progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        animation: shimmer 2s infinite;
+    }
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    .achievement-card { text-align: center; padding: 1.2rem 0.5rem; transition: all 0.3s; }
+    .achievement-card:hover { transform: scale(1.05); }
+    .achievement-icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
+    .achievement-icon.unlocked { color: var(--accent-color); }
+    .achievement-icon.locked { color: var(--text-muted); opacity: 0.4; }
+
+    .branch-progress { margin-bottom: 1rem; }
+    .branch-progress .progress {
+        height: 10px;
+        background-color: var(--border-color);
+        border-radius: 999px;
+        overflow: hidden;
+        box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .branch-progress .progress-bar {
+        background: linear-gradient(90deg, #4CAF50, #45a049);
+        border-radius: 999px;
+        box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3), inset 0 1px 0 rgba(255,255,255,0.1);
+        position: relative;
+    }
+    .branch-progress .progress-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+        animation: shimmer 2s infinite;
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--primary-color);
+        margin-bottom: 1.2rem;
+        position: relative;
+        padding-left: 16px;
+    }
+    .section-title::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 50%;
+        transform: translateY(-50%);
+        width: 4px; height: 22px;
+        background: var(--accent-color);
+        border-radius: 3px;
+    }
+
+    .subjects-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .subject-pill {
+        font-size: 0.78rem;
+        font-weight: 600;
+        border-radius: 999px;
+        padding: 0.35rem 0.72rem;
+        border: 1px solid transparent;
+        letter-spacing: 0.01em;
+    }
+
+    .subject-pill.approved {
+        color: #1f6f52;
+        background: rgba(34, 139, 96, 0.12);
+        border-color: rgba(34, 139, 96, 0.28);
+    }
+
+    .subject-pill.ongoing {
+        color: #1f5e93;
+        background: rgba(59, 130, 246, 0.11);
+        border-color: rgba(59, 130, 246, 0.28);
+    }
+
+    .subject-pill.failed {
+        color: #8f3d48;
+        background: rgba(220, 53, 69, 0.12);
+        border-color: rgba(220, 53, 69, 0.24);
+    }
+
+    .subject-pill.opt-specific {
+        color: #8a5a00;
+        background: rgba(245, 158, 11, 0.14);
+        border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .subject-pill.opt-human {
+        color: #5b3ea1;
+        background: rgba(139, 92, 246, 0.14);
+        border-color: rgba(139, 92, 246, 0.28);
+    }
+
+    .subject-pill.missing {
+        color: #9a3412;
+        background: rgba(249, 115, 22, 0.13);
+        border-color: rgba(249, 115, 22, 0.28);
+    }
+
+    [data-theme="dark"] .subject-pill.approved {
+        color: #7fd8b0;
+        background: rgba(16, 185, 129, 0.18);
+        border-color: rgba(16, 185, 129, 0.34);
+    }
+
+    [data-theme="dark"] .subject-pill.ongoing {
+        color: #90c5ff;
+        background: rgba(59, 130, 246, 0.2);
+        border-color: rgba(59, 130, 246, 0.35);
+    }
+
+    [data-theme="dark"] .subject-pill.failed {
+        color: #ff9ea9;
+        background: rgba(239, 68, 68, 0.18);
+        border-color: rgba(239, 68, 68, 0.32);
+    }
+
+    [data-theme="dark"] .subject-pill.opt-specific {
+        color: #facc15;
+        background: rgba(245, 158, 11, 0.2);
+        border-color: rgba(245, 158, 11, 0.35);
+    }
+
+    [data-theme="dark"] .subject-pill.opt-human {
+        color: #c4b5fd;
+        background: rgba(139, 92, 246, 0.2);
+        border-color: rgba(139, 92, 246, 0.35);
+    }
+
+    [data-theme="dark"] .subject-pill.missing {
+        color: #fdba74;
+        background: rgba(249, 115, 22, 0.2);
+        border-color: rgba(249, 115, 22, 0.35);
+    }
+
+    #loading-spinner { display: none; }
