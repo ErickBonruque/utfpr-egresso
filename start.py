@@ -47,10 +47,10 @@ def _ensure_runtime_seed_data():
 
 		call_command(
 			'popular_banco',
-			ativos=80,
-			egressos=20,
-			trancados=10,
-			evadidos=5,
+			ativos=15,
+			egressos=5,
+			trancados=3,
+			evadidos=2,
 			limpar=False,
 			verbosity=0,
 		)
