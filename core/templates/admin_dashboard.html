@@ -1,0 +1,155 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Painel Admin — UTFPR CEA{% endblock %}
+
+{% block content %}
+<link href="{% static 'css/admin_dashboard.css' %}" rel="stylesheet">
+
+<div class="container-fluid main-content px-3 px-md-4 py-4">
+
+    <!-- Header -->
+    <div class="row mb-4 align-items-center">
+        <div class="col">
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-bar-chart-line-fill me-2" style="color:var(--utfpr-yellow)"></i>
+                Painel Administrativo
+            </h2>
+            <p class="text-muted small mb-0">UTFPR Santa Helena &mdash; Ciência da Computação</p>
+        </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="row g-3 mb-4" id="kpi-cards"></div>
+
+    <!-- Status Donut + Period Bar -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-5">
+            <div class="card admin-card h-100 p-3">
+                <div class="card-section-title">Distribuição por Status</div>
+                <div class="chart-wrap">
+                    <canvas id="chartStatus"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="card admin-card h-100 p-3">
+                <div class="card-section-title">Alunos Ativos por Período</div>
+                <div class="chart-wrap">
+                    <canvas id="chartPeriod"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GPA + Workload -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card admin-card h-100 p-3">
+                <div class="card-section-title">Distribuição de CR (Coeficiente de Rendimento)</div>
+                <div class="chart-wrap">
+                    <canvas id="chartGpa"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card admin-card h-100 p-3">
+                <div class="card-section-title">Progresso de Carga Horária</div>
+                <div class="chart-wrap">
+                    <canvas id="chartWorkload"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hardest Subjects -->
+    <div class="row g-3 mb-4">
+        <div class="col-12">
+            <div class="card admin-card p-3">
+                <div class="card-section-title">Top 10 Disciplinas com Menor Taxa de Aprovação</div>
+                <div class="chart-wrap chart-wrap-tall">
+                    <canvas id="chartHardest"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Evasion + Cohort -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card admin-card h-100 p-3">
+                <div class="card-section-title">Evasão por Período</div>
+                <div class="chart-wrap">
+                    <canvas id="chartEvasion"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card admin-card h-100 p-3">
+                <div class="card-section-title">Coorte por Ano de Ingresso</div>
+                <div class="chart-wrap">
+                    <canvas id="chartCohort"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alumni Section Header -->
+    <div class="row mb-2 mt-2">
+        <div class="col">
+            <h5 class="fw-semibold">
+                <i class="bi bi-mortarboard-fill me-2" style="color:var(--utfpr-yellow)"></i>
+                Egressos &amp; Mercado de Trabalho
+            </h5>
+        </div>
+    </div>
+
+    <!-- Companies + Remote + Mentoring availability -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-5">
+            <div class="card admin-card h-100 p-3">
+                <div class="card-section-title">Top 10 Empresas</div>
+                <div class="chart-wrap chart-wrap-tall">
+                    <canvas id="chartCompanies"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card admin-card h-100 p-3 text-center">
+                <div class="card-section-title">Trabalho Remoto</div>
+                <div class="chart-wrap">
+                    <canvas id="chartRemote"></canvas>
+                </div>
+                <p class="mt-2 small text-muted" id="remoteLabel"></p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card admin-card h-100 p-3">
+                <div class="card-section-title">Disponibilidade para Mentoria</div>
+                <div class="chart-wrap">
+                    <canvas id="chartMentoring"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mentoring Areas -->
+    <div class="row g-3 mb-5">
+        <div class="col-12">
+            <div class="card admin-card p-3">
+                <div class="card-section-title">Top Áreas de Mentoria</div>
+                <div class="chart-wrap chart-wrap-tall">
+                    <canvas id="chartMentoringAreas"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const METRICS = {{ metrics_json|safe }};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{% static 'js/admin_dashboard.js' %}"></script>
+{% endblock %}

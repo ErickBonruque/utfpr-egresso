@@ -179,9 +179,26 @@ class Command(BaseCommand):
                             help='Seed para reprodutibilidade (default: 42)')
         parser.add_argument('--limpar', action='store_true',
                             help='Limpa todos os dados antes de popular')
+        parser.add_argument(
+            '--base-fixa',
+            action='store_true',
+            help=(
+                'Usa valores canônicos para o dashboard admin: '
+                '600 ativos, 30 formados, 100 trancados, 70 evadidos, seed=2024, --limpar. '
+                'Equivalente a: --ativos 600 --egressos 30 --trancados 100 --evadidos 70 --seed 2024 --limpar'
+            ),
+        )
 
     @transaction.atomic
     def handle(self, *args, **options):
+        if options['base_fixa']:
+            options['ativos'] = 600
+            options['egressos'] = 30
+            options['trancados'] = 100
+            options['evadidos'] = 70
+            options['seed'] = 2024
+            options['limpar'] = True
+
         n_ativos = options['ativos']
         n_egressos = options['egressos']
         n_trancados = options['trancados']

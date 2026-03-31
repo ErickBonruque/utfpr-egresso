@@ -2,12 +2,15 @@ import json
 import math
 import traceback
 
-from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.conf import settings as django_settings
+from django.db.models import Count, FloatField, Q, ExpressionWrapper
+from django.db.models.functions import Cast
+from django.http import HttpResponseForbidden, JsonResponse
+from django.shortcuts import redirect, render, get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
-from core.models import Aluno
+from core.models import Aluno, Disciplina, Matricula
 from core.progress import calcular_progresso_aluno
 from core.serializers import serializar_aluno, serializar_aluno_resumo, serializar_egresso_publico
 
@@ -58,6 +61,7 @@ def _aluno_context(request):
         'aluno_json': json.dumps(aluno_data, ensure_ascii=False),
         'progress_json': json.dumps(progresso, ensure_ascii=False),
         'aluno': aluno,
+        'is_admin': request.session.get('admin_mode', False),
     }
 
 
@@ -460,3 +464,220 @@ def _safe_number(value):
         return f
     except (ValueError, TypeError):
         return None
+
+
+# ── Admin Dashboard ───────────────────────────────────────────────────────
+
+def admin_unlock(request):
+    """Ativa o modo admin na sessão via chave secreta."""
+    key = request.GET.get('key', '')
+    if key == getattr(django_settings, 'ADMIN_DASHBOARD_KEY', 'cea-admin-2024'):
+        request.session['admin_mode'] = True
+        return redirect('admin_dashboard')
+    return HttpResponseForbidden('Chave inválida.')
+
+
+def admin_dashboard(request):
+    """Dashboard administrativo com métricas agregadas do curso."""
+    if not request.session.get('admin_mode'):
+        return HttpResponseForbidden(
+            'Acesso restrito. Acesse /admin-dashboard/unlock/?key=<chave> primeiro.'
+        )
+    metrics = _build_dashboard_metrics()
+    context = _aluno_context(request)
+    context['nav_active'] = 'admin_dashboard'
+    context['is_admin'] = True
+    context['metrics_json'] = json.dumps(metrics, ensure_ascii=False, default=str)
+    return render(request, 'admin_dashboard.html', context)
+
+
+def _build_dashboard_metrics():
+    """Agrega métricas do curso usando apenas ORM queries."""
+
+    # ── 1. Totais por status ─────────────────────────────────────────────
+    status_counts_qs = (
+        Aluno.objects
+        .values('status')
+        .annotate(total=Count('pk'))
+        .order_by('status')
+    )
+    status_counts = {row['status']: row['total'] for row in status_counts_qs}
+    total = sum(status_counts.values())
+
+    # ── 2. Alunos ativos por período ─────────────────────────────────────
+    per_period = list(
+        Aluno.objects
+        .filter(status='ativo')
+        .values('periodo_atual')
+        .annotate(total=Count('pk'))
+        .order_by('periodo_atual')
+    )
+
+    # ── 3. Distribuição de GPA ───────────────────────────────────────────
+    gpa_qs = (
+        Aluno.objects
+        .exclude(coeficiente=0.0)
+        .aggregate(
+            lt4=Count('pk', filter=Q(coeficiente__lt=4)),
+            g4a6=Count('pk', filter=Q(coeficiente__gte=4, coeficiente__lt=6)),
+            g6a7=Count('pk', filter=Q(coeficiente__gte=6, coeficiente__lt=7)),
+            g7a8=Count('pk', filter=Q(coeficiente__gte=7, coeficiente__lt=8)),
+            g8a9=Count('pk', filter=Q(coeficiente__gte=8, coeficiente__lt=9)),
+            gte9=Count('pk', filter=Q(coeficiente__gte=9)),
+        )
+    )
+    gpa_buckets = {
+        '<4':  gpa_qs['lt4'],
+        '4-6': gpa_qs['g4a6'],
+        '6-7': gpa_qs['g6a7'],
+        '7-8': gpa_qs['g7a8'],
+        '8-9': gpa_qs['g8a9'],
+        '≥9':  gpa_qs['gte9'],
+    }
+
+    # ── 4. Top 10 disciplinas com menor taxa de aprovação ────────────────
+    hardest_qs = (
+        Matricula.objects
+        .filter(status__in=['aprovada', 'reprovada'])
+        .values('disciplina__nome', 'disciplina__codigo', 'disciplina__periodo')
+        .annotate(
+            total_finalizadas=Count('pk'),
+            aprovadas=Count('pk', filter=Q(status='aprovada')),
+        )
+        .filter(total_finalizadas__gte=10)
+        .annotate(
+            taxa_aprovacao=ExpressionWrapper(
+                Cast('aprovadas', FloatField()) / Cast('total_finalizadas', FloatField()) * 100,
+                output_field=FloatField()
+            )
+        )
+        .order_by('taxa_aprovacao')
+        [:10]
+    )
+    hardest_subjects = [
+        {
+            'nome': r['disciplina__nome'],
+            'codigo': r['disciplina__codigo'],
+            'periodo': r['disciplina__periodo'],
+            'taxa_aprovacao': round(r['taxa_aprovacao'], 1),
+            'total': r['total_finalizadas'],
+            'aprovadas': r['aprovadas'],
+        }
+        for r in hardest_qs
+    ]
+
+    # ── 5. Evasão por período ────────────────────────────────────────────
+    evasion_by_period = list(
+        Aluno.objects
+        .filter(status='evadido')
+        .values('periodo_atual')
+        .annotate(total=Count('pk'))
+        .order_by('periodo_atual')
+    )
+
+    # ── 6. Insights de egressos (formados) ──────────────────────────────
+    alumni_qs = Aluno.objects.filter(status='formado')
+    total_alumni = alumni_qs.count()
+
+    top_companies = list(
+        alumni_qs
+        .exclude(empresa__isnull=True)
+        .exclude(empresa='')
+        .values('empresa')
+        .annotate(total=Count('pk'))
+        .order_by('-total')
+        [:10]
+    )
+
+    remote_count = alumni_qs.filter(trabalha_remoto=True).count()
+    remote_pct = round(remote_count / total_alumni * 100, 1) if total_alumni else 0
+
+    mentoring_availability = list(
+        alumni_qs
+        .values('disponibilidade')
+        .annotate(total=Count('pk'))
+        .order_by('disponibilidade')
+    )
+
+    # Áreas de mentoria: split em Python (SQLite sem UNNEST)
+    areas_raw = (
+        alumni_qs
+        .exclude(areas_mentoria__isnull=True)
+        .exclude(areas_mentoria='')
+        .values_list('areas_mentoria', flat=True)
+    )
+    areas_counter = {}
+    for raw in areas_raw:
+        for area in raw.split(','):
+            area = area.strip()
+            if area:
+                areas_counter[area] = areas_counter.get(area, 0) + 1
+    top_mentoring_areas = [
+        {'area': a, 'count': c}
+        for a, c in sorted(areas_counter.items(), key=lambda x: -x[1])[:10]
+    ]
+
+    # ── 7. Distribuição de carga horária concluída (%) ───────────────────
+    workload_qs = (
+        Aluno.objects
+        .filter(carga_horaria_total__gt=0)
+        .annotate(
+            pct=ExpressionWrapper(
+                Cast('carga_horaria_cumprida', FloatField()) /
+                Cast('carga_horaria_total', FloatField()) * 100,
+                output_field=FloatField()
+            )
+        )
+        .aggregate(
+            b0_20=Count('pk',  filter=Q(pct__lt=20)),
+            b20_40=Count('pk', filter=Q(pct__gte=20, pct__lt=40)),
+            b40_60=Count('pk', filter=Q(pct__gte=40, pct__lt=60)),
+            b60_80=Count('pk', filter=Q(pct__gte=60, pct__lt=80)),
+            b80_100=Count('pk', filter=Q(pct__gte=80)),
+        )
+    )
+    workload_buckets = {
+        '0-20%':   workload_qs['b0_20'],
+        '20-40%':  workload_qs['b20_40'],
+        '40-60%':  workload_qs['b40_60'],
+        '60-80%':  workload_qs['b60_80'],
+        '80-100%': workload_qs['b80_100'],
+    }
+
+    # ── 8. Coorte por ano de ingresso ────────────────────────────────────
+    cohort_by_year = list(
+        Aluno.objects
+        .values('ano_curriculo')
+        .annotate(total=Count('pk'))
+        .order_by('ano_curriculo')
+    )
+
+    # ── KPIs ─────────────────────────────────────────────────────────────
+    n_ativos = status_counts.get('ativo', 0)
+    n_formados = status_counts.get('formado', 0)
+    n_evadidos = status_counts.get('evadido', 0)
+
+    return {
+        'total': total,
+        'status_counts': status_counts,
+        'kpis': {
+            'total': total,
+            'active_pct':    round(n_ativos   / total * 100, 1) if total else 0,
+            'grad_rate_pct': round(n_formados  / total * 100, 1) if total else 0,
+            'evasion_pct':   round(n_evadidos  / total * 100, 1) if total else 0,
+        },
+        'per_period': per_period,
+        'gpa_buckets': gpa_buckets,
+        'hardest_subjects': hardest_subjects,
+        'evasion_by_period': evasion_by_period,
+        'alumni': {
+            'total': total_alumni,
+            'top_companies': top_companies,
+            'remote_pct': remote_pct,
+            'remote_count': remote_count,
+            'mentoring_availability': mentoring_availability,
+            'top_mentoring_areas': top_mentoring_areas,
+        },
+        'workload_buckets': workload_buckets,
+        'cohort_by_year': cohort_by_year,
+    }

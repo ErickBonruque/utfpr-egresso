@@ -18,4 +18,8 @@ urlpatterns = [
     path('api/trocar-aluno/', views.api_trocar_aluno, name='api_trocar_aluno'),
     path('api/alunos/', views.api_alunos, name='api_alunos'),
     path('api/alunos/<int:aluno_id>/', views.api_aluno_detalhe, name='api_aluno_detalhe'),
+
+    # Admin dashboard
+    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('admin-dashboard/unlock/', views.admin_unlock, name='admin_unlock'),
 ]
