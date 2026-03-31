@@ -94,15 +94,178 @@
     100% { transform: rotate(360deg); }
 }
 
-/* Responsividade */
+/* ═══════════════════════════════════════════════════
+   RESPONSIVIDADE GLOBAL
+   ═══════════════════════════════════════════════════ */
+
+/* ── Tablets (max 991px) ───────────────────────────── */
+@media (max-width: 991px) {
+    /* Navbar: esconder badge e nome ao lado do avatar */
+    .user-level-badge {
+        font-size: 0.68rem;
+        padding: 4px 10px;
+    }
+    .user-name-group {
+        display: none !important;
+    }
+
+    /* Navbar colapsada */
+    .navbar-collapse {
+        background: var(--navbar-bg);
+        border-radius: 0 0 16px 16px;
+        padding: 1rem;
+        margin-top: 0.5rem;
+        border: 1px solid var(--border-color);
+        border-top: none;
+    }
+    .navbar-cea .nav-link {
+        padding: 10px 14px !important;
+        margin: 2px 0;
+    }
+
+    /* Dashboard: cards empilham */
+    .main-content {
+        padding: 1rem 0;
+    }
+}
+
+/* ── Mobile (max 768px) ────────────────────────────── */
 @media (max-width: 768px) {
     .user-info {
         flex-direction: column;
         text-align: center;
         margin-top: 1rem;
     }
-    
     .stat-card {
         margin-bottom: 1rem;
+    }
+
+    /* Navbar: compactar área do usuário */
+    .navbar-user-section {
+        gap: 6px;
+    }
+    .user-level-badge {
+        font-size: 0.62rem;
+        padding: 3px 8px;
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .user-avatar-btn {
+        width: 34px;
+        height: 34px;
+        font-size: 0.72rem;
+    }
+
+    /* Profile dropdown: full-width no mobile */
+    .profile-dropdown {
+        width: calc(100vw - 2rem);
+        right: -0.5rem;
+    }
+
+    /* Dashboard: progress card */
+    .progress-card .card-body {
+        padding: 1rem !important;
+    }
+
+    /* Conquistas: hero e stats compactos */
+    .hero-head {
+        padding: 1rem;
+        border-radius: 12px;
+    }
+    .hero-head h4 {
+        font-size: 1.1rem;
+    }
+    .stats-bar {
+        padding: 0.8rem 1rem;
+    }
+    .stat-value {
+        font-size: 1.2rem;
+    }
+    .stat-label {
+        font-size: 0.7rem;
+    }
+
+    /* Conquistas: grid 1 coluna */
+    .achievement-card {
+        margin-bottom: 0.5rem;
+    }
+
+    /* Filtros: scroll horizontal */
+    .filter-btns {
+        overflow-x: auto;
+        flex-wrap: nowrap !important;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 4px;
+    }
+    .filter-btns::-webkit-scrollbar {
+        display: none;
+    }
+    .filter-btns .btn {
+        flex-shrink: 0;
+    }
+
+    /* Container padding reduzido */
+    .container {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+
+    /* Cards gerais */
+    .card {
+        border-radius: 12px;
+    }
+    .card-body {
+        padding: 1rem;
+    }
+    .card:hover {
+        transform: none;
+    }
+
+    /* Section title compacto */
+    .section-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.8rem;
+    }
+}
+
+/* ── Mobile pequeno (max 480px) ────────────────────── */
+@media (max-width: 480px) {
+    /* Navbar: badge ainda mais compacto */
+    .user-level-badge {
+        font-size: 0.58rem;
+        padding: 2px 6px;
+        max-width: 110px;
+    }
+    .navbar-cea .navbar-brand {
+        font-size: 1rem;
+    }
+    .navbar-cea .navbar-brand img {
+        height: 32px !important;
+    }
+
+    /* Dashboard: achievement cards menores */
+    .achievement-icon {
+        font-size: 1.8rem;
+    }
+
+    /* Conquistas: stats bar em coluna */
+    .stats-bar .row {
+        flex-direction: column;
+    }
+    .stats-bar .stat-item {
+        border-right: none !important;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        padding: 0.5rem 0;
+    }
+    .stats-bar .stat-item:last-child {
+        border-bottom: none;
+    }
+
+    /* Tooltip de matéria: full width */
+    .subject-tooltip {
+        width: calc(100vw - 2rem) !important;
+        max-width: 320px;
     }
 }

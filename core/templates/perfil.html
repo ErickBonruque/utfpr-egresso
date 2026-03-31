@@ -131,6 +131,29 @@
     margin-bottom: 1.5rem; flex-wrap: wrap;
   }
   .back-bar h1 { font-size: 1.55rem; font-weight: 800; color: var(--text-primary); margin: 0; }
+
+  /* ── Responsividade ── */
+  @media (max-width: 768px) {
+    .perfil-page { padding: 1rem 0 2rem; }
+    .hero-body { padding: 0 1rem 1rem; }
+    .hero-avatar { width: 68px; height: 68px; font-size: 1.5rem; margin-top: -34px; }
+    .hero-name { font-size: 1.2rem; }
+    .hero-sub { font-size: .8rem; }
+    .stat-chip { font-size: .75rem; padding: .35rem .65rem; }
+    .metric-value { font-size: 1.5rem; }
+    .metric-card { padding: 1rem; }
+    .section-card { padding: 1rem; margin-bottom: 1rem; }
+    .period-body { padding: .5rem 0 .75rem 0; }
+    .subject-row { flex-wrap: wrap; gap: 4px; }
+    .subject-code { min-width: auto; }
+    .back-bar h1 { font-size: 1.2rem; }
+    .ach-badge { font-size: .72rem; padding: .35rem .6rem; }
+  }
+  @media (max-width: 480px) {
+    .hero-banner { height: 70px; }
+    .hero-avatar { width: 56px; height: 56px; font-size: 1.2rem; margin-top: -28px; border-width: 3px; }
+    .metric-value { font-size: 1.3rem; }
+  }
 </style>
 
 <div class="container perfil-page">

@@ -8,7 +8,6 @@ import json
 import os
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from django.apps import apps
 from core.models import Aluno, Disciplina, Matricula
 
 
@@ -18,30 +17,16 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write('Configurando base fixa para Vercel...')
         
-        # Verificar se já existe dados
-        total_alunos = Aluno.objects.count()
-        if total_alunos > 0:
-            self.stdout.write(self.style.WARNING(f'Banco já contém {total_alunos} alunos'))
-            self.stdout.write('Limpando dados existentes...')
-            
-            # Limpar models na ordem correta
-            Matricula.objects.all().delete()
-            Aluno.objects.all().delete()
-            Disciplina.objects.all().delete()
+        # Limpar dados existentes
+        self.stdout.write('Limpando dados existentes...')
+        call_command('flush', verbosity=0, interactive=False)
         
         # Carregar dados fixos
-        dados_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'dados_fixos.json')
-        self.stdout.write(f'Procurando arquivo em: {dados_file}')
-        
+        dados_file = os.path.join(os.path.dirname(__file__), '../../../dados_fixos.json')
         if os.path.exists(dados_file):
             self.stdout.write('Carregando dados fixos...')
-            try:
-                call_command('loaddata', dados_file, verbosity=1)
-                self.stdout.write(self.style.SUCCESS('Dados carregados com sucesso!'))
-            except Exception as e:
-                self.stdout.write(self.style.ERROR(f'Erro ao carregar dados: {e}'))
-                self.stdout.write('Gerando base fixa com parâmetros padrão...')
-                call_command('popular_banco', '--base-fixa')
+            call_command('loaddata', dados_file)
+            self.stdout.write(self.style.SUCCESS('Dados carregados com sucesso!'))
         else:
             self.stdout.write(self.style.WARNING('Arquivo dados_fixos.json não encontrado'))
             self.stdout.write('Gerando base fixa com parâmetros padrão...')
@@ -64,6 +49,6 @@ class Command(BaseCommand):
         # Verificar se Erick está na base
         erick = Aluno.objects.filter(nome__icontains='Erick').first()
         if erick:
-            self.stdout.write(self.style.SUCCESS(f'✅ Alex Silva Demo encontrado (ID: {erick.pk})'))
+            self.stdout.write(self.style.SUCCESS(f'Alex Silva Demo encontrado (ID: {erick.pk})'))
         else:
-            self.stdout.write(self.style.WARNING('⚠️ Erick não encontrado na base'))
+            self.stdout.write(self.style.WARNING('Erick não encontrado na base'))

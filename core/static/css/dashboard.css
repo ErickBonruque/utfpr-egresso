@@ -514,12 +514,18 @@
     .periods-grid {
         grid-template-columns: repeat(4, 1fr);
     }
+    /* Dashboard achievements: 1 por linha */
+    #achievements-row .col-4 {
+        width: 100%;
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
 }
 
-/* Mobile: scroll horizontal */
+/* Mobile: scroll horizontal na grade */
 @media (max-width: 640px) {
     .periods-grid {
-        grid-template-columns: repeat(8, minmax(90px, 1fr));
+        grid-template-columns: repeat(8, minmax(80px, 1fr));
         overflow-x: auto;
         padding-bottom: 8px;
         -webkit-overflow-scrolling: touch;
@@ -533,6 +539,48 @@
         overflow-x: auto;
         flex-wrap: nowrap;
         padding-bottom: 4px;
+    }
+    .stat-chip {
+        flex-shrink: 0;
+    }
+    .curriculum-filters {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 4px;
+    }
+    .curriculum-filters::-webkit-scrollbar {
+        display: none;
+    }
+    .filter-chip {
+        flex-shrink: 0;
+    }
+    /* Células menores no mobile */
+    .subject-cell {
+        padding: 6px 4px;
+        min-height: 44px;
+    }
+    .subject-code {
+        font-size: 0.56rem;
+    }
+    .subject-status-icon {
+        font-size: 0.5rem;
+    }
+    /* Period header compacto */
+    .period-header {
+        padding: 6px 2px;
+    }
+    .period-label {
+        font-size: 0.6rem;
+    }
+    .period-count {
+        font-size: 0.52rem;
+    }
+    /* Optativas: pills menores */
+    .opt-pill {
+        font-size: 0.66rem;
+        padding: 4px 8px;
     }
 }
 

@@ -5,7 +5,7 @@ Os nomes dos campos usam camelCase para manter compatibilidade com o JS existent
 nos templates (dashboard.html, arvore.html, conquistas.html, etc.).
 """
 
-from core.models import Aluno
+from core.models import Aluno, Disciplina
 
 
 def serializar_aluno(aluno, incluir_disciplinas=True):
@@ -31,14 +31,35 @@ def serializar_aluno(aluno, incluir_disciplinas=True):
     }
 
     if incluir_disciplinas:
+        # Buscar matrículas existentes indexadas por disciplina
         matriculas = (
             aluno.matriculas
             .select_related('disciplina')
             .order_by('disciplina__periodo', 'disciplina__codigo')
         )
-        data['subjects'] = [
-            _serializar_matricula(m) for m in matriculas
-        ]
+        matricula_por_disc = {m.disciplina_id: m for m in matriculas}
+
+        # Incluir TODAS as disciplinas da grade, marcando sem matrícula como nao_iniciada
+        todas_disciplinas = Disciplina.objects.all().order_by('periodo', 'codigo')
+        subjects = []
+        for disc in todas_disciplinas:
+            mat = matricula_por_disc.get(disc.pk)
+            if mat:
+                subjects.append(_serializar_matricula(mat))
+            else:
+                subjects.append({
+                    'code': disc.codigo,
+                    'name': disc.nome,
+                    'workload': disc.carga_horaria,
+                    'period': disc.periodo,
+                    'type': disc.tipo,
+                    'group': disc.grupo,
+                    'status': 'nao_iniciada',
+                    'grade': None,
+                    'attendance': None,
+                    'completedAt': None,
+                })
+        data['subjects'] = subjects
 
     return data
 
