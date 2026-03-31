@@ -61,7 +61,7 @@ def _aluno_context(request):
         'aluno_json': json.dumps(aluno_data, ensure_ascii=False),
         'progress_json': json.dumps(progresso, ensure_ascii=False),
         'aluno': aluno,
-        'is_admin': (aluno.is_admin if aluno else False) or request.session.get('admin_mode', False),
+        'is_admin': aluno.is_admin if aluno else False,
     }
 
 
@@ -469,19 +469,15 @@ def _safe_number(value):
 # ── Admin Dashboard ───────────────────────────────────────────────────────
 
 def admin_unlock(request):
-    """Ativa o modo admin na sessão via chave secreta."""
-    key = request.GET.get('key', '')
-    if key == getattr(django_settings, 'ADMIN_DASHBOARD_KEY', 'cea-admin-2024'):
-        request.session['admin_mode'] = True
-        return redirect('admin_dashboard')
-    return HttpResponseForbidden('Chave inválida.')
+    """Mantido por compatibilidade — acesso admin agora é por aluno.is_admin."""
+    request.session.pop('admin_mode', None)
+    return redirect('admin_dashboard')
 
 
 def admin_dashboard(request):
     """Dashboard administrativo com métricas agregadas do curso."""
     aluno = _get_aluno_from_request(request)
-    is_admin = (aluno and aluno.is_admin) or request.session.get('admin_mode', False)
-    if not is_admin:
+    if not (aluno and aluno.is_admin):
         return HttpResponseForbidden(
             'Acesso restrito. Selecione um aluno com permissão de administrador.'
         )
