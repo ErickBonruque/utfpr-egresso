@@ -16,27 +16,27 @@
             <div class="collapse navbar-collapse" id="navbarGlobal">
                 <ul class="navbar-nav mx-auto">
                     <li class="nav-item">
-                        <a class="nav-link {% block nav_dashboard %}{% endblock %}" href="{% url 'dashboard' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
+                        <a class="nav-link {% if nav_active == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
                             <i class="bi bi-grid-fill me-1"></i> Dashboard
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% block nav_arvore %}{% endblock %}" href="{% url 'arvore' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
+                        <a class="nav-link {% if nav_active == 'arvore' %}active{% endif %}" href="{% url 'arvore' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
                             <i class="bi bi-tree me-1"></i> Árvore
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% block nav_egressos %}{% endblock %}" href="{% url 'egressos' %}">
+                        <a class="nav-link {% if nav_active == 'egressos' %}active{% endif %}" href="{% url 'egressos' %}">
                             <i class="bi bi-people me-1"></i> Egressos
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% block nav_conquistas %}{% endblock %}" href="{% url 'conquistas' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
+                        <a class="nav-link {% if nav_active == 'conquistas' %}active{% endif %}" href="{% url 'conquistas' %}{% if aluno %}?id={{ aluno.pk }}{% endif %}">
                             <i class="bi bi-trophy me-1"></i> Conquistas
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {% block nav_vagas %}{% endblock %}" href="{% url 'vagas' %}">
+                        <a class="nav-link {% if nav_active == 'vagas' %}active{% endif %}" href="{% url 'vagas' %}">
                             <i class="bi bi-briefcase me-1"></i> Vagas
                         </a>
                     </li>

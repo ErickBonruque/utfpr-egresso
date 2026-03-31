@@ -76,6 +76,7 @@ def home(request):
 def dashboard(request):
     """View para o dashboard principal"""
     context = _aluno_context(request)
+    context['nav_active'] = 'dashboard'
     return render(request, 'dashboard.html', context)
 
 
@@ -101,6 +102,7 @@ def egressos(request):
     stats['publicEmails'] = public_emails
 
     context = _aluno_context(request)
+    context['nav_active'] = 'egressos'
     context['stats_json'] = json.dumps(stats, ensure_ascii=False)
     return render(request, 'egressos.html', context)
 
@@ -108,18 +110,21 @@ def egressos(request):
 def vagas(request):
     """View para a página de vagas"""
     context = _aluno_context(request)
+    context['nav_active'] = 'vagas'
     return render(request, 'vagas.html', context)
 
 
 def conquistas(request):
     """View para a página de conquistas"""
     context = _aluno_context(request)
+    context['nav_active'] = 'conquistas'
     return render(request, 'conquistas.html', context)
 
 
 def arvore(request):
     """View para a página da árvore de carreiras"""
     context = _aluno_context(request)
+    context['nav_active'] = 'arvore'
     return render(request, 'arvore.html', context)
 
 
