@@ -80,52 +80,44 @@
             </div>
         </div>
 
-        <!-- In-Progress Subjects -->
-        <div class="row mb-4" id="ongoing-section">
+        <!-- Mapa Curricular -->
+        <div class="row mb-4">
             <div class="col-12">
-                <div class="card">
+                <div class="card curriculum-map-card">
                     <div class="card-body">
-                        <h5 class="card-title section-title" id="ongoing-title">Disciplinas em Andamento</h5>
-                        <div class="subjects-cloud" id="ongoing-badges"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <!-- Header com título, legenda e filtros -->
+                        <div class="curriculum-header">
+                            <h5 class="card-title section-title mb-0">Mapa Curricular</h5>
+                            <div class="curriculum-legend">
+                                <span class="legend-item"><span class="legend-dot approved"></span> Aprovada</span>
+                                <span class="legend-item"><span class="legend-dot ongoing"></span> Cursando</span>
+                                <span class="legend-item"><span class="legend-dot failed"></span> Reprovada</span>
+                                <span class="legend-item"><span class="legend-dot pending"></span> Pendente</span>
+                            </div>
+                            <div class="curriculum-filters" id="curriculum-filters">
+                                <button class="filter-chip active" data-filter="all">Todas</button>
+                                <button class="filter-chip" data-filter="aprovada">Aprovadas</button>
+                                <button class="filter-chip" data-filter="cursando">Cursando</button>
+                                <button class="filter-chip" data-filter="reprovada">Reprovadas</button>
+                                <button class="filter-chip" data-filter="nao_iniciada">Pendentes</button>
+                            </div>
+                        </div>
 
-        <!-- Subject Categories -->
-        <div class="row mb-4 g-3">
-            <div class="col-12 col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title section-title" id="mandatory-done-title">Obrigatórias Feitas</h5>
-                        <div class="subjects-cloud" id="mandatory-done-badges"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title section-title" id="opt-specific-title">Optativas Específicas Feitas</h5>
-                        <div class="subjects-cloud" id="opt-specific-badges"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <!-- Contadores rápidos -->
+                        <div class="curriculum-stats" id="curriculum-stats"></div>
 
-        <div class="row mb-4 g-3">
-            <div class="col-12 col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title section-title" id="opt-human-title">Optativas Humanísticas Feitas</h5>
-                        <div class="subjects-cloud" id="opt-human-badges"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12 col-lg-6">
-                <div class="card">
-                    <div class="card-body">
-                        <h5 class="card-title section-title" id="mandatory-missing-title">Obrigatórias Faltantes</h5>
-                        <div class="subjects-cloud" id="mandatory-missing-badges"></div>
+                        <!-- Grade 8 colunas (uma por período) -->
+                        <div class="periods-grid" id="periods-grid"></div>
+
+                        <!-- Optativas (abaixo da grade) -->
+                        <div class="optativas-section" id="optativas-section" style="display:none;">
+                            <div class="optativas-header" id="optativas-toggle">
+                                <i class="bi bi-chevron-down optativas-toggle" id="optativas-chevron"></i>
+                                <span class="optativas-title" id="optativas-title">Optativas</span>
+                            </div>
+                            <div class="optativas-body" id="optativas-body"></div>
+                        </div>
+
                     </div>
                 </div>
             </div>
