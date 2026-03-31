@@ -1,22 +1,19 @@
 """
-Management command para configurar base fixa na Vercel.
+Management command para configurar base fixa na Vercel (versão simplificada).
 
 Uso:
-    python manage.py base_fixa_vercel
+    python manage.py base_fixa_vercel_simples
 """
-import json
-import os
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
-from django.apps import apps
 from core.models import Aluno, Disciplina, Matricula
 
 
 class Command(BaseCommand):
-    help = 'Configura base fixa para produção na Vercel'
+    help = 'Configura base fixa para produção na Vercel (sem dependência de JSON)'
 
     def handle(self, *args, **options):
-        self.stdout.write('Configurando base fixa para Vercel...')
+        self.stdout.write('Configurando base fixa para Vercel (versão simplificada)...')
         
         # Verificar se já existe dados
         total_alunos = Aluno.objects.count()
@@ -29,23 +26,13 @@ class Command(BaseCommand):
             Aluno.objects.all().delete()
             Disciplina.objects.all().delete()
         
-        # Carregar dados fixos
-        dados_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'dados_fixos.json')
-        self.stdout.write(f'Procurando arquivo em: {dados_file}')
+        # Gerar base fixa com parâmetros conhecidos
+        self.stdout.write('Gerando base fixa com parâmetros padrão...')
+        call_command('popular_banco', '--base-fixa')
         
-        if os.path.exists(dados_file):
-            self.stdout.write('Carregando dados fixos...')
-            try:
-                call_command('loaddata', dados_file, verbosity=1)
-                self.stdout.write(self.style.SUCCESS('Dados carregados com sucesso!'))
-            except Exception as e:
-                self.stdout.write(self.style.ERROR(f'Erro ao carregar dados: {e}'))
-                self.stdout.write('Gerando base fixa com parâmetros padrão...')
-                call_command('popular_banco', '--base-fixa')
-        else:
-            self.stdout.write(self.style.WARNING('Arquivo dados_fixos.json não encontrado'))
-            self.stdout.write('Gerando base fixa com parâmetros padrão...')
-            call_command('popular_banco', '--base-fixa')
+        # Adicionar Erick manualmente
+        self.stdout.write('Adicionando Alex Silva Demo...')
+        call_command('adicionar_erick')
         
         # Estatísticas finais
         total_alunos = Aluno.objects.count()

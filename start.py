@@ -31,7 +31,7 @@ def _ensure_runtime_db_schema():
 def _ensure_runtime_seed_data():
 	"""
 	Em Vercel com SQLite efêmero, garante dados mínimos para a POC.
-	Evita telas vazias após cold start.
+	Carrega dados_fixos.json para manter a base idêntica ao localhost.
 	"""
 	if not os.environ.get('VERCEL'):
 		return
@@ -45,15 +45,22 @@ def _ensure_runtime_seed_data():
 		if Aluno.objects.exists():
 			return
 
-		call_command(
-			'popular_banco',
-			ativos=15,
-			egressos=5,
-			trancados=3,
-			evadidos=2,
-			limpar=False,
-			verbosity=0,
-		)
+		# Carregar dados fixos exportados do localhost
+		fixture = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dados_fixos.json')
+		if os.path.exists(fixture):
+			call_command('loaddata', fixture, verbosity=0)
+			print(f'dados_fixos.json carregado ({Aluno.objects.count()} alunos).', file=sys.stderr)
+		else:
+			# Fallback: gerar dados sintéticos se fixture não existir
+			call_command(
+				'popular_banco',
+				ativos=15,
+				egressos=5,
+				trancados=3,
+				evadidos=2,
+				limpar=False,
+				verbosity=0,
+			)
 	except Exception:
 		print('Falha ao popular dados iniciais em runtime.', file=sys.stderr)
 		traceback.print_exc()
