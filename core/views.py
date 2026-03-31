@@ -61,7 +61,7 @@ def _aluno_context(request):
         'aluno_json': json.dumps(aluno_data, ensure_ascii=False),
         'progress_json': json.dumps(progresso, ensure_ascii=False),
         'aluno': aluno,
-        'is_admin': request.session.get('admin_mode', False),
+        'is_admin': (aluno.is_admin if aluno else False) or request.session.get('admin_mode', False),
     }
 
 
@@ -479,9 +479,11 @@ def admin_unlock(request):
 
 def admin_dashboard(request):
     """Dashboard administrativo com métricas agregadas do curso."""
-    if not request.session.get('admin_mode'):
+    aluno = _get_aluno_from_request(request)
+    is_admin = (aluno and aluno.is_admin) or request.session.get('admin_mode', False)
+    if not is_admin:
         return HttpResponseForbidden(
-            'Acesso restrito. Acesse /admin-dashboard/unlock/?key=<chave> primeiro.'
+            'Acesso restrito. Selecione um aluno com permissão de administrador.'
         )
     metrics = _build_dashboard_metrics()
     context = _aluno_context(request)

@@ -67,6 +67,8 @@ class Aluno(models.Model):
                                        help_text='Disponibilidade para mentoria')
     areas_mentoria = models.TextField(blank=True, null=True,
                                       help_text='Áreas de expertise para mentoria (separadas por comma)')
+    is_admin = models.BooleanField(default=False,
+                                   help_text='Acesso ao painel administrativo')
 
     class Meta:
         ordering = ['registro']

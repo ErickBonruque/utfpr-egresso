@@ -382,6 +382,7 @@ class Command(BaseCommand):
                 'coeficiente': 0.7925,
                 'campus': 'Santa Helena',
                 'curso': 'Ciência da Computação',
+                'is_admin': True,
             }
         )
 
