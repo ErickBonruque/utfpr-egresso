@@ -28,6 +28,21 @@ type SeedFile = {
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
 
+// Default leveling table applied to every course; admins can reconfigure it
+// per course later (Fase 4). minXp follows a triangular progression.
+const DEFAULT_LEVELS = [
+  "Calouro",
+  "Iniciante",
+  "Aprendiz",
+  "Explorador",
+  "Dedicado",
+  "Veterano",
+  "Especialista",
+  "Mestre",
+  "Lenda do Campus",
+  "Formando",
+].map((title, i) => ({ level: i + 1, minXp: 50 * i * (i + 1), title }));
+
 async function main() {
   const data: SeedFile = JSON.parse(
     readFileSync(resolve(import.meta.dirname, "data/santa-helena.json"), "utf8"),
@@ -83,6 +98,14 @@ async function main() {
           isElective: s.isElective,
           electiveGroup: s.electiveGroup,
         },
+      });
+    }
+
+    for (const l of DEFAULT_LEVELS) {
+      await prisma.levelDefinition.upsert({
+        where: { courseId_level: { courseId: course.id, level: l.level } },
+        update: {},
+        create: { courseId: course.id, ...l },
       });
     }
 

@@ -54,13 +54,14 @@ model Course {
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
-  campus          Campus           @relation(fields: [campusId], references: [id], onDelete: Restrict)
-  subjects        Subject[]
-  curricula       Curriculum[]
-  achievements    Achievement[]
-  tracks          Track[]
-  careers         Career[]
-  studentProfiles StudentProfile[]
+  campus           Campus            @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  subjects         Subject[]
+  curricula        Curriculum[]
+  achievements     Achievement[]
+  tracks           Track[]
+  careers          Career[]
+  studentProfiles  StudentProfile[]
+  levelDefinitions LevelDefinition[]
 
   @@unique([campusId, name])
   @@map("courses")
@@ -142,6 +143,24 @@ model Achievement {
 
   @@unique([courseId, name])
   @@map("achievements")
+}
+
+/// XP thresholds and titles per level, configurable by admins per course
+/// (decision 2026-07-08: leveling rules live in the DB, not in engine code).
+/// The gamification engine (Fase 6) resolves a student's level by picking the
+/// highest level whose minXp <= total XP.
+model LevelDefinition {
+  id       String @id @default(cuid())
+  courseId String @map("course_id")
+  level    Int
+  minXp    Int    @map("min_xp")
+  /// Progressive title shown to the student (e.g. "Calouro", "Veterano")
+  title    String
+
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, level])
+  @@map("level_definitions")
 }
 
 /// A career tree ("árvore de carreiras") of a course.
