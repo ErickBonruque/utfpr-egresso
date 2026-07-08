@@ -1,0 +1,23 @@
+# Local infra for the CEA app. Fase 1 ships only Postgres; the app service
+# joins in Fase 2 (scaffolding).
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: cea-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: cea
+      POSTGRES_PASSWORD: cea_dev_password
+      POSTGRES_DB: cea
+    ports:
+      - "5432:5432"
+    volumes:
+      - cea_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cea -d cea"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  cea_pgdata:

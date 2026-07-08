@@ -81,3 +81,6 @@ yarn-error.log*
 *.temp
 temp/
 tmp/
+
+# Planejamento interno (refac) - não versionado
+.planning/

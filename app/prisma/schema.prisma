@@ -1,0 +1,401 @@
+// CEA — Conexão Egresso-Aluno · data model (Fase 1)
+//
+// The schema is split in three zones with different ownership rules:
+//   1. INSTITUTION & CONTENT — ours, configured by admins (campus, courses,
+//      curricula, gamification content). Multi-tenancy is column scoping:
+//      every content row reaches a Course, every Course reaches a Campus.
+//   2. USERS & PROFILES — ours. Auth tables are finalized by Better Auth in
+//      Fase 3; User carries only the fields Better Auth expects.
+//   3. UTFPR MIRROR — read-only cache of academic data (enrollments, standing).
+//      Written EXCLUSIVELY by the integration layer (AcademicDataProvider,
+//      Fase 8). Never treated as our source of truth.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 1. INSTITUTION & CONTENT (ours — admin-configured, zero hardcoded content)
+// ═══════════════════════════════════════════════════════════════════════════
+
+model Campus {
+  id        String   @id @default(cuid())
+  /// Official UTFPR campus initials (SH, CM, CT...) — external natural key
+  code      String   @unique
+  name      String
+  city      String
+  state     String   @default("PR")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  courses Course[]
+
+  @@map("campuses")
+}
+
+enum Degree {
+  BACHELORS
+  LICENTIATE
+  TECHNOLOGY
+
+  @@map("degree")
+}
+
+model Course {
+  id        String   @id @default(cuid())
+  campusId  String   @map("campus_id")
+  name      String
+  degree    Degree
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  campus          Campus           @relation(fields: [campusId], references: [id], onDelete: Restrict)
+  subjects        Subject[]
+  curricula       Curriculum[]
+  achievements    Achievement[]
+  tracks          Track[]
+  careers         Career[]
+  studentProfiles StudentProfile[]
+
+  @@unique([campusId, name])
+  @@map("courses")
+}
+
+model Subject {
+  id            String   @id @default(cuid())
+  courseId      String   @map("course_id")
+  /// Official UTFPR subject code (e.g. CC1AED1) — the join key with UTFPR data
+  code          String
+  name          String
+  workloadHours Int      @map("workload_hours")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  course            Course                 @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  curriculumEntries CurriculumEntry[]
+  nodeRequirements  TrackNodeRequirement[]
+  enrollments       Enrollment[]
+
+  @@unique([courseId, code])
+  @@map("subjects")
+}
+
+/// A versioned curriculum (matriz curricular) of a course, e.g. "2026/1".
+model Curriculum {
+  id        String   @id @default(cuid())
+  courseId  String   @map("course_id")
+  /// Version label as published by UTFPR (e.g. "2026/1")
+  version   String
+  isActive  Boolean  @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  course  Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  entries CurriculumEntry[]
+
+  @@unique([courseId, version])
+  @@map("curricula")
+}
+
+/// Positions a subject inside a curriculum version (period, elective info).
+model CurriculumEntry {
+  id            String  @id @default(cuid())
+  curriculumId  String  @map("curriculum_id")
+  subjectId     String  @map("subject_id")
+  period        Int
+  isElective    Boolean @default(false) @map("is_elective")
+  /// UTFPR elective group code (e.g. "412") — null for mandatory subjects
+  electiveGroup String? @map("elective_group")
+
+  curriculum Curriculum @relation(fields: [curriculumId], references: [id], onDelete: Cascade)
+  subject    Subject    @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([curriculumId, subjectId])
+  @@index([curriculumId, period])
+  @@map("curriculum_entries")
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  courseId    String   @map("course_id")
+  name        String
+  description String
+  /// Free-form category managed by admins (Acadêmica, Programação, Marcos...)
+  category    String
+  /// Icon identifier from the UI icon set (resolved by the frontend)
+  icon        String?
+  xpReward    Int      @default(0) @map("xp_reward")
+  /// Unlock rule evaluated by the gamification engine (Fase 6), e.g.
+  /// { "type": "subjects_approved", "subjectCodes": [...], "min": 3 }
+  criteria    Json?
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  course   Course                @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  progress AchievementProgress[]
+
+  @@unique([courseId, name])
+  @@map("achievements")
+}
+
+/// A career tree ("árvore de carreiras") of a course.
+model Track {
+  id          String   @id @default(cuid())
+  courseId    String   @map("course_id")
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  course Course      @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  nodes  TrackNode[]
+
+  @@unique([courseId, name])
+  @@map("tracks")
+}
+
+enum TrackNodeKind {
+  /// Progress node (e.g. "Fundamentos", "Algoritmos")
+  CORE
+  /// Specialization branch (e.g. "IA/ML", "Segurança")
+  BRANCH
+
+  @@map("track_node_kind")
+}
+
+model TrackNode {
+  id          String        @id @default(cuid())
+  trackId     String        @map("track_id")
+  parentId    String?       @map("parent_id")
+  kind        TrackNodeKind
+  name        String
+  description String?
+  icon        String?
+  sortOrder   Int           @default(0) @map("sort_order")
+  xpReward    Int           @default(0) @map("xp_reward")
+
+  track        Track                  @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  parent       TrackNode?             @relation("TrackNodeTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children     TrackNode[]            @relation("TrackNodeTree")
+  requirements TrackNodeRequirement[]
+  careers      CareerTrackNode[]
+
+  @@index([trackId])
+  @@map("track_nodes")
+}
+
+/// Subjects that must be approved to unlock a track node.
+model TrackNodeRequirement {
+  id        String @id @default(cuid())
+  nodeId    String @map("node_id")
+  subjectId String @map("subject_id")
+
+  node    TrackNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  subject Subject   @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  @@unique([nodeId, subjectId])
+  @@map("track_node_requirements")
+}
+
+model Career {
+  id          String   @id @default(cuid())
+  courseId    String   @map("course_id")
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  course Course            @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  nodes  CareerTrackNode[]
+
+  @@unique([courseId, name])
+  @@map("careers")
+}
+
+/// Track nodes that lead to a career (many-to-many).
+model CareerTrackNode {
+  careerId String @map("career_id")
+  nodeId   String @map("node_id")
+
+  career Career    @relation(fields: [careerId], references: [id], onDelete: Cascade)
+  node   TrackNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@id([careerId, nodeId])
+  @@map("career_track_nodes")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 2. USERS & PROFILES (ours — auth finalized by Better Auth in Fase 3)
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// Core user identity. Field set follows Better Auth's user model so Fase 3
+/// can adopt this table without a breaking migration (session/account tables
+/// will be added by Better Auth itself).
+model User {
+  id            String   @id @default(cuid())
+  name          String
+  email         String   @unique
+  emailVerified Boolean  @default(false) @map("email_verified")
+  image         String?
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  adminAssignments AdminAssignment[]
+  studentProfile   StudentProfile?
+
+  @@map("users")
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  CAMPUS_ADMIN
+  COURSE_ADMIN
+
+  @@map("admin_role")
+}
+
+/// Grants an admin role over a scope: SUPER_ADMIN has both scopes null,
+/// CAMPUS_ADMIN sets campusId, COURSE_ADMIN sets courseId. Enforced by the
+/// auth guards (Fase 3).
+model AdminAssignment {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  role      AdminRole
+  campusId  String?   @map("campus_id")
+  courseId  String?   @map("course_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("admin_assignments")
+}
+
+/// Our data about a student: the link user ↔ course plus the UTFPR external
+/// key (RA). Academic facts (grades, status) live in the mirror zone below.
+model StudentProfile {
+  id       String @id @default(cuid())
+  userId   String @unique @map("user_id")
+  courseId String @map("course_id")
+  /// Registro Acadêmico — UTFPR's natural key, used to reconcile mirror data
+  ra       String @unique
+  /// Admission term as informed on signup (e.g. "2023/1")
+  admissionTerm String?  @map("admission_term")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course           Course                @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  graduateProfile  GraduateProfile?
+  achievementProgress AchievementProgress[]
+  enrollments      Enrollment[]
+  academicStanding AcademicStanding?
+
+  @@index([courseId])
+  @@map("student_profiles")
+}
+
+/// Alumni-only data, created on the student → graduate transition (Fase 7).
+model GraduateProfile {
+  id                  String   @id @default(cuid())
+  studentProfileId    String   @unique @map("student_profile_id")
+  company             String?
+  jobTitle            String?  @map("job_title")
+  linkedinUrl         String?  @map("linkedin_url")
+  githubUrl           String?  @map("github_url")
+  bio                 String?
+  mentorshipAvailable Boolean  @default(false) @map("mentorship_available")
+  mentorshipAreas     String[] @default([]) @map("mentorship_areas")
+  /// Privacy: profile only appears on the public showcase when true
+  showInShowcase      Boolean  @default(false) @map("show_in_showcase")
+  graduatedTerm       String?  @map("graduated_term")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@map("graduate_profiles")
+}
+
+/// Progress of a student toward one achievement (ProgressoConquista).
+model AchievementProgress {
+  id               String    @id @default(cuid())
+  studentProfileId String    @map("student_profile_id")
+  achievementId    String    @map("achievement_id")
+  /// 0–100; kept even after unlock for display purposes
+  progress         Int       @default(0)
+  unlockedAt       DateTime? @map("unlocked_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  achievement    Achievement    @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+
+  @@unique([studentProfileId, achievementId])
+  @@map("achievement_progress")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// 3. UTFPR MIRROR (external source of truth — written only by the
+//    AcademicDataProvider sync, Fase 8; today populated by the SeedProvider)
+// ═══════════════════════════════════════════════════════════════════════════
+
+enum EnrollmentStatus {
+  IN_PROGRESS
+  APPROVED
+  FAILED
+  WITHDRAWN
+
+  @@map("enrollment_status")
+}
+
+/// Mirror of one UTFPR enrollment (Matricula): student × subject × term.
+model Enrollment {
+  id               String           @id @default(cuid())
+  studentProfileId String           @map("student_profile_id")
+  subjectId        String           @map("subject_id")
+  /// Academic term (e.g. "2025/2")
+  term             String
+  status           EnrollmentStatus
+  /// Final grade 0.0–10.0 as provided by UTFPR
+  grade            Decimal?         @db.Decimal(4, 2)
+  /// Attendance percentage 0–100 as provided by UTFPR
+  attendance       Decimal?         @db.Decimal(5, 2)
+  syncedAt         DateTime         @default(now()) @map("synced_at")
+
+  studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+  subject        Subject        @relation(fields: [subjectId], references: [id], onDelete: Restrict)
+
+  @@unique([studentProfileId, subjectId, term])
+  @@index([subjectId])
+  @@map("enrollments")
+}
+
+enum AcademicStatus {
+  ACTIVE
+  LOCKED
+  DROPPED_OUT
+  GRADUATED
+
+  @@map("academic_status")
+}
+
+/// Mirror of the student's academic situation at UTFPR.
+model AcademicStanding {
+  id               String         @id @default(cuid())
+  studentProfileId String         @unique @map("student_profile_id")
+  status           AcademicStatus
+  currentPeriod    Int?           @map("current_period")
+  /// Coeficiente de rendimento 0.0–1.0 (UTFPR scale)
+  gpa              Decimal?       @db.Decimal(5, 4)
+  syncedAt         DateTime       @default(now()) @map("synced_at")
+
+  studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
+
+  @@map("academic_standings")
+}

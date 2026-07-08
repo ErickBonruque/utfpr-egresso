@@ -1,0 +1,2519 @@
+{
+  "generatedFrom": "matriz.txt + .planning/data/matriz_*.json (Sistema Acadêmico UTFPR, oferta 2026/1)",
+  "campus": {
+    "code": "SH",
+    "name": "Santa Helena",
+    "city": "Santa Helena"
+  },
+  "courses": [
+    {
+      "name": "Ciência da Computação",
+      "degree": "BACHELORS",
+      "curriculumVersion": "2026/1",
+      "subjects": [
+        {
+          "code": "CC1AED1",
+          "name": "Algoritmos e Estrutura de Dados I",
+          "workloadHours": 90,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC1ICC",
+          "name": "Introdução à Ciência da Computação",
+          "workloadHours": 45,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC1MBD",
+          "name": "Modelagem de Banco de Dados",
+          "workloadHours": 60,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "HU1LA",
+          "name": "Linguagem Acadêmica",
+          "workloadHours": 45,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "MA1FM",
+          "name": "Fundamentos de Matemática",
+          "workloadHours": 60,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "MA1LM",
+          "name": "Lógica Matemática",
+          "workloadHours": 45,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC2AED2",
+          "name": "Algoritmos e Estrutura de Dados II",
+          "workloadHours": 60,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC2CLD",
+          "name": "Circuitos Lógicos Digitais",
+          "workloadHours": 60,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC2ER",
+          "name": "Engenharia de Requisitos",
+          "workloadHours": 60,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC2POO",
+          "name": "Programação Orientada a Objetos",
+          "workloadHours": 60,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "MA2MA",
+          "name": "Matemática Aplicada",
+          "workloadHours": 60,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "OPHCC",
+          "name": "Canto Coral",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "412"
+        },
+        {
+          "code": "OPHE",
+          "name": "Empreendedorismo",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "412"
+        },
+        {
+          "code": "OPHFE",
+          "name": "Fundamentos da Ética",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "412"
+        },
+        {
+          "code": "OPHGIT",
+          "name": "Gestão da Inovação e Tecnologia",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "412"
+        },
+        {
+          "code": "OPHHCA",
+          "name": "História e Cultura Afro",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "412"
+        },
+        {
+          "code": "OPHIT1",
+          "name": "Inglês Técnico I",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "412"
+        },
+        {
+          "code": "OPHIT2",
+          "name": "Inglês Técnico II",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "412"
+        },
+        {
+          "code": "OPHL",
+          "name": "Libras I",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "412"
+        },
+        {
+          "code": "OPHL2",
+          "name": "Libras 2",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "412"
+        },
+        {
+          "code": "OPHLG",
+          "name": "Liderança e Gerenciamento",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "412"
+        },
+        {
+          "code": "OPHMAS",
+          "name": "Meio Ambiente e Sociedade",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "412"
+        },
+        {
+          "code": "OPHMP",
+          "name": "Metodologia da Pesquisa",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "412"
+        },
+        {
+          "code": "OPHRHL",
+          "name": "Relações Humanas e Liderança",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "412"
+        },
+        {
+          "code": "CC3AED3",
+          "name": "Algoritmos e Estrutura de Dados III",
+          "workloadHours": 60,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC3AOC",
+          "name": "Arquitetura e Organização de Computadores",
+          "workloadHours": 90,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC3ES",
+          "name": "Engenharia de Software",
+          "workloadHours": 60,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC3PI1",
+          "name": "Projeto Integrador I: Computação e Educação",
+          "workloadHours": 180,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "MA3AL",
+          "name": "Álgebra Linear",
+          "workloadHours": 45,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "MA3CA",
+          "name": "Cálculo Aplicado",
+          "workloadHours": 60,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC4IHC",
+          "name": "Interação Humano Computador",
+          "workloadHours": 60,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC4LBD",
+          "name": "Laboratório de Banco de Dados",
+          "workloadHours": 60,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC4PO",
+          "name": "Pesquisa e Ordenação",
+          "workloadHours": 60,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC4RC",
+          "name": "Redes de Computadores",
+          "workloadHours": 60,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC4SO",
+          "name": "Sistemas Operacionais",
+          "workloadHours": 60,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "MA4PE",
+          "name": "Probabilidade e Estatística",
+          "workloadHours": 60,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC5AG",
+          "name": "Algoritmos em Grafos",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC5PI2",
+          "name": "Projeto Integrador II: Desenvolvimento, Inovação e Empreendedorismo Social",
+          "workloadHours": 180,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC5PLDS",
+          "name": "Paradigmas de Linguagens e Desenvolvimento de Sistemas",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC5QS",
+          "name": "Qualidade de Software",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC5SDT",
+          "name": "Sistemas Distribuídos e Tecnologias",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "EO11",
+          "name": "Estágio Obrigatório",
+          "workloadHours": 360,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "MA5MN",
+          "name": "Métodos Numéricos",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC6FIA",
+          "name": "Fundamentos de Inteligência Artificial",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC6IBDDA",
+          "name": "Introdução a Big Data e Data Analytics",
+          "workloadHours": 60,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC6LFTC",
+          "name": "Linguagens Formais e Teoria da Computação",
+          "workloadHours": 60,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC6PDSW",
+          "name": "Projeto e Desenvolvimento de Sistemas Web",
+          "workloadHours": 60,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC6TRC",
+          "name": "Tecnologias de Redes de Computadores",
+          "workloadHours": 60,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "MA6PO",
+          "name": "Pesquisa Operacional",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "TCC1",
+          "name": "Trabalho de Conclusão de Curso I",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC7C",
+          "name": "Compiladores",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC7CS",
+          "name": "Cibersegurança",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC7IAA",
+          "name": "Inteligência Artificial Aplicada",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC7PI3",
+          "name": "Projeto Integrador III: Tecnologia e Mundo do Trabalho",
+          "workloadHours": 180,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC7VC",
+          "name": "Visão Computacional",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "OPEAP",
+          "name": "Aprendizagem Profunda",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPECD",
+          "name": "Comunicação de Dados",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPECDMS",
+          "name": "Cultura Digital e Mídias Sociais",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPECF",
+          "name": "Computação Forense",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPEDADM",
+          "name": "Desenvolvimento de Aplicações para Dispositivos Móveis",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPEGP",
+          "name": "Gerenciamento de Projetos",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPEIC",
+          "name": "Internet das Coisas",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPEIE",
+          "name": "Informática na Educação",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPELEAC",
+          "name": "Linguagem de Estruturação e Apresentação de Conteúdos",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPELM",
+          "name": "Linguagem de Montagem",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPELPOO",
+          "name": "Linguagem de Programação Objeto Orientada",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPELSO",
+          "name": "Laboratório de Sistemas Operacionais",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPEPDI",
+          "name": "Processamento Digital de Imagens",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPEPL",
+          "name": "Programação Lógica",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPEPPD",
+          "name": "Programação Paralela e Distribuída",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPERP",
+          "name": "Redes de Petri",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPESM",
+          "name": "Sistemas Multiagentes",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPETCD",
+          "name": "Tópicos em Ciência de Dados",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "OPETDS",
+          "name": "Tecnologia em Desenvolvimento de Sistemas",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": true,
+          "electiveGroup": "413"
+        },
+        {
+          "code": "CC8CG",
+          "name": "Computação Gráfica",
+          "workloadHours": 60,
+          "period": 8,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "TCC2",
+          "name": "Trabalho de Conclusão de Curso II",
+          "workloadHours": 30,
+          "period": 8,
+          "isElective": false,
+          "electiveGroup": null
+        }
+      ]
+    },
+    {
+      "name": "Agronomia",
+      "degree": "BACHELORS",
+      "curriculumVersion": "2026/1",
+      "subjects": [
+        {
+          "code": "CB1013",
+          "name": "Fundamentos de Zoologia",
+          "workloadHours": 30,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB1015",
+          "name": "Morfologia e Anatomia Vegetal",
+          "workloadHours": 60,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CC1017",
+          "name": "Recursos Computacionais e Conteúdo Digital na Agricultura",
+          "workloadHours": 45,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "EE1014",
+          "name": "Introdução à Agronomia",
+          "workloadHours": 45,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "EG1012",
+          "name": "Desenho Técnico",
+          "workloadHours": 45,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FI1011",
+          "name": "Análise do Movimento dos Corpos Rígidos",
+          "workloadHours": 30,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "MA1018",
+          "name": "Matemática para a Agronomia",
+          "workloadHours": 60,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "QU1016",
+          "name": "Química Geral e Orgânica para a Agronomia",
+          "workloadHours": 45,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB1027",
+          "name": "Sistemática Vegetal",
+          "workloadHours": 60,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CS1022",
+          "name": "Gênese e Morfologia do Solo",
+          "workloadHours": 45,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "EE1025",
+          "name": "Metodologia da Pesquisa",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "EP1023",
+          "name": "Introdução à Ciência de Dados na Agricultura",
+          "workloadHours": 45,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "GE1024",
+          "name": "Levantamentos Topográficos",
+          "workloadHours": 60,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "MA1021",
+          "name": "Elementos de Cálculo Diferencial e Integral",
+          "workloadHours": 60,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "QU1026",
+          "name": "Química Analítica para a Agronomia",
+          "workloadHours": 45,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "OP1002",
+          "name": "Qualidade de Vida",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "OP1003",
+          "name": "Ética, Profissão e Cidadania",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "OP1004",
+          "name": "Filosofia da Ciência e da Tecnologia",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "OP1005",
+          "name": "Filosofia Geral",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "OP1006",
+          "name": "História e Cultura Afro-brasileira",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "OP1007",
+          "name": "Relações Humanas e Liderança",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "OP1008",
+          "name": "Inglês Técnico 1",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "OP1009",
+          "name": "Inglês Técnico 2",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "OP1010",
+          "name": "Libras 1",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "OP1011",
+          "name": "Libras 2",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "OP1012",
+          "name": "Linguagem Acadêmica",
+          "workloadHours": 45,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "OP1013",
+          "name": "Canto Coral",
+          "workloadHours": 45,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "OP1046",
+          "name": "Gestão da Inovação e Tecnologia",
+          "workloadHours": 30,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "OP1048",
+          "name": "Desenvolvimento Rural: Trajetórias, Diversidade e Questões em Debate",
+          "workloadHours": 60,
+          "period": 2,
+          "isElective": true,
+          "electiveGroup": "410"
+        },
+        {
+          "code": "CB1036",
+          "name": "Genética Agropecuária",
+          "workloadHours": 45,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CS1033",
+          "name": "Composição e Propriedades do Solo",
+          "workloadHours": 45,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "EP1034",
+          "name": "Experimentação na Agricultura",
+          "workloadHours": 60,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FI1035",
+          "name": "Fluidos e Termodinâmica",
+          "workloadHours": 30,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FT1031",
+          "name": "Agrometeorologia",
+          "workloadHours": 45,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "GE1037",
+          "name": "Levantamentos Geodésicos",
+          "workloadHours": 45,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "QU1032",
+          "name": "Bioquímica",
+          "workloadHours": 60,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB1042",
+          "name": "Ecologia Agrícola",
+          "workloadHours": 45,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB1044",
+          "name": "Fisiologia Vegetal I",
+          "workloadHours": 45,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CS1046",
+          "name": "Produção de Informação de Recursos do Solo",
+          "workloadHours": 45,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ER1045",
+          "name": "Máquinas e Equipamentos Agrícolas",
+          "workloadHours": 45,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ES1047",
+          "name": "Sociologia Rural",
+          "workloadHours": 45,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FS1043",
+          "name": "Entomologia Geral",
+          "workloadHours": 60,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ZO1041",
+          "name": "Alimentos e Alimentação Animal",
+          "workloadHours": 45,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB1054",
+          "name": "Fisiologia Vegetal II",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CS1053",
+          "name": "Fertilidade do Solo e Adubação",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ER1055",
+          "name": "Mecanização Agrícola",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ER1057",
+          "name": "Projetos Hidráulicos na Agricultura",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ES1056",
+          "name": "Princípios e Métodos de Extensão e Comunicação Rural",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FS1052",
+          "name": "Entomologia Agrícola",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FT1058",
+          "name": "Biotecnologia Agrícola",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "GP1051",
+          "name": "Economia Rural e Mercados Agropecuários",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CS1065",
+          "name": "Manejo e Conservação do Solo e da Água",
+          "workloadHours": 60,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ER1064",
+          "name": "Manejo da Água em Sistemas Agrícolas",
+          "workloadHours": 60,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FS1063",
+          "name": "Agentes Causais de Doenças de Plantas",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FT1062",
+          "name": "Agroecologia",
+          "workloadHours": 60,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FT1066",
+          "name": "Produção e Tecnologia de Sementes",
+          "workloadHours": 60,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "GP1061",
+          "name": "Administração de Empresas Rurais",
+          "workloadHours": 60,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "OP1001",
+          "name": "Biologia e Microbiologia do Solo",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1014",
+          "name": "Modelagem Geoestatística em Agroecossistemas",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1015",
+          "name": "Obras Hidráulicas",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1016",
+          "name": "Capital Social: Associativismo e Cooperativismo",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1017",
+          "name": "Ecoturismo e Turismo Rural",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1018",
+          "name": "Controle Biológico de Pragas e Vetores",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1019",
+          "name": "Tecnologia em Aplicação de Produtos Fitossanitários",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1020",
+          "name": "Cultivo de Plantas Medicinais e Aromáticas",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1021",
+          "name": "Culturas de Lavoura de Inverno",
+          "workloadHours": 60,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1022",
+          "name": "Culturas de Lavoura de Verão",
+          "workloadHours": 60,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1023",
+          "name": "Fisiologia do Estresse em Plantas",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1024",
+          "name": "Logística e Pós Colheita de Grãos",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1025",
+          "name": "Técnicas Especiais em Qualidade de Sementes",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1026",
+          "name": "Tecnologia Pós-colheita de Produtos Hortícolas",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1027",
+          "name": "Tópicos Especiais em Fruticultura",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1028",
+          "name": "Plantas de Cobertura",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1029",
+          "name": "Geoprocessamento e Sensoriamento Remoto",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1030",
+          "name": "Ajustamento de Observações",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1031",
+          "name": "Astronomia de Posição",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1033",
+          "name": "Gestão e Manejo Ambiental",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1034",
+          "name": "Manejo de Bacias Hidrográficas",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1035",
+          "name": "Sistema Integrado de Produção Agropecuária",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1036",
+          "name": "Empreendedorismo",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1037",
+          "name": "Planejamento de Empresas Rurais",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1038",
+          "name": "Projetos de Desenvolvimento Sustentável",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1039",
+          "name": "Projetos, Avaliações e Perícias",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1040",
+          "name": "Apicultura",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1041",
+          "name": "Piscicultura",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1042",
+          "name": "Avicultura",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1043",
+          "name": "Suinocultura",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1044",
+          "name": "Química de Metabólitos Secundários",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1045",
+          "name": "Aplicações de Ciência de Dados para Agronomia em Python",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "OP1047",
+          "name": "Astronomia Básica para o Ensino de Ciências",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": true,
+          "electiveGroup": "411"
+        },
+        {
+          "code": "ER1071",
+          "name": "Agricultura de Precisão",
+          "workloadHours": 45,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ER1072",
+          "name": "Construções Rurais",
+          "workloadHours": 45,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FS1073",
+          "name": "Manejo Integrado de Doenças de Plantas",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FS1078",
+          "name": "Plantas Daninhas",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FT1076",
+          "name": "Propagação de Plantas",
+          "workloadHours": 30,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FT1077",
+          "name": "Desenvolvimento e Posicionamento de Cultivares",
+          "workloadHours": 45,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "TC1075",
+          "name": "Planejamento do Trabalho de Conclusão de Curso",
+          "workloadHours": 30,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ZO1074",
+          "name": "Forragicultura",
+          "workloadHours": 45,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "EE1084",
+          "name": "Legislação Agrária e Ambiental",
+          "workloadHours": 30,
+          "period": 8,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FS1082",
+          "name": "Defesa Fitossanitária e Receituário Agronômico",
+          "workloadHours": 30,
+          "period": 8,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FT1081",
+          "name": "Culturas da Soja, Milho e Feijão",
+          "workloadHours": 60,
+          "period": 8,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FT1083",
+          "name": "Fruticultura",
+          "workloadHours": 45,
+          "period": 8,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FT1085",
+          "name": "Olericultura",
+          "workloadHours": 60,
+          "period": 8,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FT1086",
+          "name": "Silvicultura",
+          "workloadHours": 30,
+          "period": 8,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ZO1087",
+          "name": "Produção de Monogástricos",
+          "workloadHours": 45,
+          "period": 8,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FT1091",
+          "name": "Floricultura e Paisagismo",
+          "workloadHours": 45,
+          "period": 9,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "TA1092",
+          "name": "Tecnologia de Produtos Agropecuários",
+          "workloadHours": 60,
+          "period": 9,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "TC1093",
+          "name": "Trabalho de Conclusão de Curso",
+          "workloadHours": 30,
+          "period": 9,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ZO1094",
+          "name": "Bovinocultura de Corte e Leite",
+          "workloadHours": 45,
+          "period": 9,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "EO1000",
+          "name": "Estágio Curricular Obrigatório",
+          "workloadHours": 360,
+          "period": 10,
+          "isElective": false,
+          "electiveGroup": null
+        }
+      ]
+    },
+    {
+      "name": "Licenciatura em Ciências Biológicas",
+      "degree": "LICENTIATE",
+      "curriculumVersion": "2026/1",
+      "subjects": [
+        {
+          "code": "CB141A",
+          "name": "Biologia Celular",
+          "workloadHours": 60,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB141B",
+          "name": "Diversidade Biológica e Filogenia",
+          "workloadHours": 45,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB141C",
+          "name": "Morfologia e Anatomia Vegetal",
+          "workloadHours": 60,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED141A",
+          "name": "História da Educação Geral e Brasileira",
+          "workloadHours": 60,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED141B",
+          "name": "Psicologia da Educação",
+          "workloadHours": 30,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED141C",
+          "name": "Linguagem Acadêmica",
+          "workloadHours": 45,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "MA141A",
+          "name": "Matemática",
+          "workloadHours": 30,
+          "period": 1,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB142A",
+          "name": "Embriologia e Histologia",
+          "workloadHours": 60,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB142B",
+          "name": "Micologia e Ficologia",
+          "workloadHours": 45,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB142C",
+          "name": "Zoologia de Invertebrados 1",
+          "workloadHours": 60,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED142A",
+          "name": "História e Epistemologia da Ciência",
+          "workloadHours": 45,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED142B",
+          "name": "Políticas Educacionais no Brasil",
+          "workloadHours": 45,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "FI142A",
+          "name": "Física Aplicada à Biologia",
+          "workloadHours": 45,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "QU142A",
+          "name": "Química Geral Aplicada",
+          "workloadHours": 60,
+          "period": 2,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB143A",
+          "name": "Genética Geral",
+          "workloadHours": 45,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB143B",
+          "name": "Zoologia de Invertebrados 2",
+          "workloadHours": 60,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB143C",
+          "name": "Sistemática de Plantas Terrestres",
+          "workloadHours": 60,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED143A",
+          "name": "Currículo de Ciências e Biologia",
+          "workloadHours": 45,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED143B",
+          "name": "Didática Aplicada ao Ensino de Ciências e Biologia",
+          "workloadHours": 60,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED143C",
+          "name": "Educação e Diversidade",
+          "workloadHours": 45,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "PEI143",
+          "name": "Projeto Extensionista Interdisciplinar 1",
+          "workloadHours": 120,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "QU143A",
+          "name": "Química Orgânica Aplicada",
+          "workloadHours": 30,
+          "period": 3,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB144A",
+          "name": "Anatomia Humana",
+          "workloadHours": 60,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB144B",
+          "name": "Zoologia de Vertebrados 1",
+          "workloadHours": 60,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED144A",
+          "name": "Gestão e Organização do Trabalho Pedagógico Escolar",
+          "workloadHours": 45,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED144B",
+          "name": "Metodologias do Ensino de Ciências e Biologia",
+          "workloadHours": 60,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "PEI144",
+          "name": "Projeto Extensionista Interdisciplinar 2",
+          "workloadHours": 120,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "QU144A",
+          "name": "Bioquímica",
+          "workloadHours": 60,
+          "period": 4,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB145A",
+          "name": "Microbiologia",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB145B",
+          "name": "Zoologia de Vertebrados 2",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB145C",
+          "name": "Fisiologia Vegetal",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED145A",
+          "name": "Astronomia Básica para o Ensino de Ciências",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED145C",
+          "name": "Educação Especial e Inclusão",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "EST14",
+          "name": "Estágio",
+          "workloadHours": 165,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "EST145",
+          "name": "Estágio Supervisionado em Ciências 1",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "MA145A",
+          "name": "Estatística Aplicada à Biologia",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "OP1401",
+          "name": "Ambientes Virtuais de Apoio ao Ensino e Aprendizagem",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1402",
+          "name": "Arte e Ciência",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1403",
+          "name": "Canto Coral",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1404",
+          "name": "Concepções, Identidade e Saberes Docentes",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1405",
+          "name": "Desafios Contemporâneos à Educação Escolar e Atuação Docente",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1406",
+          "name": "Dimensões da Ciência e Tecnologia no Ambiente Educacional",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1407",
+          "name": "Direitos Humanos e Sustentabilidade",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1408",
+          "name": "Divulgação Científica e Ensino",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1409",
+          "name": "Educação à Distância",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1410",
+          "name": "Educação de Jovens e Adultos no Brasil",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1411",
+          "name": "Educação e Qualidade de Vida",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1412",
+          "name": "Educação Indígena, Quilombola e do Campo",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1413",
+          "name": "Estudos Culturais das Ciências",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1414",
+          "name": "Ética, Profissão e Cidadania",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1415",
+          "name": "Filosofia da Ciência e da Tecnologia",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1416",
+          "name": "História da Ciência e Ensino",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1417",
+          "name": "História e Cultura Afro-brasileira",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1418",
+          "name": "História e Filosofia da Ciência",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1419",
+          "name": "Introdução à Pesquisa em Ensino",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1420",
+          "name": "Meio Ambiente e Sociedade",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1421",
+          "name": "O Conhecimento Científico Frente ao Contexto da Desinformação",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1422",
+          "name": "Oficina Pedagógica: Tecnologia e Educação",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1423",
+          "name": "Produção Audiovisual Educacional",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1424",
+          "name": "Psicologia das Relações Humanas",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1425",
+          "name": "Saúde Psicossocial e Trabalho",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1426",
+          "name": "Sistemas Multimídia",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1427",
+          "name": "Softwares Educativos",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1428",
+          "name": "Tópicos Específicos da Pesquisa na Educação em Ciências e Biologia",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "414"
+        },
+        {
+          "code": "OP1429",
+          "name": "Geoprocessamento e Sensoriamento Remoto",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1430",
+          "name": "Princípios de Análise Instrumental",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1431",
+          "name": "Química de Metabólicos Secundários",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1432",
+          "name": "Química Analítica",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1433",
+          "name": "Informática Básica",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1434",
+          "name": "Agroecologia",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1435",
+          "name": "Bioética",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1436",
+          "name": "Biogeografia",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1437",
+          "name": "Botânica Econômica",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1438",
+          "name": "Citogenética de Populações",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1439",
+          "name": "Citogenética Humana",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1440",
+          "name": "Controle Biológico",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1441",
+          "name": "Controle Biológico de Pragas e Vetores",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1442",
+          "name": "Ecologia de Campo",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1443",
+          "name": "Ecologia Humana",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1444",
+          "name": "Ecologia Química de Insetos",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1445",
+          "name": "Entomologia Aplicada a Conservação Ambiental",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1446",
+          "name": "Entomologia Geral",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1447",
+          "name": "Entomologia Sanitária",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1448",
+          "name": "Fisiologia do Estresse Vegetal",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1449",
+          "name": "Floricultura e Paisagismo",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1450",
+          "name": "Genética Médica",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1451",
+          "name": "Gestão e Manejo Ambiental",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1452",
+          "name": "Manejo de Bacias Hidrográficas",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1453",
+          "name": "Microbiologia Ambiental",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1454",
+          "name": "Microbiologia Médica",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1455",
+          "name": "Noções de Controle de Qualidade Microbiológico",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1456",
+          "name": "Plantas Medicinais, Aromáticas e Condimentares",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1457",
+          "name": "Princípios Básicos de Ictiologia",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1458",
+          "name": "Propagação Vegetal",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1459",
+          "name": "Sistemas de Gestão Ambiental",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1460",
+          "name": "Sistemas Integrados de Produção Agroflorestal",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1461",
+          "name": "Zoonoses Emergentes",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1462",
+          "name": "Legislação Ambiental",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1463",
+          "name": "Patologia Básica",
+          "workloadHours": 60,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1464",
+          "name": "Ecoturismo e Turismo Rural",
+          "workloadHours": 45,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1465",
+          "name": "Inglês Técnico 1",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1466",
+          "name": "Inglês Técnico 2",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1467",
+          "name": "Bioinsumos Agrícolas",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "OP1468",
+          "name": "Bioprospecção",
+          "workloadHours": 30,
+          "period": 5,
+          "isElective": true,
+          "electiveGroup": "415"
+        },
+        {
+          "code": "CB146A",
+          "name": "Anatomia Animal Comparada",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB146B",
+          "name": "Biologia Molecular",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB146C",
+          "name": "Fisiologia Humana",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB146D",
+          "name": "Imunologia",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB146E",
+          "name": "Ecologia Geral e de Ecossistemas",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED146A",
+          "name": "Corpo, Gênero e Sexualidade",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED146B",
+          "name": "Psicologia do Desenvolvimento e Aprendizagem",
+          "workloadHours": 45,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "EST146",
+          "name": "Estágio Supervisionado em Ciências 2",
+          "workloadHours": 60,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "TCC14A",
+          "name": "Trabalho de Conclusão de Curso 1",
+          "workloadHours": 30,
+          "period": 6,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB147A",
+          "name": "Biotecnologia",
+          "workloadHours": 45,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB147B",
+          "name": "Ecologia de Populações e Comunidades",
+          "workloadHours": 45,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB147C",
+          "name": "Parasitologia Geral",
+          "workloadHours": 45,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED145B",
+          "name": "Ctsa no Ensino de Ciências e Biologia",
+          "workloadHours": 45,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED147A",
+          "name": "Libras",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "EST147",
+          "name": "Estágio Supervisionado em Biologia 1",
+          "workloadHours": 60,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "PEI147",
+          "name": "Projeto Extensionista Interdisciplinar 3",
+          "workloadHours": 105,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "TCC14B",
+          "name": "Trabalho de Conclusão de Curso 2",
+          "workloadHours": 30,
+          "period": 7,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB148A",
+          "name": "Geologia e Paleontologia",
+          "workloadHours": 45,
+          "period": 8,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "CB148B",
+          "name": "Evolução",
+          "workloadHours": 60,
+          "period": 8,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "ED148A",
+          "name": "Educação Ambiental",
+          "workloadHours": 60,
+          "period": 8,
+          "isElective": false,
+          "electiveGroup": null
+        },
+        {
+          "code": "EST148",
+          "name": "Estágio Supervisionado em Biologia 2",
+          "workloadHours": 60,
+          "period": 8,
+          "isElective": false,
+          "electiveGroup": null
+        }
+      ]
+    }
+  ]
+}
