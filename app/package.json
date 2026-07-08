@@ -5,22 +5,44 @@
   "description": "Sistema CEA — Conexão Egresso-Aluno (UTFPR)",
   "license": "MIT",
   "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "biome check",
+    "format": "biome format --write",
+    "test": "vitest run",
+    "setup": "docker compose up -d db && prisma migrate deploy && prisma db seed",
     "db:up": "docker compose up -d db",
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "db:studio": "prisma studio",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "prepare": "cd .. && husky app/.husky || true"
   },
-  "devDependencies": {
-    "@types/node": "^26.1.1",
-    "dotenv": "^17.4.2",
-    "prisma": "^7.8.0",
-    "tsx": "^4.23.0",
-    "typescript": "^6.0.3"
+  "lint-staged": {
+    "*": "biome check --write --no-errors-on-unmatched"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "^7.8.0"
+    "@prisma/client": "^7.8.0",
+    "next": "16.2.10",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "dotenv": "^17.4.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prisma": "^7.8.0",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.0",
+    "typescript": "^5",
+    "vitest": "^4.0.18"
   }
 }

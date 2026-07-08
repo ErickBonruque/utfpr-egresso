@@ -4,7 +4,7 @@
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient, type Degree } from "../generated/prisma/client.js";
+import { type Degree, PrismaClient } from "../generated/prisma/client.js";
 
 type SeedSubject = {
   code: string;
@@ -45,7 +45,10 @@ const DEFAULT_LEVELS = [
 
 async function main() {
   const data: SeedFile = JSON.parse(
-    readFileSync(resolve(import.meta.dirname, "data/santa-helena.json"), "utf8"),
+    readFileSync(
+      resolve(import.meta.dirname, "data/santa-helena.json"),
+      "utf8",
+    ),
   );
 
   const campus = await prisma.campus.upsert({
@@ -59,12 +62,19 @@ async function main() {
     const course = await prisma.course.upsert({
       where: { campusId_name: { campusId: campus.id, name: courseData.name } },
       update: { degree: courseData.degree },
-      create: { campusId: campus.id, name: courseData.name, degree: courseData.degree },
+      create: {
+        campusId: campus.id,
+        name: courseData.name,
+        degree: courseData.degree,
+      },
     });
 
     const curriculum = await prisma.curriculum.upsert({
       where: {
-        courseId_version: { courseId: course.id, version: courseData.curriculumVersion },
+        courseId_version: {
+          courseId: course.id,
+          version: courseData.curriculumVersion,
+        },
       },
       update: {},
       create: { courseId: course.id, version: courseData.curriculumVersion },
@@ -84,7 +94,10 @@ async function main() {
 
       await prisma.curriculumEntry.upsert({
         where: {
-          curriculumId_subjectId: { curriculumId: curriculum.id, subjectId: subject.id },
+          curriculumId_subjectId: {
+            curriculumId: curriculum.id,
+            subjectId: subject.id,
+          },
         },
         update: {
           period: s.period,

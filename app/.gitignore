@@ -1,5 +1,25 @@
+# dependencies
 node_modules
-# Keep environment variables out of version control
-.env
 
+# environment (keep the example committed)
+.env*
+!.env.example
+
+# prisma generated client (regenerated on npm install)
 /generated/prisma
+
+# next.js
+/.next/
+/out/
+/build
+
+# testing
+/coverage
+
+# misc
+.DS_Store
+*.pem
+*.tsbuildinfo
+next-env.d.ts
+npm-debug.log*
+.vercel
