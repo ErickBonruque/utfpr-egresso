@@ -1,5 +1,7 @@
-# Local infra for the CEA app. Fase 1 ships only Postgres; the app service
-# joins in Fase 2 (scaffolding).
+# Local infra for the CEA app (the app itself runs with `npm run dev`;
+# decision Fase 2: only the database is containerized in dev).
+name: cea
+
 services:
   db:
     image: postgres:17-alpine
