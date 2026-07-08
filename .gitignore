@@ -5,18 +5,19 @@ __pycache__/
 *$py.class
 *.so
 .Python
-build/
+# (padrões de build do Python ancorados à raiz para não engolir arquivos de app/)
+/build/
 develop-eggs/
-dist/
-downloads/
-eggs/
+/dist/
+/downloads/
+/eggs/
 .eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
+/lib/
+/lib64/
+/parts/
+/sdist/
+/var/
+/wheels/
 pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/
@@ -70,7 +71,7 @@ Thumbs.db
 .DS_Store
 
 # Logs
-logs/
+/logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -79,8 +80,8 @@ yarn-error.log*
 # Temporary files
 *.tmp
 *.temp
-temp/
-tmp/
+/temp/
+/tmp/
 
 # Planejamento interno (refac) - não versionado
 .planning/
