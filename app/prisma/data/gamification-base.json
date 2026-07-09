@@ -1,0 +1,656 @@
+{
+  "_comment": "Base inicial de trilhas, conquistas e carreiras dos 3 cursos de Santa Helena (Fase 3, 2026-07-08). É um ponto de partida: os coordenadores de curso refinam pelo painel admin (Fase 4). Critérios de conquista seguem o contrato do engine de gamificação (Fase 6): subjects_approved = aprovar min disciplinas da lista; subjects_approved_count = aprovar min disciplinas quaisquer. Ícones são nomes do conjunto lucide, resolvidos pelo frontend. 'key' e 'requires/nodes' (códigos de disciplina e keys de nós) existem só para o seed resolver relações.",
+  "courses": [
+    {
+      "course": "Ciência da Computação",
+      "achievements": [
+        {
+          "name": "Primeiro Passo",
+          "description": "Aprovação na primeira disciplina do curso.",
+          "category": "Marcos",
+          "icon": "footprints",
+          "xpReward": 25,
+          "criteria": { "type": "subjects_approved_count", "min": 1 }
+        },
+        {
+          "name": "Calouro Superado",
+          "description": "Aprovação em todas as disciplinas do 1º período.",
+          "category": "Marcos",
+          "icon": "flag",
+          "xpReward": 100,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": [
+              "CC1AED1",
+              "CC1ICC",
+              "CC1MBD",
+              "HU1LA",
+              "MA1FM",
+              "MA1LM"
+            ],
+            "min": 6
+          }
+        },
+        {
+          "name": "Lógica de Aço",
+          "description": "Aprovação em Lógica Matemática e Fundamentos de Matemática.",
+          "category": "Acadêmica",
+          "icon": "brain",
+          "xpReward": 50,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["MA1LM", "MA1FM"],
+            "min": 2
+          }
+        },
+        {
+          "name": "Estruturas Dominadas",
+          "description": "Aprovação na trilogia de Algoritmos e Estrutura de Dados.",
+          "category": "Programação",
+          "icon": "binary",
+          "xpReward": 150,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["CC1AED1", "CC2AED2", "CC3AED3"],
+            "min": 3
+          }
+        },
+        {
+          "name": "Arquiteto(a) de Dados",
+          "description": "Aprovação em Modelagem e Laboratório de Banco de Dados.",
+          "category": "Programação",
+          "icon": "database",
+          "xpReward": 75,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["CC1MBD", "CC4LBD"],
+            "min": 2
+          }
+        },
+        {
+          "name": "Full Stack em Construção",
+          "description": "Aprovação em POO e Projeto e Desenvolvimento de Sistemas Web.",
+          "category": "Programação",
+          "icon": "code",
+          "xpReward": 100,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["CC2POO", "CC6PDSW"],
+            "min": 2
+          }
+        },
+        {
+          "name": "Mente Artificial",
+          "description": "Aprovação em Fundamentos de IA e IA Aplicada.",
+          "category": "Programação",
+          "icon": "sparkles",
+          "xpReward": 100,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["CC6FIA", "CC7IAA"],
+            "min": 2
+          }
+        },
+        {
+          "name": "Maratonista",
+          "description": "Aprovação em 20 disciplinas do curso.",
+          "category": "Marcos",
+          "icon": "medal",
+          "xpReward": 200,
+          "criteria": { "type": "subjects_approved_count", "min": 20 }
+        },
+        {
+          "name": "Rumo ao Diploma",
+          "description": "Aprovação no TCC I.",
+          "category": "Marcos",
+          "icon": "book-open",
+          "xpReward": 150,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["TCC1"],
+            "min": 1
+          }
+        },
+        {
+          "name": "Missão Cumprida",
+          "description": "Aprovação no TCC II — a reta final foi vencida.",
+          "category": "Marcos",
+          "icon": "graduation-cap",
+          "xpReward": 200,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["TCC2"],
+            "min": 1
+          }
+        }
+      ],
+      "tracks": [
+        {
+          "name": "Jornada da Computação",
+          "description": "Trilha de progresso do curso: dos fundamentos às especializações em IA, web e segurança.",
+          "nodes": [
+            {
+              "key": "fundamentos",
+              "parent": null,
+              "kind": "CORE",
+              "name": "Fundamentos",
+              "description": "Base de lógica, algoritmos e introdução à computação.",
+              "icon": "blocks",
+              "sortOrder": 0,
+              "xpReward": 100,
+              "requires": ["CC1ICC", "CC1AED1", "MA1LM"]
+            },
+            {
+              "key": "programacao",
+              "parent": "fundamentos",
+              "kind": "CORE",
+              "name": "Programação",
+              "description": "Domínio de POO e estruturas de dados avançadas.",
+              "icon": "code",
+              "sortOrder": 1,
+              "xpReward": 150,
+              "requires": ["CC2POO", "CC2AED2", "CC3AED3"]
+            },
+            {
+              "key": "engenharia-software",
+              "parent": "programacao",
+              "kind": "CORE",
+              "name": "Engenharia de Software",
+              "description": "Requisitos, processos e qualidade de software.",
+              "icon": "clipboard-check",
+              "sortOrder": 2,
+              "xpReward": 150,
+              "requires": ["CC2ER", "CC3ES", "CC5QS"]
+            },
+            {
+              "key": "dados-ia",
+              "parent": "programacao",
+              "kind": "BRANCH",
+              "name": "Dados & Inteligência Artificial",
+              "description": "Especialização em IA, big data e análise de dados.",
+              "icon": "brain",
+              "sortOrder": 3,
+              "xpReward": 200,
+              "requires": ["CC6FIA", "CC6IBDDA", "CC7IAA"]
+            },
+            {
+              "key": "web-sistemas",
+              "parent": "programacao",
+              "kind": "BRANCH",
+              "name": "Web & Sistemas Distribuídos",
+              "description": "Especialização em desenvolvimento web e sistemas distribuídos.",
+              "icon": "globe",
+              "sortOrder": 4,
+              "xpReward": 200,
+              "requires": ["CC6PDSW", "CC5SDT", "CC4RC"]
+            },
+            {
+              "key": "infra-seguranca",
+              "parent": "fundamentos",
+              "kind": "BRANCH",
+              "name": "Infraestrutura & Segurança",
+              "description": "Especialização em sistemas operacionais, redes e cibersegurança.",
+              "icon": "shield",
+              "sortOrder": 5,
+              "xpReward": 200,
+              "requires": ["CC4SO", "CC6TRC", "CC7CS"]
+            }
+          ]
+        }
+      ],
+      "careers": [
+        {
+          "name": "Desenvolvedor(a) de Software",
+          "description": "Constrói aplicações web, mobile e sistemas corporativos.",
+          "nodes": ["web-sistemas", "engenharia-software"]
+        },
+        {
+          "name": "Cientista de Dados",
+          "description": "Extrai conhecimento de dados com estatística e machine learning.",
+          "nodes": ["dados-ia"]
+        },
+        {
+          "name": "Engenheiro(a) de IA",
+          "description": "Projeta e treina modelos de inteligência artificial em produção.",
+          "nodes": ["dados-ia", "web-sistemas"]
+        },
+        {
+          "name": "Especialista em Cibersegurança",
+          "description": "Protege sistemas, redes e dados contra ataques.",
+          "nodes": ["infra-seguranca"]
+        }
+      ]
+    },
+    {
+      "course": "Agronomia",
+      "achievements": [
+        {
+          "name": "Primeiro Passo",
+          "description": "Aprovação na primeira disciplina do curso.",
+          "category": "Marcos",
+          "icon": "footprints",
+          "xpReward": 25,
+          "criteria": { "type": "subjects_approved_count", "min": 1 }
+        },
+        {
+          "name": "Raízes Firmes",
+          "description": "Aprovação em todas as disciplinas do 1º período.",
+          "category": "Marcos",
+          "icon": "flag",
+          "xpReward": 100,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": [
+              "CB1013",
+              "CB1015",
+              "CC1017",
+              "EE1014",
+              "EG1012",
+              "FI1011",
+              "MA1018",
+              "QU1016"
+            ],
+            "min": 8
+          }
+        },
+        {
+          "name": "Químico(a) do Campo",
+          "description": "Aprovação na sequência de química: geral, analítica e bioquímica.",
+          "category": "Acadêmica",
+          "icon": "flask-conical",
+          "xpReward": 75,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["QU1016", "QU1026", "QU1032"],
+            "min": 3
+          }
+        },
+        {
+          "name": "Guardião(ã) do Solo",
+          "description": "Aprovação nas disciplinas de ciências do solo.",
+          "category": "Acadêmica",
+          "icon": "mountain",
+          "xpReward": 100,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["CS1022", "CS1033", "CS1065"],
+            "min": 3
+          }
+        },
+        {
+          "name": "Protetor(a) de Plantas",
+          "description": "Aprovação na sequência de entomologia e fitopatologia.",
+          "category": "Acadêmica",
+          "icon": "bug",
+          "xpReward": 125,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["FS1052", "FS1063", "FS1073"],
+            "min": 3
+          }
+        },
+        {
+          "name": "Mãos na Terra",
+          "description": "Aprovação em Fisiologia Vegetal I e Produção de Sementes.",
+          "category": "Acadêmica",
+          "icon": "sprout",
+          "xpReward": 75,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["CB1044", "FT1066"],
+            "min": 2
+          }
+        },
+        {
+          "name": "Agro é Tech",
+          "description": "Aprovação em Ciência de Dados na Agricultura e Agricultura de Precisão.",
+          "category": "Tecnologia",
+          "icon": "cpu",
+          "xpReward": 100,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["EP1023", "ER1071"],
+            "min": 2
+          }
+        },
+        {
+          "name": "Maratonista do Campo",
+          "description": "Aprovação em 25 disciplinas do curso.",
+          "category": "Marcos",
+          "icon": "medal",
+          "xpReward": 200,
+          "criteria": { "type": "subjects_approved_count", "min": 25 }
+        },
+        {
+          "name": "Reta Final",
+          "description": "Aprovação no Planejamento do TCC.",
+          "category": "Marcos",
+          "icon": "book-open",
+          "xpReward": 150,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["TC1075"],
+            "min": 1
+          }
+        }
+      ],
+      "tracks": [
+        {
+          "name": "Jornada Agronômica",
+          "description": "Trilha de progresso do curso: dos fundamentos do campo às especializações em produção, gestão e tecnologia.",
+          "nodes": [
+            {
+              "key": "fundamentos-campo",
+              "parent": null,
+              "kind": "CORE",
+              "name": "Fundamentos do Campo",
+              "description": "Base de biologia, química e introdução à agronomia.",
+              "icon": "sprout",
+              "sortOrder": 0,
+              "xpReward": 100,
+              "requires": ["EE1014", "QU1016", "CB1015"]
+            },
+            {
+              "key": "ciencias-solo",
+              "parent": "fundamentos-campo",
+              "kind": "CORE",
+              "name": "Ciências do Solo",
+              "description": "Gênese, propriedades e fertilidade do solo.",
+              "icon": "mountain",
+              "sortOrder": 1,
+              "xpReward": 150,
+              "requires": ["CS1022", "CS1033", "CS1053"]
+            },
+            {
+              "key": "producao-vegetal",
+              "parent": "ciencias-solo",
+              "kind": "CORE",
+              "name": "Produção Vegetal",
+              "description": "Fisiologia, sementes e manejo de pragas.",
+              "icon": "wheat",
+              "sortOrder": 2,
+              "xpReward": 150,
+              "requires": ["CB1044", "FT1066", "FS1052"]
+            },
+            {
+              "key": "agricultura-precisao",
+              "parent": "fundamentos-campo",
+              "kind": "BRANCH",
+              "name": "Agricultura de Precisão & Dados",
+              "description": "Especialização em tecnologia, dados e geoprocessamento no campo.",
+              "icon": "satellite",
+              "sortOrder": 3,
+              "xpReward": 200,
+              "requires": ["EP1023", "ER1071", "GE1024"]
+            },
+            {
+              "key": "gestao-rural",
+              "parent": "fundamentos-campo",
+              "kind": "BRANCH",
+              "name": "Gestão & Extensão Rural",
+              "description": "Especialização em economia, administração e extensão rural.",
+              "icon": "users",
+              "sortOrder": 4,
+              "xpReward": 200,
+              "requires": ["GP1051", "GP1061", "ES1056"]
+            },
+            {
+              "key": "protecao-plantas",
+              "parent": "producao-vegetal",
+              "kind": "BRANCH",
+              "name": "Proteção de Plantas",
+              "description": "Especialização em fitopatologia e defesa fitossanitária.",
+              "icon": "shield",
+              "sortOrder": 5,
+              "xpReward": 200,
+              "requires": ["FS1063", "FS1073", "FS1082"]
+            }
+          ]
+        }
+      ],
+      "careers": [
+        {
+          "name": "Consultor(a) Agronômico(a)",
+          "description": "Assistência técnica e receituário agronômico a produtores.",
+          "nodes": ["protecao-plantas", "producao-vegetal"]
+        },
+        {
+          "name": "Gestor(a) do Agronegócio",
+          "description": "Administra empresas rurais, cooperativas e cadeias produtivas.",
+          "nodes": ["gestao-rural"]
+        },
+        {
+          "name": "Especialista em Agricultura de Precisão",
+          "description": "Aplica sensores, dados e automação à produção agrícola.",
+          "nodes": ["agricultura-precisao"]
+        },
+        {
+          "name": "Pesquisador(a) Agropecuário(a)",
+          "description": "Pesquisa e desenvolvimento em melhoramento e produção.",
+          "nodes": ["producao-vegetal", "ciencias-solo"]
+        }
+      ]
+    },
+    {
+      "course": "Licenciatura em Ciências Biológicas",
+      "achievements": [
+        {
+          "name": "Primeiro Passo",
+          "description": "Aprovação na primeira disciplina do curso.",
+          "category": "Marcos",
+          "icon": "footprints",
+          "xpReward": 25,
+          "criteria": { "type": "subjects_approved_count", "min": 1 }
+        },
+        {
+          "name": "Calouro Superado",
+          "description": "Aprovação em todas as disciplinas do 1º período.",
+          "category": "Marcos",
+          "icon": "flag",
+          "xpReward": 100,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": [
+              "CB141A",
+              "CB141B",
+              "CB141C",
+              "ED141A",
+              "ED141B",
+              "ED141C",
+              "MA141A"
+            ],
+            "min": 7
+          }
+        },
+        {
+          "name": "Célula por Célula",
+          "description": "Aprovação em Biologia Celular e Embriologia e Histologia.",
+          "category": "Acadêmica",
+          "icon": "microscope",
+          "xpReward": 50,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["CB141A", "CB142A"],
+            "min": 2
+          }
+        },
+        {
+          "name": "Naturalista",
+          "description": "Aprovação na sequência de zoologia de invertebrados e vertebrados.",
+          "category": "Acadêmica",
+          "icon": "bird",
+          "xpReward": 125,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["CB142C", "CB143B", "CB144B"],
+            "min": 3
+          }
+        },
+        {
+          "name": "Botânico(a) em Formação",
+          "description": "Aprovação na sequência de morfologia, sistemática e fisiologia vegetal.",
+          "category": "Acadêmica",
+          "icon": "leaf",
+          "xpReward": 125,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["CB141C", "CB143C", "CB145C"],
+            "min": 3
+          }
+        },
+        {
+          "name": "Geneticista Júnior",
+          "description": "Aprovação em Genética Geral e Biologia Molecular.",
+          "category": "Acadêmica",
+          "icon": "dna",
+          "xpReward": 100,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["CB143A", "CB146B"],
+            "min": 2
+          }
+        },
+        {
+          "name": "Vocação Docente",
+          "description": "Aprovação em Didática e Metodologias do Ensino de Ciências e Biologia.",
+          "category": "Docência",
+          "icon": "presentation",
+          "xpReward": 100,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["ED143B", "ED144B"],
+            "min": 2
+          }
+        },
+        {
+          "name": "Em Sala de Aula",
+          "description": "Aprovação nos Estágios Supervisionados em Ciências 1 e 2.",
+          "category": "Docência",
+          "icon": "school",
+          "xpReward": 150,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["EST145", "EST146"],
+            "min": 2
+          }
+        },
+        {
+          "name": "Maratonista da Vida",
+          "description": "Aprovação em 25 disciplinas do curso.",
+          "category": "Marcos",
+          "icon": "medal",
+          "xpReward": 200,
+          "criteria": { "type": "subjects_approved_count", "min": 25 }
+        },
+        {
+          "name": "Rumo ao Diploma",
+          "description": "Aprovação no TCC 1.",
+          "category": "Marcos",
+          "icon": "book-open",
+          "xpReward": 150,
+          "criteria": {
+            "type": "subjects_approved",
+            "subjectCodes": ["TCC14A"],
+            "min": 1
+          }
+        }
+      ],
+      "tracks": [
+        {
+          "name": "Jornada do(a) Biólogo(a) Educador(a)",
+          "description": "Trilha de progresso do curso: dos fundamentos da vida à docência e às especializações em biociências.",
+          "nodes": [
+            {
+              "key": "fundamentos-vida",
+              "parent": null,
+              "kind": "CORE",
+              "name": "Fundamentos da Vida",
+              "description": "Base de biologia celular, diversidade e linguagem acadêmica.",
+              "icon": "microscope",
+              "sortOrder": 0,
+              "xpReward": 100,
+              "requires": ["CB141A", "CB141B", "CB141C"]
+            },
+            {
+              "key": "diversidade-biologica",
+              "parent": "fundamentos-vida",
+              "kind": "CORE",
+              "name": "Diversidade Biológica",
+              "description": "Zoologia de invertebrados e vertebrados.",
+              "icon": "bird",
+              "sortOrder": 1,
+              "xpReward": 150,
+              "requires": ["CB142C", "CB143B", "CB144B"]
+            },
+            {
+              "key": "formacao-docente",
+              "parent": "fundamentos-vida",
+              "kind": "CORE",
+              "name": "Formação Docente",
+              "description": "Psicologia da educação, didática e metodologias de ensino.",
+              "icon": "presentation",
+              "sortOrder": 2,
+              "xpReward": 150,
+              "requires": ["ED141B", "ED143B", "ED144B"]
+            },
+            {
+              "key": "ensino-ciencias",
+              "parent": "formacao-docente",
+              "kind": "BRANCH",
+              "name": "Ensino de Ciências",
+              "description": "Especialização em prática docente: estágios e inclusão.",
+              "icon": "school",
+              "sortOrder": 3,
+              "xpReward": 200,
+              "requires": ["EST145", "EST146", "ED145C"]
+            },
+            {
+              "key": "molecular-saude",
+              "parent": "fundamentos-vida",
+              "kind": "BRANCH",
+              "name": "Biologia Molecular & Saúde",
+              "description": "Especialização em genética, biologia molecular e imunologia.",
+              "icon": "dna",
+              "sortOrder": 4,
+              "xpReward": 200,
+              "requires": ["CB143A", "CB146B", "CB146D"]
+            },
+            {
+              "key": "ecologia-ambiente",
+              "parent": "diversidade-biologica",
+              "kind": "BRANCH",
+              "name": "Ecologia & Meio Ambiente",
+              "description": "Especialização em ecologia, botânica e ecossistemas.",
+              "icon": "leaf",
+              "sortOrder": 5,
+              "xpReward": 200,
+              "requires": ["CB146E", "CB143C", "CB145B"]
+            }
+          ]
+        }
+      ],
+      "careers": [
+        {
+          "name": "Professor(a) de Ciências e Biologia",
+          "description": "Docência na educação básica e formação de novos cientistas.",
+          "nodes": ["ensino-ciencias", "formacao-docente"]
+        },
+        {
+          "name": "Pesquisador(a) em Biociências",
+          "description": "Pesquisa em genética, microbiologia e biologia molecular.",
+          "nodes": ["molecular-saude"]
+        },
+        {
+          "name": "Educador(a) Ambiental",
+          "description": "Projetos de conservação e educação ambiental.",
+          "nodes": ["ecologia-ambiente", "ensino-ciencias"]
+        },
+        {
+          "name": "Biólogo(a) de Campo",
+          "description": "Levantamentos de fauna e flora, licenciamento e conservação.",
+          "nodes": ["ecologia-ambiente", "diversidade-biologica"]
+        }
+      ]
+    }
+  ]
+}

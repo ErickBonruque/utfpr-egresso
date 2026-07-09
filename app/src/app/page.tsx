@@ -17,12 +17,22 @@ export default async function Home() {
 
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-8 px-6 py-16">
-      <header className="flex flex-col gap-2">
-        <h1 className="font-semibold text-3xl">CEA — Conexão Egresso-Aluno</h1>
-        <p className="text-neutral-500">
-          Fundação do projeto (Fase 2). Os dados abaixo vêm do PostgreSQL, via
-          Prisma, a partir do seed da Fase 1.
-        </p>
+      <header className="flex items-start justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="font-semibold text-3xl">
+            CEA — Conexão Egresso-Aluno
+          </h1>
+          <p className="text-neutral-500">
+            Fundação do projeto (Fase 2). Os dados abaixo vêm do PostgreSQL, via
+            Prisma, a partir do seed da Fase 1.
+          </p>
+        </div>
+        <a
+          href="/login"
+          className="rounded-md bg-neutral-900 px-4 py-2 font-medium text-sm text-white dark:bg-white dark:text-neutral-900"
+        >
+          Entrar
+        </a>
       </header>
 
       {campuses.length === 0 ? (

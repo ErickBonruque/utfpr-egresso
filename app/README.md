@@ -16,7 +16,21 @@ npm run setup                          # 2. sobe o Postgres, aplica migrations e
 npm run dev                            # 3. http://localhost:3000
 ```
 
-O seed cria o campus Santa Helena com seus 3 cursos e as matrizes curriculares 2026/1 reais (311 disciplinas).
+O seed cria o campus Santa Helena com seus 3 cursos e as matrizes curriculares 2026/1 reais (311 disciplinas), a base de gamificação (conquistas, trilhas e carreiras por curso) e os logins mockados abaixo.
+
+## Logins de teste (mockados até a integração com a UTFPR)
+
+Acesse `/login`. Alunos entram com **RA + senha** (aba "Aluno / Egresso"); administradores com **e-mail + senha** (aba "Administração"). Senha de todos os alunos mock: `@teste123`.
+
+| Perfil | Login | Curso |
+|--------|-------|-------|
+| SUPER_ADMIN | `admin@cea.local` / `@admin123` | — |
+| Aluno | `a2587246` | Ciência da Computação |
+| Aluno | `a2601001` | Agronomia |
+| Aluno | `a2601002` | Licenciatura em Ciências Biológicas |
+| Egresso | `a2190001` | Ciência da Computação (formada 2023/2) |
+
+Não há cadastro público: contas de aluno virão da integração com a UTFPR (Fase 8) e admins são criados por outros admins (Fase 4).
 
 ## Scripts
 
@@ -56,7 +70,7 @@ Regras de arquitetura (decididas na Fase 0 do plano de refatoração):
 
 ## Variáveis de ambiente
 
-Documentadas em [.env.example](.env.example). Por enquanto só `DATABASE_URL`.
+Documentadas em [.env.example](.env.example): `DATABASE_URL`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL` e, opcionalmente, `SEED_SUPERADMIN_EMAIL`/`SEED_SUPERADMIN_PASSWORD`.
 
 ## CI
 
