@@ -273,6 +273,7 @@ model User {
   studentProfile   StudentProfile?
   sessions         Session[]
   accounts         Account[]
+  invitesCreated   AdminInvite[]     @relation("InvitesCreated")
 
   @@map("users")
 }
@@ -336,6 +337,29 @@ enum AdminRole {
   COURSE_ADMIN
 
   @@map("admin_role")
+}
+
+/// Invitation for a new admin (Fase 4). The invite link carries the token;
+/// e-mail delivery is a placeholder until UTFPR SMTP exists (decision
+/// 2026-07-09) — the creating admin copies the link from the panel. In the
+/// future the UTFPR integration may auto-grant admin to staff logins.
+model AdminInvite {
+  id          String    @id @default(cuid())
+  email       String
+  name        String
+  role        AdminRole
+  campusId    String?   @map("campus_id")
+  courseId    String?   @map("course_id")
+  token       String    @unique
+  expiresAt   DateTime  @map("expires_at")
+  acceptedAt  DateTime? @map("accepted_at")
+  createdById String    @map("created_by_id")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  createdBy User @relation("InvitesCreated", fields: [createdById], references: [id], onDelete: Cascade)
+
+  @@index([email])
+  @@map("admin_invites")
 }
 
 /// Grants an admin role over a scope: SUPER_ADMIN has both scopes null,

@@ -73,6 +73,43 @@ export function canManageCourse(actor: Actor, course: CourseRef): boolean {
   );
 }
 
+/// Scope shape convention from Fase 1: SUPER_ADMIN has both ids null,
+/// CAMPUS_ADMIN only campusId, COURSE_ADMIN only courseId.
+export type GrantTarget = {
+  role: AdminRole;
+  campusId: string | null;
+  courseId: string | null;
+};
+
+export function isValidGrantShape(target: GrantTarget): boolean {
+  switch (target.role) {
+    case "SUPER_ADMIN":
+      return target.campusId === null && target.courseId === null;
+    case "CAMPUS_ADMIN":
+      return target.campusId !== null && target.courseId === null;
+    case "COURSE_ADMIN":
+      return target.campusId === null && target.courseId !== null;
+  }
+}
+
+/// Who may grant (and symmetrically revoke/cancel) an admin role (Fase 4):
+/// SUPER_ADMIN grants anything; CAMPUS_ADMIN grants COURSE_ADMIN for courses
+/// of its campus (targetCourse resolves the course's campus). COURSE_ADMIN
+/// grants nothing.
+export function canGrantAdmin(
+  actor: Actor,
+  target: GrantTarget,
+  targetCourse: CourseRef | null = null,
+): boolean {
+  if (!isValidGrantShape(target)) return false;
+  if (isSuperAdmin(actor)) return true;
+  if (target.role !== "COURSE_ADMIN" || !targetCourse) return false;
+  if (target.courseId !== targetCourse.id) return false;
+  return actor.grants.some(
+    (g) => g.role === "CAMPUS_ADMIN" && g.campusId === targetCourse.campusId,
+  );
+}
+
 /// A student may read their own data; admins may read students in scope.
 export function canViewStudent(
   actor: Actor,

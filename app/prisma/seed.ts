@@ -395,6 +395,34 @@ async function seedUsers() {
   await grantAdminRole(admin.id, "SUPER_ADMIN");
   console.log(`  SUPER_ADMIN: ${adminEmail}`);
 
+  // Mocked scoped admins (Fase 4): exercise the scope rules on every panel
+  // screen until UTFPR staff logins can be auto-granted (integration, Fase 8).
+  const campusSH = await prisma.campus.findUnique({ where: { code: "SH" } });
+  const courseCC = await prisma.course.findFirst({
+    where: { name: "Ciência da Computação" },
+  });
+  if (!campusSH || !courseCC) {
+    throw new Error("Seed institucional precisa rodar antes dos admins mock.");
+  }
+  const campusAdmin = await upsertCredentialUser({
+    name: "Direção Santa Helena",
+    email: "campus.sh@cea.local",
+    password: adminPassword,
+  });
+  await grantAdminRole(campusAdmin.id, "CAMPUS_ADMIN", {
+    campusId: campusSH.id,
+  });
+  console.log("  CAMPUS_ADMIN: campus.sh@cea.local (Santa Helena)");
+  const courseAdmin = await upsertCredentialUser({
+    name: "Coordenação de Ciência da Computação",
+    email: "coord.cc@cea.local",
+    password: adminPassword,
+  });
+  await grantAdminRole(courseAdmin.id, "COURSE_ADMIN", {
+    courseId: courseCC.id,
+  });
+  console.log("  COURSE_ADMIN: coord.cc@cea.local (Ciência da Computação)");
+
   for (const s of MOCK_STUDENTS) {
     const course = await prisma.course.findFirst({
       where: { name: s.course },

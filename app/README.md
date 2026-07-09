@@ -22,15 +22,17 @@ O seed cria o campus Santa Helena com seus 3 cursos e as matrizes curriculares 2
 
 Acesse `/login`. Alunos entram com **RA + senha** (aba "Aluno / Egresso"); administradores com **e-mail + senha** (aba "Administração"). Senha de todos os alunos mock: `@teste123`.
 
-| Perfil | Login | Curso |
-|--------|-------|-------|
-| SUPER_ADMIN | `admin@cea.local` / `@admin123` | — |
+| Perfil | Login | Escopo/Curso |
+|--------|-------|--------------|
+| SUPER_ADMIN | `admin@cea.local` / `@admin123` | global |
+| CAMPUS_ADMIN | `campus.sh@cea.local` / `@admin123` | campus Santa Helena |
+| COURSE_ADMIN | `coord.cc@cea.local` / `@admin123` | Ciência da Computação |
 | Aluno | `a2587246` | Ciência da Computação |
 | Aluno | `a2601001` | Agronomia |
 | Aluno | `a2601002` | Licenciatura em Ciências Biológicas |
 | Egresso | `a2190001` | Ciência da Computação (formada 2023/2) |
 
-Não há cadastro público: contas de aluno virão da integração com a UTFPR (Fase 8) e admins são criados por outros admins (Fase 4).
+Não há cadastro público: contas de aluno virão da integração com a UTFPR (Fase 8) e admins entram por convite (painel → Administradores; o link do convite é copiado do painel — não há envio de e-mail/SMTP, ver `src/server/mailer.ts`). Recuperação de senha não é responsabilidade desta plataforma: acontece no ecossistema da UTFPR (portal do aluno).
 
 ## Scripts
 
