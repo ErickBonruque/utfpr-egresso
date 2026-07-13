@@ -12,7 +12,7 @@ import {
 } from "@xyflow/react";
 import { Lock } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { GamIcon } from "@/components/gam-icon";
 import {
   CAREER_NODE_HEIGHT,
@@ -91,6 +91,10 @@ export function CareerTree({
   className?: string;
 }) {
   const { resolvedTheme } = useTheme();
+  // O tema só é conhecido no cliente; no SSR renderiza "light" e ajusta
+  // após montar — evita hydration mismatch (next-themes).
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
   const { flowNodes, flowEdges } = useMemo(() => {
     const layout = layoutCareerTree(nodes);
@@ -116,7 +120,7 @@ export function CareerTree({
         nodes={flowNodes}
         edges={flowEdges}
         nodeTypes={nodeTypes}
-        colorMode={resolvedTheme === "dark" ? "dark" : "light"}
+        colorMode={mounted && resolvedTheme === "dark" ? "dark" : "light"}
         fitView
         nodesDraggable={false}
         nodesConnectable={false}
