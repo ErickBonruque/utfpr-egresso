@@ -1,9 +1,9 @@
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { FormDialog } from "@/components/admin/form-dialog";
-import { GamIcon } from "@/components/admin/gam-icon";
 import { IconPicker } from "@/components/admin/icon-picker";
 import { NativeSelect } from "@/components/admin/native-select";
 import { SubjectMultiSelect } from "@/components/admin/subject-multi-select";
+import { GamIcon } from "@/components/gam-icon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

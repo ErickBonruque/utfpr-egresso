@@ -1,5 +1,6 @@
 import { AdminNav, type AdminNavItem } from "@/components/admin/admin-nav";
 import { SignOutButton } from "@/components/sign-out-button";
+import { ThemeToggle } from "@/components/theme-toggle";
 import { isSuperAdmin, primaryRole } from "@/lib/authz";
 import { ROLE_LABEL } from "@/lib/labels";
 import { requireAdmin } from "@/server/actor";
@@ -40,7 +41,10 @@ export default async function AdminLayout({
             {role ? ` · ${ROLE_LABEL[role] ?? role}` : ""}
           </p>
         </div>
-        <SignOutButton />
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <SignOutButton />
+        </div>
       </header>
       <div className="flex flex-col gap-6 md:flex-row">
         <aside className="shrink-0 md:w-48">

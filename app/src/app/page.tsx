@@ -22,14 +22,14 @@ export default async function Home() {
           <h1 className="font-semibold text-3xl">
             CEA — Conexão Egresso-Aluno
           </h1>
-          <p className="text-neutral-500">
+          <p className="text-muted-foreground">
             Fundação do projeto (Fase 2). Os dados abaixo vêm do PostgreSQL, via
             Prisma, a partir do seed da Fase 1.
           </p>
         </div>
         <a
           href="/login"
-          className="rounded-md bg-neutral-900 px-4 py-2 font-medium text-sm text-white dark:bg-white dark:text-neutral-900"
+          className="rounded-md bg-primary px-4 py-2 font-medium text-primary-foreground text-sm"
         >
           Entrar
         </a>
@@ -50,10 +50,10 @@ export default async function Home() {
               {campus.courses.map((course) => (
                 <li
                   key={course.id}
-                  className="flex items-baseline justify-between rounded-lg border border-neutral-200 px-4 py-3 dark:border-neutral-800"
+                  className="flex items-baseline justify-between rounded-lg border px-4 py-3"
                 >
                   <span>{course.name}</span>
-                  <span className="text-neutral-500 text-sm">
+                  <span className="text-muted-foreground text-sm">
                     {course._count.subjects} disciplinas
                   </span>
                 </li>

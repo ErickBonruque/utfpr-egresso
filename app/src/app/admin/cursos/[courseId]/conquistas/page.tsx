@@ -1,8 +1,8 @@
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { CriteriaBuilder } from "@/components/admin/criteria-builder";
 import { FormDialog } from "@/components/admin/form-dialog";
-import { GamIcon } from "@/components/admin/gam-icon";
 import { IconPicker } from "@/components/admin/icon-picker";
+import { GamIcon } from "@/components/gam-icon";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
