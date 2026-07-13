@@ -17,6 +17,7 @@ import {
   PrismaClient,
   type TrackNodeKind,
 } from "../generated/prisma/client.js";
+import { planMockEnrollments } from "../src/lib/mock-enrollments.js";
 import { applyAcademicStanding } from "../src/server/academic-standing.js";
 
 type SeedSubject = {
@@ -480,12 +481,73 @@ async function seedUsers() {
   }
 }
 
+/// Mock UTFPR-mirror enrollments (Fase 6) — deterministic plan derived from
+/// each student's admission term + current period, so the gamification
+/// engine has real data to chew on until the Fase 8 integration. Create-only
+/// (skipDuplicates): reseeding never rewrites history.
+async function seedEnrollments() {
+  for (const s of MOCK_STUDENTS) {
+    const profile = await prisma.studentProfile.findUnique({
+      where: { ra: s.ra },
+      select: { id: true, courseId: true, admissionTerm: true },
+    });
+    if (!profile) throw new Error(`Perfil não encontrado: ${s.ra}`);
+
+    const curriculum = await prisma.curriculum.findFirst({
+      where: { courseId: profile.courseId, isActive: true },
+      include: {
+        entries: {
+          select: {
+            period: true,
+            isElective: true,
+            subject: { select: { id: true, code: true } },
+          },
+        },
+      },
+    });
+    if (!curriculum) throw new Error(`Curso sem matriz ativa: ${s.course}`);
+
+    const plan = planMockEnrollments({
+      ra: s.ra,
+      admissionTerm: s.admissionTerm,
+      currentPeriod: s.standing.currentPeriod ?? null,
+      graduated: s.standing.status === "GRADUATED",
+      entries: curriculum.entries.map((e) => ({
+        code: e.subject.code,
+        period: e.period,
+        isElective: e.isElective,
+      })),
+    });
+
+    const subjectIdByCode = new Map(
+      curriculum.entries.map((e) => [e.subject.code, e.subject.id]),
+    );
+    const created = await prisma.enrollment.createMany({
+      data: plan.map((p) => ({
+        studentProfileId: profile.id,
+        // biome-ignore lint/style/noNonNullAssertion: plan only emits codes that came from the curriculum entries above
+        subjectId: subjectIdByCode.get(p.subjectCode)!,
+        term: p.term,
+        status: p.status,
+        grade: p.grade,
+        attendance: p.attendance,
+      })),
+      skipDuplicates: true,
+    });
+    console.log(
+      `  ${s.ra}: ${plan.length} matrículas planejadas (${created.count} novas)`,
+    );
+  }
+}
+
 async function main() {
   await seedInstitution(loadJson<SeedFile>("santa-helena.json"));
   console.log("Gamificação (base inicial):");
   await seedGamification(loadJson<GamificationFile>("gamification-base.json"));
   console.log("Usuários (logins mockados até a integração UTFPR):");
   await seedUsers();
+  console.log("Matrículas espelho (mock determinístico, Fase 6):");
+  await seedEnrollments();
 }
 
 main()

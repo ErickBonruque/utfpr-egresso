@@ -389,6 +389,11 @@ model StudentProfile {
   ra       String @unique
   /// Admission term as informed on signup (e.g. "2023/1")
   admissionTerm String?  @map("admission_term")
+  /// Self-service fields (Fase 6) — edited by the student; they pre-fill the
+  /// GraduateProfile on the aluno → egresso transition (Fase 7).
+  bio         String? @db.VarChar(500)
+  linkedinUrl String? @map("linkedin_url")
+  githubUrl   String? @map("github_url")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
