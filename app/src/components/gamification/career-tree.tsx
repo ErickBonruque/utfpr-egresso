@@ -104,6 +104,10 @@ export function CareerTree({
           id: n.id,
           type: "career",
           position: { x: n.x, y: n.y },
+          // Dimensões iniciais: sem elas o MiniMap desenha retângulos 0×0
+          // até o ResizeObserver medir os nós custom.
+          width: CAREER_NODE_WIDTH,
+          height: CAREER_NODE_HEIGHT,
           data: { node: n },
         }),
       ),
@@ -131,7 +135,23 @@ export function CareerTree({
       >
         <Background gap={24} />
         <Controls showInteractive={false} />
-        <MiniMap pannable zoomable className="hidden! md:block!" />
+        <MiniMap
+          pannable
+          zoomable
+          className="hidden! md:block!"
+          // Cores explícitas por estado — os defaults do React Flow somem
+          // contra o fundo no tema escuro (bug apontado no UAT da Fase 6).
+          nodeColor={(n: CareerFlowNode) =>
+            n.data.node.state === "done"
+              ? "var(--brand)"
+              : n.data.node.state === "in-progress"
+                ? "var(--muted-foreground)"
+                : "var(--muted)"
+          }
+          nodeStrokeColor="var(--border)"
+          bgColor="var(--card)"
+          maskColor="color-mix(in oklab, var(--muted) 55%, transparent)"
+        />
       </ReactFlow>
     </div>
   );
