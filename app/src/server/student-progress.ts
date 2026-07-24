@@ -71,6 +71,20 @@ export type StudentProgress = {
     linkedinUrl: string | null;
     githubUrl: string | null;
     isGraduate: boolean;
+    /// null quando o usuário ainda não é egresso; populado a partir do
+    /// GraduateProfile quando isGraduate. Consumido pela aba de egresso no
+    /// /perfil e pelo card de egresso no /painel (Fase 7).
+    graduate: {
+      company: string | null;
+      jobTitle: string | null;
+      linkedinUrl: string | null;
+      githubUrl: string | null;
+      contactEmail: string | null;
+      mentorshipAvailable: boolean;
+      mentorshipAreas: string[];
+      showInShowcase: boolean;
+      graduatedTerm: string | null;
+    } | null;
   };
   course: { id: string; name: string; campusName: string };
   standing: {
@@ -107,7 +121,19 @@ export const getStudentProgress = cache(async (): Promise<StudentProgress> => {
       user: { select: { name: true } },
       course: { include: { campus: { select: { name: true } } } },
       academicStanding: true,
-      graduateProfile: { select: { id: true } },
+      graduateProfile: {
+        select: {
+          company: true,
+          jobTitle: true,
+          linkedinUrl: true,
+          githubUrl: true,
+          contactEmail: true,
+          mentorshipAvailable: true,
+          mentorshipAreas: true,
+          showInShowcase: true,
+          graduatedTerm: true,
+        },
+      },
       enrollments: {
         include: { subject: { select: { code: true, name: true } } },
       },
@@ -405,6 +431,19 @@ export const getStudentProgress = cache(async (): Promise<StudentProgress> => {
       linkedinUrl: profile.linkedinUrl,
       githubUrl: profile.githubUrl,
       isGraduate: profile.graduateProfile !== null,
+      graduate: profile.graduateProfile
+        ? {
+            company: profile.graduateProfile.company,
+            jobTitle: profile.graduateProfile.jobTitle,
+            linkedinUrl: profile.graduateProfile.linkedinUrl,
+            githubUrl: profile.graduateProfile.githubUrl,
+            contactEmail: profile.graduateProfile.contactEmail,
+            mentorshipAvailable: profile.graduateProfile.mentorshipAvailable,
+            mentorshipAreas: profile.graduateProfile.mentorshipAreas,
+            showInShowcase: profile.graduateProfile.showInShowcase,
+            graduatedTerm: profile.graduateProfile.graduatedTerm,
+          }
+        : null,
     },
     course: {
       id: profile.course.id,

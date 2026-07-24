@@ -476,6 +476,7 @@ async function seedUsers() {
         mentorshipAvailable: true,
         mentorshipAreas: ["Carreira em desenvolvimento", "Primeiro estágio"],
         showInShowcase: true,
+        contactEmail: "mariana.souza@example.com",
       },
     });
   }

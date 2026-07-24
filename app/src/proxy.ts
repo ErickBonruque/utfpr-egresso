@@ -18,5 +18,6 @@ export const config = {
     "/arvore/:path*",
     "/conquistas/:path*",
     "/perfil/:path*",
+    "/egressos/:path*",
   ],
 };

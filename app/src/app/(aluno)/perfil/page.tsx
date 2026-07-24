@@ -13,6 +13,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getStudentProgress } from "@/server/student-progress";
 import { updateStudentProfile } from "./actions";
+import { updateGraduateProfile } from "./graduate-actions";
+import { GraduateForm } from "./graduate-form";
 import { ProfileForm } from "./profile-form";
 
 export const dynamic = "force-dynamic";
@@ -85,6 +87,9 @@ export default async function PerfilPage() {
           <TabsTrigger value="visao-geral">Visão geral</TabsTrigger>
           <TabsTrigger value="historico">Histórico</TabsTrigger>
           <TabsTrigger value="configuracoes">Configurações</TabsTrigger>
+          {profile.isGraduate && (
+            <TabsTrigger value="egresso">Egresso</TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="visao-geral">
@@ -179,6 +184,31 @@ export default async function PerfilPage() {
             }}
           />
         </TabsContent>
+
+        {profile.graduate && (
+          <TabsContent value="egresso" className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1">
+              <h2 className="font-semibold text-lg">Perfil profissional</h2>
+              <p className="text-muted-foreground text-sm">
+                Estes dados aparecem na vitrine de egressos (visível para
+                usuários logados) quando você ativa a opção abaixo.
+              </p>
+            </div>
+            <GraduateForm
+              action={updateGraduateProfile}
+              defaults={{
+                company: profile.graduate.company,
+                jobTitle: profile.graduate.jobTitle,
+                linkedinUrl: profile.graduate.linkedinUrl,
+                githubUrl: profile.graduate.githubUrl,
+                contactEmail: profile.graduate.contactEmail,
+                mentorshipAvailable: profile.graduate.mentorshipAvailable,
+                mentorshipAreas: profile.graduate.mentorshipAreas,
+                showInShowcase: profile.graduate.showInShowcase,
+              }}
+            />
+          </TabsContent>
+        )}
       </Tabs>
     </>
   );

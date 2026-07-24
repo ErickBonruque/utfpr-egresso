@@ -11,5 +11,8 @@ export default defineConfig({
   },
   datasource: {
     url: process.env.DATABASE_URL,
+    // Only used by `prisma migrate diff` against the migrations dir; harmless
+    // otherwise. Points at a throwaway DB created on demand for diffing.
+    shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL,
   },
 });

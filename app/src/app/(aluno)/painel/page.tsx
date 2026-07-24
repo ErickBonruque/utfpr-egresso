@@ -46,11 +46,40 @@ export default async function PainelPage() {
         </p>
       </header>
 
-      {profile.isGraduate && (
-        <p className="rounded-lg border border-success/50 bg-success/10 p-4 text-sm text-success">
-          🎓 Você concluiu o curso! O espaço do egresso (vitrine, mentoria e
-          conexões) chega na Fase 7.
-        </p>
+      {profile.isGraduate && profile.graduate && (
+        <Card className="border-success/40">
+          <CardHeader>
+            <CardTitle className="flex flex-wrap items-center gap-2 text-base">
+              <span>🎓 Espaço do egresso</span>
+              {profile.graduate.showInShowcase ? (
+                <Badge variant="secondary">Na vitrine</Badge>
+              ) : (
+                <Badge variant="outline">Oculto na vitrine</Badge>
+              )}
+              {profile.graduate.mentorshipAvailable && (
+                <Badge variant="secondary">Mentor(a)</Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3 text-sm">
+            <p className="text-muted-foreground">
+              {profile.graduate.jobTitle ?? "Sem cargo informado"}
+              {profile.graduate.company ? ` · ${profile.graduate.company}` : ""}
+            </p>
+            <p>
+              Mantenha seu perfil profissional atualizado e disponível para
+              conectar com alunos e outros egressos.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild size="sm">
+                <Link href="/perfil">Editar perfil de egresso</Link>
+              </Button>
+              <Button asChild variant="outline" size="sm">
+                <Link href="/egressos">Ver vitrine</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       <section className="grid gap-4 md:grid-cols-3">

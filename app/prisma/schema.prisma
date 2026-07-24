@@ -422,6 +422,10 @@ model GraduateProfile {
   /// Privacy: profile only appears on the public showcase when true
   showInShowcase      Boolean  @default(false) @map("show_in_showcase")
   graduatedTerm       String?  @map("graduated_term")
+  /// Egresso-controlled contact email for the mentorship button (mailto:).
+  /// Nullable on purpose: leaving it empty hides the contact button. Never
+  /// falls back to User.email — that's the login email (private).
+  contactEmail        String?  @map("contact_email")
   createdAt           DateTime @default(now()) @map("created_at")
   updatedAt           DateTime @updatedAt @map("updated_at")
 
