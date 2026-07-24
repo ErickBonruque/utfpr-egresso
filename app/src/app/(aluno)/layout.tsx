@@ -1,4 +1,4 @@
-import { Home, Network, Trophy, UserRound } from "lucide-react";
+import { Briefcase, Home, Network, Trophy, UserRound } from "lucide-react";
 import Link from "next/link";
 import { LevelBadge } from "@/components/gamification/level-badge";
 import { SignOutButton } from "@/components/sign-out-button";
@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: "/painel", label: "Início", icon: Home },
   { href: "/arvore", label: "Árvore", icon: Network },
   { href: "/conquistas", label: "Conquistas", icon: Trophy },
+  { href: "/vagas", label: "Vagas", icon: Briefcase },
   { href: "/perfil", label: "Perfil", icon: UserRound },
 ];
 
