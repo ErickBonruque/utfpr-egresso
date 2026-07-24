@@ -119,9 +119,13 @@ export default async function CourseCareersPage({
           <TableBody>
             {careers.map((career) => (
               <TableRow key={career.id}>
-                <TableCell className="font-medium">{career.name}</TableCell>
+                <TableCell className="font-medium whitespace-nowrap">
+                  {career.name}
+                </TableCell>
                 <TableCell className="max-w-64 text-muted-foreground text-xs">
-                  {career.description ?? "—"}
+                  <p className="line-clamp-2 break-words">
+                    {career.description ?? "—"}
+                  </p>
                 </TableCell>
                 <TableCell>
                   <div className="flex max-w-72 flex-wrap gap-1">
@@ -132,32 +136,34 @@ export default async function CourseCareersPage({
                     ))}
                   </div>
                 </TableCell>
-                <TableCell className="flex gap-2">
-                  <FormDialog
-                    wide
-                    title={`Editar ${career.name}`}
-                    action={updateCareer.bind(null, career.id)}
-                    trigger={
-                      <Button variant="outline" size="sm">
-                        Editar
-                      </Button>
-                    }
-                  >
-                    <CareerFields
-                      nodeOptions={nodeOptions}
-                      defaults={{
-                        name: career.name,
-                        description: career.description,
-                        nodeIds: career.nodes.map(({ node }) => node.id),
-                      }}
-                    />
-                  </FormDialog>
-                  <ConfirmButton
-                    action={deleteCareer.bind(null, career.id)}
-                    confirmMessage={`Excluir a carreira "${career.name}"?`}
-                  >
-                    Excluir
-                  </ConfirmButton>
+                <TableCell className="whitespace-nowrap">
+                  <div className="flex gap-2">
+                    <FormDialog
+                      wide
+                      title={`Editar ${career.name}`}
+                      action={updateCareer.bind(null, career.id)}
+                      trigger={
+                        <Button variant="outline" size="sm">
+                          Editar
+                        </Button>
+                      }
+                    >
+                      <CareerFields
+                        nodeOptions={nodeOptions}
+                        defaults={{
+                          name: career.name,
+                          description: career.description,
+                          nodeIds: career.nodes.map(({ node }) => node.id),
+                        }}
+                      />
+                    </FormDialog>
+                    <ConfirmButton
+                      action={deleteCareer.bind(null, career.id)}
+                      confirmMessage={`Excluir a carreira "${career.name}"?`}
+                    >
+                      Excluir
+                    </ConfirmButton>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
