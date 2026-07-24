@@ -27,6 +27,42 @@ describe("validateCriteria", () => {
     ).toEqual({ type: "subjects_approved_count", min: 10 });
   });
 
+  // ── Fase 6.2: novos tipos ────────────────────────────────────────────
+
+  it("accepts min_grade_in_subject and rounds the grade to 1 decimal", () => {
+    expect(
+      validateCriteria({
+        type: "min_grade_in_subject",
+        subjectCode: " CC1AED1 ",
+        minGrade: 7.25,
+      }),
+    ).toEqual({
+      type: "min_grade_in_subject",
+      subjectCode: "CC1AED1",
+      minGrade: 7.3,
+    });
+  });
+
+  it("accepts min_gpa and rounds to 1 decimal", () => {
+    expect(validateCriteria({ type: "min_gpa", minGpa: 6.75 })).toEqual({
+      type: "min_gpa",
+      minGpa: 6.8,
+    });
+  });
+
+  it("accepts approved_full_period", () => {
+    expect(
+      validateCriteria({ type: "approved_full_period", period: 3 }),
+    ).toEqual({ type: "approved_full_period", period: 3 });
+  });
+
+  it("accepts workload_pct", () => {
+    expect(validateCriteria({ type: "workload_pct", minPct: 50 })).toEqual({
+      type: "workload_pct",
+      minPct: 50,
+    });
+  });
+
   it("dedupes and trims subject codes", () => {
     const criteria = validateCriteria({
       type: "subjects_approved",
@@ -55,6 +91,33 @@ describe("validateCriteria", () => {
     ).toThrow(CriteriaError);
     expect(() => validateCriteria(null)).toThrow(CriteriaError);
     expect(() => validateCriteria("x")).toThrow(CriteriaError);
+    // Fase 6.2 — rejeições dos novos tipos:
+    expect(() =>
+      validateCriteria({
+        type: "min_grade_in_subject",
+        subjectCode: "",
+        minGrade: 7,
+      }),
+    ).toThrow(CriteriaError);
+    expect(() =>
+      validateCriteria({
+        type: "min_grade_in_subject",
+        subjectCode: "CC1A",
+        minGrade: 11,
+      }),
+    ).toThrow(CriteriaError);
+    expect(() => validateCriteria({ type: "min_gpa", minGpa: -1 })).toThrow(
+      CriteriaError,
+    );
+    expect(() =>
+      validateCriteria({ type: "approved_full_period", period: 0 }),
+    ).toThrow(CriteriaError);
+    expect(() => validateCriteria({ type: "workload_pct", minPct: 0 })).toThrow(
+      CriteriaError,
+    );
+    expect(() =>
+      validateCriteria({ type: "workload_pct", minPct: 101 }),
+    ).toThrow(CriteriaError);
   });
 
   it("rejects min greater than the number of selected subjects", () => {
@@ -122,6 +185,26 @@ describe("describeCriteria", () => {
     ).toBe("Aprovar 2 de 3 disciplinas selecionadas");
     expect(describeCriteria({ type: "subjects_approved_count", min: 7 })).toBe(
       "Aprovar 7 disciplinas do curso",
+    );
+    // Fase 6.2 — descrições dos novos tipos:
+    expect(
+      describeCriteria({
+        type: "min_grade_in_subject",
+        subjectCode: "CC1AED1",
+        minGrade: 9,
+      }),
+    ).toBe("Obter nota ≥ 9 em CC1AED1");
+    expect(describeCriteria({ type: "min_gpa", minGpa: 7 })).toBe(
+      "Manter CR ≥ 7",
+    );
+    expect(describeCriteria({ type: "approved_full_period", period: 1 })).toBe(
+      "Aprovar todas as disciplinas do 1º período",
+    );
+    expect(describeCriteria({ type: "approved_full_period", period: 3 })).toBe(
+      "Aprovar todas as disciplinas do 3º período",
+    );
+    expect(describeCriteria({ type: "workload_pct", minPct: 50 })).toBe(
+      "Concluir 50% da carga horária obrigatória",
     );
   });
 });

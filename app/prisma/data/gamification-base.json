@@ -122,6 +122,50 @@
             "subjectCodes": ["TCC2"],
             "min": 1
           }
+        },
+        {
+          "name": "Metade do Caminho",
+          "description": "Concluir 50% da carga horária obrigatória do curso.",
+          "category": "Marcos",
+          "icon": "route",
+          "xpReward": 150,
+          "criteria": { "type": "workload_pct", "minPct": 50 }
+        },
+        {
+          "name": "Reta Final",
+          "description": "Concluir 80% da carga horária obrigatória — o diploma está próximo.",
+          "category": "Marcos",
+          "icon": "flag",
+          "xpReward": 200,
+          "criteria": { "type": "workload_pct", "minPct": 80 }
+        },
+        {
+          "name": "Crônico dos Bons",
+          "description": "Manter coeficiente de rendimento (CR) maior ou igual a 7.",
+          "category": "Acadêmica",
+          "icon": "award",
+          "xpReward": 120,
+          "criteria": { "type": "min_gpa", "minGpa": 7 }
+        },
+        {
+          "name": "Perfeccionista de Algoritmos",
+          "description": "Obter nota maior ou igual a 9 em Algoritmos e Estrutura de Dados 1.",
+          "category": "Acadêmica",
+          "icon": "star",
+          "xpReward": 100,
+          "criteria": {
+            "type": "min_grade_in_subject",
+            "subjectCode": "CC1AED1",
+            "minGrade": 9
+          }
+        },
+        {
+          "name": "Primeiro Período Intacto",
+          "description": "Aprovar todas as disciplinas obrigatórias do 1º período.",
+          "category": "Marcos",
+          "icon": "shield-check",
+          "xpReward": 100,
+          "criteria": { "type": "approved_full_period", "period": 1 }
         }
       ],
       "tracks": [
@@ -332,6 +376,50 @@
             "subjectCodes": ["TC1075"],
             "min": 1
           }
+        },
+        {
+          "name": "Meio do Campo",
+          "description": "Concluir 50% da carga horária obrigatória do curso.",
+          "category": "Marcos",
+          "icon": "route",
+          "xpReward": 150,
+          "criteria": { "type": "workload_pct", "minPct": 50 }
+        },
+        {
+          "name": "Carga Cumprida",
+          "description": "Concluir 80% da carga horária obrigatória — o diploma está próximo.",
+          "category": "Marcos",
+          "icon": "flag",
+          "xpReward": 200,
+          "criteria": { "type": "workload_pct", "minPct": 80 }
+        },
+        {
+          "name": "Produtividade em Alta",
+          "description": "Manter coeficiente de rendimento (CR) maior ou igual a 7.",
+          "category": "Acadêmica",
+          "icon": "award",
+          "xpReward": 120,
+          "criteria": { "type": "min_gpa", "minGpa": 7 }
+        },
+        {
+          "name": "Mão na Terra",
+          "description": "Obter nota maior ou igual a 9 em Ciência do Solo I.",
+          "category": "Acadêmica",
+          "icon": "star",
+          "xpReward": 100,
+          "criteria": {
+            "type": "min_grade_in_subject",
+            "subjectCode": "CS1022",
+            "minGrade": 9
+          }
+        },
+        {
+          "name": "Primeiro Plantio",
+          "description": "Aprovar todas as disciplinas obrigatórias do 1º período.",
+          "category": "Marcos",
+          "icon": "shield-check",
+          "xpReward": 100,
+          "criteria": { "type": "approved_full_period", "period": 1 }
         }
       ],
       "tracks": [
@@ -553,6 +641,50 @@
             "subjectCodes": ["TCC14A"],
             "min": 1
           }
+        },
+        {
+          "name": "Metade da Jornada",
+          "description": "Concluir 50% da carga horária obrigatória do curso.",
+          "category": "Marcos",
+          "icon": "route",
+          "xpReward": 150,
+          "criteria": { "type": "workload_pct", "minPct": 50 }
+        },
+        {
+          "name": "Quase Biólogo(a)",
+          "description": "Concluir 80% da carga horária obrigatória — o diploma está próximo.",
+          "category": "Marcos",
+          "icon": "flag",
+          "xpReward": 200,
+          "criteria": { "type": "workload_pct", "minPct": 80 }
+        },
+        {
+          "name": "Desempenho Exemplar",
+          "description": "Manter coeficiente de rendimento (CR) maior ou igual a 7.",
+          "category": "Acadêmica",
+          "icon": "award",
+          "xpReward": 120,
+          "criteria": { "type": "min_gpa", "minGpa": 7 }
+        },
+        {
+          "name": "Naturalista de Talento",
+          "description": "Obter nota maior ou igual a 9 em Botânica Geral.",
+          "category": "Acadêmica",
+          "icon": "star",
+          "xpReward": 100,
+          "criteria": {
+            "type": "min_grade_in_subject",
+            "subjectCode": "CB141B",
+            "minGrade": 9
+          }
+        },
+        {
+          "name": "Primeira Coleta",
+          "description": "Aprovar todas as disciplinas obrigatórias do 1º período.",
+          "category": "Marcos",
+          "icon": "shield-check",
+          "xpReward": 100,
+          "criteria": { "type": "approved_full_period", "period": 1 }
         }
       ],
       "tracks": [

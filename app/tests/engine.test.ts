@@ -8,7 +8,21 @@ import {
 } from "@/lib/engine";
 
 function facts(...approved: string[]): AcademicFacts {
-  return { approvedSubjectCodes: new Set(approved) };
+  return emptyFacts({ approvedSubjectCodes: new Set(approved) });
+}
+
+/// Builds AcademicFacts with safe defaults for the optional fields, so each
+/// test only spells out what matters for the criterion under test.
+function emptyFacts(overrides: Partial<AcademicFacts> = {}): AcademicFacts {
+  return {
+    approvedSubjectCodes: new Set(),
+    bestGradeBySubject: new Map(),
+    gpa: null,
+    currentPeriod: null,
+    workloadPct: 0,
+    fullyApprovedPeriods: new Set(),
+    ...overrides,
+  };
 }
 
 describe("evaluateCriteria", () => {
@@ -54,6 +68,114 @@ describe("evaluateCriteria", () => {
     expect(evaluateCriteria(criteria, facts("A", "B", "C", "D", "E")).met).toBe(
       true,
     );
+  });
+
+  // ── Fase 6.2: novos tipos ────────────────────────────────────────────
+
+  it("min_grade_in_subject: nota parcial, atingida e saturação", () => {
+    const criteria: Criteria = {
+      type: "min_grade_in_subject",
+      subjectCode: "CC1AED1",
+      minGrade: 8,
+    };
+    // Sem nota na disciplina → 0.
+    expect(
+      evaluateCriteria(criteria, emptyFacts({ bestGradeBySubject: new Map() })),
+    ).toEqual({ met: false, progress: 0 });
+    // Nota 6 (abaixo de 8) → 75%.
+    expect(
+      evaluateCriteria(
+        criteria,
+        emptyFacts({ bestGradeBySubject: new Map([["CC1AED1", 6]]) }),
+      ),
+    ).toEqual({ met: false, progress: 75 });
+    // Nota 8 → atingida.
+    expect(
+      evaluateCriteria(
+        criteria,
+        emptyFacts({ bestGradeBySubject: new Map([["CC1AED1", 8]]) }),
+      ),
+    ).toEqual({ met: true, progress: 100 });
+    // Nota 10 não passa de 100.
+    expect(
+      evaluateCriteria(
+        criteria,
+        emptyFacts({ bestGradeBySubject: new Map([["CC1AED1", 10]]) }),
+      ).progress,
+    ).toBe(100);
+  });
+
+  it("min_grade_in_subject usa a melhor nota entre tentativas", () => {
+    const criteria: Criteria = {
+      type: "min_grade_in_subject",
+      subjectCode: "X",
+      minGrade: 7,
+    };
+    // Reprovou com 4, depois aprovou com 8 → a melhor (8) conta.
+    expect(
+      evaluateCriteria(
+        criteria,
+        emptyFacts({ bestGradeBySubject: new Map([["X", 8]]) }),
+      ),
+    ).toEqual({ met: true, progress: 100 });
+  });
+
+  it("min_gpa: sem CR (null) não desbloqueia; parcial; atingido", () => {
+    const criteria: Criteria = { type: "min_gpa", minGpa: 7 };
+    // Calouro sem CR ainda → 0.
+    expect(evaluateCriteria(criteria, emptyFacts({ gpa: null }))).toEqual({
+      met: false,
+      progress: 0,
+    });
+    // CR 5 → ~71%.
+    expect(evaluateCriteria(criteria, emptyFacts({ gpa: 5 }))).toEqual({
+      met: false,
+      progress: 71,
+    });
+    // CR 7 → atingido.
+    expect(evaluateCriteria(criteria, emptyFacts({ gpa: 7 }))).toEqual({
+      met: true,
+      progress: 100,
+    });
+  });
+
+  it("approved_full_period: só atinge com o período completo", () => {
+    const criteria: Criteria = { type: "approved_full_period", period: 1 };
+    // Período 1 não concluído.
+    expect(
+      evaluateCriteria(
+        criteria,
+        emptyFacts({ fullyApprovedPeriods: new Set() }),
+      ),
+    ).toEqual({ met: false, progress: 0 });
+    // Período 1 completo.
+    expect(
+      evaluateCriteria(
+        criteria,
+        emptyFacts({ fullyApprovedPeriods: new Set([1]) }),
+      ),
+    ).toEqual({ met: true, progress: 100 });
+    // Concluiu o período 2 mas não o 1 → não atinge o critério do 1.
+    expect(
+      evaluateCriteria(
+        criteria,
+        emptyFacts({ fullyApprovedPeriods: new Set([2]) }),
+      ),
+    ).toEqual({ met: false, progress: 0 });
+  });
+
+  it("workload_pct: parcial, atingido e saturação", () => {
+    const criteria: Criteria = { type: "workload_pct", minPct: 50 };
+    expect(evaluateCriteria(criteria, emptyFacts({ workloadPct: 25 }))).toEqual(
+      { met: false, progress: 50 },
+    );
+    expect(evaluateCriteria(criteria, emptyFacts({ workloadPct: 50 }))).toEqual(
+      { met: true, progress: 100 },
+    );
+    // 100% não passa de 100.
+    expect(
+      evaluateCriteria(criteria, emptyFacts({ workloadPct: 100 })).progress,
+    ).toBe(100);
   });
 });
 

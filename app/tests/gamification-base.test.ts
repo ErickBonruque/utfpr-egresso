@@ -27,6 +27,14 @@ describe("gamification base (gamification-base.json)", () => {
           .subjectCodes ?? []) {
           expect(codes?.has(code), `${a.name}: ${code}`).toBe(true);
         }
+        // Fase 6.2: min_grade_in_subject referencia uma disciplina única.
+        const singleSubject = (a.criteria as { subjectCode?: string })
+          .subjectCode;
+        if (singleSubject) {
+          expect(codes?.has(singleSubject), `${a.name}: ${singleSubject}`).toBe(
+            true,
+          );
+        }
       }
       for (const t of course.tracks) {
         for (const n of t.nodes) {
@@ -71,9 +79,15 @@ describe("gamification base (gamification-base.json)", () => {
         expect(names.has(a.name)).toBe(false);
         names.add(a.name);
         expect(a.xpReward).toBeGreaterThan(0);
-        expect(["subjects_approved", "subjects_approved_count"]).toContain(
-          (a.criteria as { type: string }).type,
-        );
+        // Fase 6.2: allowlist estendida com nota/CR/período/carga.
+        expect([
+          "subjects_approved",
+          "subjects_approved_count",
+          "min_grade_in_subject",
+          "min_gpa",
+          "approved_full_period",
+          "workload_pct",
+        ]).toContain((a.criteria as { type: string }).type);
       }
     },
   );

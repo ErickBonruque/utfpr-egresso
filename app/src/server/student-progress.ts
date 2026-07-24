@@ -164,7 +164,6 @@ export const getStudentProgress = cache(async (): Promise<StudentProgress> => {
       .filter((e) => e.status === "APPROVED")
       .map((e) => e.subject.code),
   );
-  const facts = { approvedSubjectCodes };
 
   const statusBySubjectCode = new Map<string, string>();
   for (const e of profile.enrollments) {
@@ -184,6 +183,56 @@ export const getStudentProgress = cache(async (): Promise<StudentProgress> => {
   const approvedHours = mandatory
     .filter((e) => approvedSubjectCodes.has(e.subject.code))
     .reduce((sum, e) => sum + e.subject.workloadHours, 0);
+  const workloadPct =
+    totalHours === 0 ? 0 : Math.round((approvedHours / totalHours) * 100);
+
+  // ── Best grade per subject (0–10, highest across attempts) ───────────
+  const bestGradeBySubject = new Map<string, number>();
+  for (const e of profile.enrollments) {
+    if (e.grade === null) continue;
+    const grade = Number(e.grade);
+    const previous = bestGradeBySubject.get(e.subject.code);
+    if (previous === undefined || grade > previous) {
+      bestGradeBySubject.set(e.subject.code, grade);
+    }
+  }
+
+  // ── Periods fully approved (every mandatory subject of the period has
+  //    an APPROVED enrollment). Drives the approved_full_period criteria.
+  const mandatoryByPeriod = new Map<number, Set<string>>();
+  for (const entry of mandatory) {
+    let set = mandatoryByPeriod.get(entry.period);
+    if (!set) {
+      set = new Set();
+      mandatoryByPeriod.set(entry.period, set);
+    }
+    set.add(entry.subject.code);
+  }
+  const fullyApprovedPeriods = new Set<number>();
+  for (const [period, codes] of mandatoryByPeriod) {
+    let all = true;
+    for (const code of codes) {
+      if (!approvedSubjectCodes.has(code)) {
+        all = false;
+        break;
+      }
+    }
+    if (all && codes.size > 0) fullyApprovedPeriods.add(period);
+  }
+
+  const gpa =
+    profile.academicStanding?.gpa == null
+      ? null
+      : Number(profile.academicStanding.gpa) * 10;
+
+  const facts = {
+    approvedSubjectCodes,
+    bestGradeBySubject,
+    gpa,
+    currentPeriod: profile.academicStanding?.currentPeriod ?? null,
+    workloadPct,
+    fullyApprovedPeriods,
+  };
 
   // ── Achievements ─────────────────────────────────────────────────────
   const progressRows = new Map(
@@ -364,17 +413,13 @@ export const getStudentProgress = cache(async (): Promise<StudentProgress> => {
     },
     standing: {
       status: profile.academicStanding?.status ?? null,
-      currentPeriod: profile.academicStanding?.currentPeriod ?? null,
-      gpa:
-        profile.academicStanding?.gpa == null
-          ? null
-          : Number(profile.academicStanding.gpa) * 10,
+      currentPeriod: facts.currentPeriod,
+      gpa,
     },
     workload: {
       approvedHours,
       totalHours,
-      pct:
-        totalHours === 0 ? 0 : Math.round((approvedHours / totalHours) * 100),
+      pct: workloadPct,
     },
     xp: { total: totalXp, level },
     achievements: achievementViews,

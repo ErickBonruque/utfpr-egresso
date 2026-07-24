@@ -9,6 +9,17 @@ import type { Criteria } from "@/lib/criteria";
 export type AcademicFacts = {
   /// Codes of subjects with an APPROVED enrollment.
   approvedSubjectCodes: ReadonlySet<string>;
+  /// Best grade (0–10) achieved per subject code (highest over attempts).
+  bestGradeBySubject: ReadonlyMap<string, number>;
+  /// Coeficiente de rendimento on the 0–10 scale (null when not yet computed).
+  gpa: number | null;
+  /// Current period of the student (1-based), null when unknown.
+  currentPeriod: number | null;
+  /// Percentage (0–100) of the mandatory workload approved.
+  workloadPct: number;
+  /// Period numbers (1-based) the student has fully approved (every mandatory
+  /// subject of that period has an APPROVED enrollment).
+  fullyApprovedPeriods: ReadonlySet<number>;
 };
 
 export type CriteriaEvaluation = {
@@ -40,6 +51,38 @@ export function evaluateCriteria(
       return {
         met: done >= criteria.min,
         progress: Math.min(100, Math.round((done / criteria.min) * 100)),
+      };
+    }
+    case "min_grade_in_subject": {
+      const grade = facts.bestGradeBySubject.get(criteria.subjectCode);
+      if (grade === undefined) {
+        return { met: false, progress: 0 };
+      }
+      return {
+        met: grade >= criteria.minGrade,
+        progress: Math.min(100, Math.round((grade / criteria.minGrade) * 100)),
+      };
+    }
+    case "min_gpa": {
+      // No CR yet (freshman, not synced) → cannot meet, no partial progress.
+      if (facts.gpa === null) return { met: false, progress: 0 };
+      return {
+        met: facts.gpa >= criteria.minGpa,
+        progress: Math.min(
+          100,
+          Math.round((facts.gpa / criteria.minGpa) * 100),
+        ),
+      };
+    }
+    case "approved_full_period": {
+      const met = facts.fullyApprovedPeriods.has(criteria.period);
+      return { met, progress: met ? 100 : 0 };
+    }
+    case "workload_pct": {
+      const pct = facts.workloadPct;
+      return {
+        met: pct >= criteria.minPct,
+        progress: Math.min(100, Math.round((pct / criteria.minPct) * 100)),
       };
     }
   }

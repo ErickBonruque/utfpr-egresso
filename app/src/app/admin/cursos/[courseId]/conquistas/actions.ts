@@ -56,6 +56,14 @@ function readAchievementForm(
       };
     }
   }
+  if (
+    criteria?.type === "min_grade_in_subject" &&
+    !validSubjectCodes.has(criteria.subjectCode)
+  ) {
+    return {
+      error: `Disciplina fora do curso no critério: ${criteria.subjectCode}.`,
+    };
+  }
 
   return {
     data: {
