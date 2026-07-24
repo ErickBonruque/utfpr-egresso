@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import type { FormActionResult } from "@/components/admin/form-dialog";
+import { wouldCreateCycle } from "@/lib/track-tree";
 import { assertCanManageCourse, requireAdmin } from "@/server/actor";
 import { prisma } from "@/server/db";
 
@@ -187,8 +188,6 @@ export async function updateNode(
     const node = await requireNode(nodeId);
     const { parentId } = parsed.data;
     if (parentId) {
-      if (parentId === nodeId)
-        return { error: "Um nó não pode ser o próprio pai." };
       const parent = await prisma.trackNode.findUnique({
         where: { id: parentId },
         select: { trackId: true },
@@ -201,17 +200,8 @@ export async function updateNode(
         where: { trackId: node.trackId },
         select: { id: true, parentId: true },
       });
-      const parentOf = new Map(nodes.map((n) => [n.id, n.parentId]));
-      for (
-        let cursor: string | null = parentId;
-        cursor;
-        cursor = parentOf.get(cursor) ?? null
-      ) {
-        if (cursor === nodeId) {
-          return {
-            error: "O nó pai não pode ser um descendente do próprio nó.",
-          };
-        }
+      if (wouldCreateCycle(nodes, nodeId, parentId)) {
+        return { error: "O nó pai não pode ser um descendente do próprio nó." };
       }
     }
 
@@ -240,5 +230,102 @@ export async function deleteNode(nodeId: string): Promise<FormActionResult> {
     revalidate(node.track.courseId);
   } catch (e) {
     return fail(e, "Não foi possível excluir o nó.");
+  }
+}
+
+/// Resultado de actions granulares do editor visual: além do contrato
+/// `{ error } | undefined`, podem devolver o id do nó criado/selecionado
+/// para o canvas focá-lo. Erros esperados continuam como `{ error }`.
+export type NodeActionResult = { error: string } | { id: string } | undefined;
+
+/// Reatribui o pai de um nó (conectar aresta no canvas). `parentId === null`
+/// torna raiz. Validação de ciclo + escopo da trilha. Usada no `onConnect`
+/// do React Flow (source = handle inferior = pai, target = filho).
+export async function setNodeParent(
+  nodeId: string,
+  parentId: string | null,
+): Promise<FormActionResult> {
+  try {
+    const node = await requireNode(nodeId);
+    if (parentId === node.id)
+      return { error: "Um nó não pode ser o próprio pai." };
+    if (parentId) {
+      const parent = await prisma.trackNode.findUnique({
+        where: { id: parentId },
+        select: { trackId: true },
+      });
+      if (!parent || parent.trackId !== node.trackId) {
+        return { error: "Nó pai inválido." };
+      }
+      const nodes = await prisma.trackNode.findMany({
+        where: { trackId: node.trackId },
+        select: { id: true, parentId: true },
+      });
+      if (wouldCreateCycle(nodes, nodeId, parentId)) {
+        return { error: "O nó pai não pode ser um descendente do próprio nó." };
+      }
+    }
+    await prisma.trackNode.update({
+      where: { id: nodeId },
+      data: { parentId },
+    });
+    revalidate(node.track.courseId);
+  } catch (e) {
+    return fail(e, "Não foi possível reconectar o nó.");
+  }
+}
+
+/// Define o `sortOrder` de um nó (drag horizontal no canvas reordena os
+/// irmãos; o dagre recomputa as posições no próximo render).
+export async function reorderSiblings(
+  nodeId: string,
+  sortOrder: number,
+): Promise<FormActionResult> {
+  if (!Number.isInteger(sortOrder)) {
+    return { error: "Ordem inválida." };
+  }
+  try {
+    const node = await requireNode(nodeId);
+    await prisma.trackNode.update({
+      where: { id: nodeId },
+      data: { sortOrder },
+    });
+    revalidate(node.track.courseId);
+  } catch (e) {
+    return fail(e, "Não foi possível reordenar o nó.");
+  }
+}
+
+/// Cria um nó placeholder ("Novo nó") já conectado ao pai (ou como raiz).
+/// Devolve o id para o canvas focá-lo. Usada por: botão da toolbar,
+/// duplo-clique no canvas vazio (pai = null) e "adicionar filho" do Sheet.
+export async function createNodeAt(
+  trackId: string,
+  parentId: string | null,
+): Promise<NodeActionResult> {
+  try {
+    const track = await requireTrack(trackId);
+    if (parentId) {
+      const parent = await prisma.trackNode.findUnique({
+        where: { id: parentId },
+        select: { trackId: true },
+      });
+      if (!parent || parent.trackId !== trackId) {
+        return { error: "Nó pai inválido." };
+      }
+    }
+    const created = await prisma.trackNode.create({
+      data: {
+        trackId,
+        parentId,
+        kind: "CORE",
+        name: "Novo nó",
+        xpReward: 0,
+      },
+    });
+    revalidate(track.courseId);
+    return { id: created.id };
+  } catch (e) {
+    return fail(e, "Não foi possível criar o nó.");
   }
 }

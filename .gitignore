@@ -85,3 +85,6 @@ yarn-error.log*
 
 # Planejamento interno (refac) - não versionado
 .planning/
+
+# ZCode CLI (ferramenta de desenvolvimento) - não versionado
+.zcode/
