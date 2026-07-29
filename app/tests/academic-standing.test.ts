@@ -1,41 +1,8 @@
 // The aluno → egresso transition rule (Fase 3): GRADUATED in the mirrored
 // standing creates the GraduateProfile, no matter who wrote the standing.
 import { describe, expect, it } from "vitest";
-import {
-  applyAcademicStanding,
-  type StandingDb,
-} from "../src/server/academic-standing";
-
-type Row = Record<string, unknown>;
-
-/// In-memory stub of the two tables the rule touches.
-function fakeDb() {
-  const standings = new Map<string, Row>();
-  const graduates = new Map<string, Row>();
-  const db: StandingDb = {
-    academicStanding: {
-      upsert: async ({ where, update, create }) => {
-        const key = where.studentProfileId;
-        standings.set(
-          key,
-          standings.has(key) ? { ...standings.get(key), ...update } : create,
-        );
-        return standings.get(key);
-      },
-    },
-    graduateProfile: {
-      upsert: async ({ where, update, create }) => {
-        const key = where.studentProfileId;
-        graduates.set(
-          key,
-          graduates.has(key) ? { ...graduates.get(key), ...update } : create,
-        );
-        return graduates.get(key);
-      },
-    },
-  };
-  return { db, standings, graduates };
-}
+import { applyAcademicStanding } from "../src/server/academic-standing";
+import { fakeStandingDb as fakeDb } from "./helpers/standing-db";
 
 describe("applyAcademicStanding", () => {
   it("mirrors the standing without creating a graduate profile for ACTIVE", async () => {

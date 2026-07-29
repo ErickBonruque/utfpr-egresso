@@ -6,6 +6,7 @@ import { StudentChrome } from "@/components/student-chrome";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { isAdmin } from "@/lib/authz";
+import { toShowcase } from "@/lib/showcase";
 import { requireActor } from "@/server/actor";
 import { prisma } from "@/server/db";
 import { getStudentProgress } from "@/server/student-progress";
@@ -21,9 +22,12 @@ export default async function EgressosPage() {
 
   // Opt-in alumni only. No course/campus scoping: the showcase is meant to
   // connect across the whole institution (filters happen client-side).
+  // O `select` espelha a allow-list de src/lib/showcase.ts — campo novo aqui
+  // sem passar por lá não chega ao cliente (toShowcase projeta campo a campo).
   const rows = await prisma.graduateProfile.findMany({
     where: { showInShowcase: true },
     select: {
+      showInShowcase: true,
       jobTitle: true,
       company: true,
       linkedinUrl: true,
@@ -48,20 +52,7 @@ export default async function EgressosPage() {
     orderBy: { updatedAt: "desc" },
   });
 
-  const graduates = rows.map((g) => ({
-    name: g.studentProfile.user.name,
-    bio: g.studentProfile.bio,
-    jobTitle: g.jobTitle,
-    company: g.company,
-    linkedinUrl: g.linkedinUrl,
-    githubUrl: g.githubUrl,
-    contactEmail: g.contactEmail,
-    mentorshipAvailable: g.mentorshipAvailable,
-    mentorshipAreas: g.mentorshipAreas,
-    graduatedTerm: g.graduatedTerm,
-    courseName: g.studentProfile.course.name,
-    campusName: g.studentProfile.course.campus.name,
-  }));
+  const graduates = toShowcase(rows);
 
   // Distinct campus/course lists drive the filter dropdowns.
   const campi = Array.from(new Set(graduates.map((g) => g.campusName))).sort();

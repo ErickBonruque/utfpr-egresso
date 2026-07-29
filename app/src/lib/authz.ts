@@ -56,6 +56,21 @@ export function primaryRole(actor: Actor): Role | null {
   return null;
 }
 
+/// Portal do aluno (grupo de rotas `(aluno)`): pertence a quem tem
+/// StudentProfile. Egresso continua entrando — a decisão da Fase 7 foi que o
+/// egresso é um aluno com extras, e reaproveita `/painel`. Admin sem perfil de
+/// aluno fica de fora (`requireStudent` o manda para `/admin`).
+export function canAccessStudentPortal(actor: Actor): boolean {
+  return actor.student !== null;
+}
+
+/// Perfil de egresso: só o próprio egresso edita. Aluno em curso não tem
+/// GraduateProfile (ele nasce na transição aluno → egresso) e admin não edita
+/// perfil de egresso pelo portal. Guard da action `updateGraduateProfile`.
+export function canEditGraduateProfile(actor: Actor): boolean {
+  return actor.student?.isGraduate === true;
+}
+
 export function canManageCampus(actor: Actor, campusId: string): boolean {
   return actor.grants.some(
     (g) =>

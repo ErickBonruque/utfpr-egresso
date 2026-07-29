@@ -1,13 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { canEditGraduateProfile } from "@/lib/authz";
 import { validateGraduateProfile } from "@/lib/graduate-profile";
 import { requireStudent } from "@/server/actor";
 import { prisma } from "@/server/db";
 import type { ProfileActionResult } from "./actions";
 
 /// Edits the GraduateProfile (Fase 7). Only callable by an actual egresso
-/// (actor.student.isGraduate) — the GraduateProfile is created on the
+/// (canEditGraduateProfile) — the GraduateProfile is created on the
 /// aluno → egresso transition, so it always exists by the time we get here.
 /// Validation lives in the pure helper (src/lib/graduate-profile.ts) so it
 /// can be unit-tested without DB/session. Revalidates /perfil (the form) and
@@ -16,7 +17,8 @@ export async function updateGraduateProfile(
   formData: FormData,
 ): Promise<ProfileActionResult> {
   const actor = await requireStudent();
-  if (!actor.student?.isGraduate) {
+  const student = actor.student;
+  if (!student || !canEditGraduateProfile(actor)) {
     return {
       error: "Apenas egressos podem editar o perfil de egresso.",
     };
@@ -38,7 +40,7 @@ export async function updateGraduateProfile(
   const showInShowcase = formData.get("showInShowcase") === "on";
 
   await prisma.graduateProfile.update({
-    where: { studentProfileId: actor.student.profileId },
+    where: { studentProfileId: student.profileId },
     data: {
       ...value,
       mentorshipAvailable,

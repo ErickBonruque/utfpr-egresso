@@ -2,21 +2,11 @@ import { ExternalLink, Mail, MessageCircle } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
+import type { ShowcaseEntry } from "@/lib/showcase";
 
-export type GraduateCardData = {
-  name: string;
-  bio: string | null;
-  jobTitle: string | null;
-  company: string | null;
-  linkedinUrl: string | null;
-  githubUrl: string | null;
-  contactEmail: string | null;
-  mentorshipAvailable: boolean;
-  mentorshipAreas: string[];
-  graduatedTerm: string | null;
-  courseName: string;
-  campusName: string;
-};
+/// O card mostra exatamente a projeção pública da vitrine — a lista de campos
+/// é decidida (e testada) em src/lib/showcase.ts, não aqui.
+export type GraduateCardData = ShowcaseEntry;
 
 function initials(name: string): string {
   const parts = name.trim().split(/\s+/);
