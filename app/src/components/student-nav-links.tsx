@@ -23,7 +23,9 @@ export function StudentNavLinks({
             key={item.href}
             href={item.href}
             className={cn(
-              "rounded-md px-3 py-1.5 text-sm transition-colors",
+              // px menor no tablet: com 6 itens o menu + badge de nível
+              // estouravam a largura exatamente em 768px (breakpoint `md`).
+              "rounded-md px-2 py-1.5 text-sm transition-colors lg:px-3",
               active
                 ? "bg-brand font-medium text-brand-foreground"
                 : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
