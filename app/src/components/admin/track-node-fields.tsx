@@ -1,8 +1,8 @@
 import { IconPicker } from "@/components/admin/icon-picker";
-import { NativeSelect } from "@/components/admin/native-select";
 import { SubjectMultiSelect } from "@/components/admin/subject-multi-select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
 import { Textarea } from "@/components/ui/textarea";
 
 /// Nó de trilha do admin (forma plana consumida pela page e pelo editor

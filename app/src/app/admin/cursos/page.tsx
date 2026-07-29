@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { ConfirmButton } from "@/components/admin/confirm-button";
 import { FormDialog } from "@/components/admin/form-dialog";
-import { NativeSelect } from "@/components/admin/native-select";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
 import {
   Table,
   TableBody,

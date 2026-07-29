@@ -3,10 +3,10 @@
 import { useState } from "react";
 import type { FormActionResult } from "@/components/admin/form-dialog";
 import { FormDialog } from "@/components/admin/form-dialog";
-import { NativeSelect } from "@/components/admin/native-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
 import type { AdminRole } from "@/lib/authz";
 import { ROLE_LABEL } from "@/lib/labels";
 

@@ -4,6 +4,7 @@ import { Search, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import { cn } from "@/lib/utils";
 import { GraduateCard, type GraduateCardData } from "./graduate-card";
 
@@ -54,9 +55,6 @@ export function GraduateSearch({
     setMentorshipOnly(false);
   }
 
-  const selectClass =
-    "h-9 rounded-md border border-input bg-background px-3 text-foreground text-sm shadow-xs outline-none transition-colors [color-scheme:light] focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 dark:[color-scheme:dark] dark:bg-input/30";
-
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3">
@@ -75,10 +73,10 @@ export function GraduateSearch({
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <select
+          <NativeSelect
             value={campus}
             onChange={(e) => setCampus(e.target.value)}
-            className={cn(selectClass, "min-w-32")}
+            className="w-auto min-w-32"
             aria-label="Filtrar por campus"
           >
             <option value="">Todos os campi</option>
@@ -87,12 +85,12 @@ export function GraduateSearch({
                 {c}
               </option>
             ))}
-          </select>
+          </NativeSelect>
 
-          <select
+          <NativeSelect
             value={course}
             onChange={(e) => setCourse(e.target.value)}
-            className={cn(selectClass, "min-w-40")}
+            className="w-auto min-w-40"
             aria-label="Filtrar por curso"
           >
             <option value="">Todos os cursos</option>
@@ -101,7 +99,7 @@ export function GraduateSearch({
                 {c}
               </option>
             ))}
-          </select>
+          </NativeSelect>
 
           <button
             type="button"

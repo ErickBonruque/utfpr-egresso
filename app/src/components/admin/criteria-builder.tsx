@@ -1,13 +1,13 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { NativeSelect } from "@/components/admin/native-select";
 import {
   SubjectMultiSelect,
   type SubjectOption,
 } from "@/components/admin/subject-multi-select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { NativeSelect } from "@/components/ui/native-select";
 import {
   CRITERIA_TYPES,
   type Criteria,
