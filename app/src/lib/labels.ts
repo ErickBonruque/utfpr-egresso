@@ -19,6 +19,13 @@ export const ACADEMIC_STATUS_LABEL: Record<string, string> = {
   GRADUATED: "Formado(a)",
 };
 
+export const SYNC_STATUS_LABEL: Record<string, string> = {
+  RUNNING: "Em andamento",
+  SUCCESS: "Concluída",
+  PARTIAL: "Concluída com erros",
+  FAILED: "Falhou",
+};
+
 export const TRACK_NODE_KIND_LABEL: Record<string, string> = {
   CORE: "Progressão",
   BRANCH: "Especialização",

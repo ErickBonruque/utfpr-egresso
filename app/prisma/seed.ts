@@ -17,7 +17,8 @@ import {
   PrismaClient,
   type TrackNodeKind,
 } from "../generated/prisma/client.js";
-import { planMockEnrollments } from "../src/lib/mock-enrollments.js";
+import { createSeedProvider } from "../src/server/academic/seed-provider.js";
+import { runAcademicSync } from "../src/server/academic/sync.js";
 import { applyAcademicStanding } from "../src/server/academic-standing.js";
 
 type SeedSubject = {
@@ -484,79 +485,18 @@ async function seedUsers() {
   }
 }
 
-/// Mock UTFPR-mirror enrollments (Fase 6) — deterministic plan derived from
-/// each student's admission term + current period, so the gamification
-/// engine has real data to chew on until the Fase 8 integration. Create-only
-/// (skipDuplicates): reseeding never rewrites history.
+/// Matrículas espelho: delega para a camada de integração da Fase 8 em vez
+/// de gerar as linhas aqui. O provider sintético produz o mesmo histórico
+/// determinístico de antes, mas passando pela mesma rotina que a UTFPR usará
+/// — assim o seed exercita o caminho real a cada `npm run setup`, e o CR sai
+/// da regra única (deriveGpa) em vez de um cálculo próprio do seed.
 async function seedEnrollments() {
-  for (const s of MOCK_STUDENTS) {
-    const profile = await prisma.studentProfile.findUnique({
-      where: { ra: s.ra },
-      select: { id: true, courseId: true, admissionTerm: true },
-    });
-    if (!profile) throw new Error(`Perfil não encontrado: ${s.ra}`);
-
-    const curriculum = await prisma.curriculum.findFirst({
-      where: { courseId: profile.courseId, isActive: true },
-      include: {
-        entries: {
-          select: {
-            period: true,
-            isElective: true,
-            subject: { select: { id: true, code: true } },
-          },
-        },
-      },
-    });
-    if (!curriculum) throw new Error(`Curso sem matriz ativa: ${s.course}`);
-
-    const plan = planMockEnrollments({
-      ra: s.ra,
-      admissionTerm: s.admissionTerm,
-      currentPeriod: s.standing.currentPeriod ?? null,
-      graduated: s.standing.status === "GRADUATED",
-      entries: curriculum.entries.map((e) => ({
-        code: e.subject.code,
-        period: e.period,
-        isElective: e.isElective,
-      })),
-    });
-
-    const subjectIdByCode = new Map(
-      curriculum.entries.map((e) => [e.subject.code, e.subject.id]),
-    );
-    const created = await prisma.enrollment.createMany({
-      data: plan.map((p) => ({
-        studentProfileId: profile.id,
-        // biome-ignore lint/style/noNonNullAssertion: plan only emits codes that came from the curriculum entries above
-        subjectId: subjectIdByCode.get(p.subjectCode)!,
-        term: p.term,
-        status: p.status,
-        grade: p.grade,
-        attendance: p.attendance,
-      })),
-      skipDuplicates: true,
-    });
-    // CR espelhado: média das notas efetivamente lançadas, na escala 0–1 da
-    // UTFPR (o engine multiplica por 10). Derivado das mesmas matrículas mock
-    // para que o desbloqueio das conquistas `min_gpa` seja determinístico —
-    // sem isto o CR fica nulo e essas conquistas nunca saem de 0%.
-    const graded = await prisma.enrollment.aggregate({
-      where: { studentProfileId: profile.id, grade: { not: null } },
-      _avg: { grade: true },
-    });
-    const avgGrade = graded._avg.grade;
-    if (avgGrade !== null) {
-      await prisma.academicStanding.update({
-        where: { studentProfileId: profile.id },
-        data: { gpa: Number(avgGrade) / 10 },
-      });
-    }
-
-    console.log(
-      `  ${s.ra}: ${plan.length} matrículas planejadas (${created.count} novas)` +
-        (avgGrade === null ? "" : ` · CR ${Number(avgGrade).toFixed(2)}`),
-    );
+  const summary = await runAcademicSync(prisma, createSeedProvider(prisma), {
+    triggeredBy: "seed",
+    onProgress: (line) => console.log(`  ${line}`),
+  });
+  if (summary.status === "FAILED") {
+    throw new Error(`Sincronização do seed falhou: ${summary.message}`);
   }
 }
 
@@ -566,7 +506,7 @@ async function main() {
   await seedGamification(loadJson<GamificationFile>("gamification-base.json"));
   console.log("Usuários (logins mockados até a integração UTFPR):");
   await seedUsers();
-  console.log("Matrículas espelho (mock determinístico, Fase 6):");
+  console.log("Matrículas espelho (via camada de integração, Fase 8):");
   await seedEnrollments();
 }
 

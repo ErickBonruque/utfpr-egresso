@@ -257,17 +257,17 @@ model CareerTrackNode {
 /// username carries the student RA (normalized lowercase); admins sign in by
 /// email and may have no username at all.
 model User {
-  id            String   @id @default(cuid())
-  name          String
-  email         String   @unique
-  emailVerified Boolean  @default(false) @map("email_verified")
-  image         String?
+  id              String   @id @default(cuid())
+  name            String
+  email           String   @unique
+  emailVerified   Boolean  @default(false) @map("email_verified")
+  image           String?
   /// Login identifier for students: the RA, normalized (username plugin)
   username        String?  @unique
   /// RA as typed by the user, before normalization (username plugin)
   displayUsername String?  @map("display_username")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
 
   adminAssignments AdminAssignment[]
   studentProfile   StudentProfile?
@@ -382,27 +382,27 @@ model AdminAssignment {
 /// Our data about a student: the link user ↔ course plus the UTFPR external
 /// key (RA). Academic facts (grades, status) live in the mirror zone below.
 model StudentProfile {
-  id       String @id @default(cuid())
-  userId   String @unique @map("user_id")
-  courseId String @map("course_id")
+  id            String   @id @default(cuid())
+  userId        String   @unique @map("user_id")
+  courseId      String   @map("course_id")
   /// Registro Acadêmico — UTFPR's natural key, used to reconcile mirror data
-  ra       String @unique
+  ra            String   @unique
   /// Admission term as informed on signup (e.g. "2023/1")
   admissionTerm String?  @map("admission_term")
   /// Self-service fields (Fase 6) — edited by the student; they pre-fill the
   /// GraduateProfile on the aluno → egresso transition (Fase 7).
-  bio         String? @db.VarChar(500)
-  linkedinUrl String? @map("linkedin_url")
-  githubUrl   String? @map("github_url")
+  bio           String?  @db.VarChar(500)
+  linkedinUrl   String?  @map("linkedin_url")
+  githubUrl     String?  @map("github_url")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
-  user             User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
-  course           Course                @relation(fields: [courseId], references: [id], onDelete: Restrict)
-  graduateProfile  GraduateProfile?
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course              Course                @relation(fields: [courseId], references: [id], onDelete: Restrict)
+  graduateProfile     GraduateProfile?
   achievementProgress AchievementProgress[]
-  enrollments      Enrollment[]
-  academicStanding AcademicStanding?
+  enrollments         Enrollment[]
+  academicStanding    AcademicStanding?
 
   @@index([courseId])
   @@map("student_profiles")
@@ -509,4 +509,45 @@ model AcademicStanding {
   studentProfile StudentProfile @relation(fields: [studentProfileId], references: [id], onDelete: Cascade)
 
   @@map("academic_standings")
+}
+
+enum SyncRunStatus {
+  RUNNING
+  SUCCESS
+  /// Alguns alunos falharam, outros sincronizaram.
+  PARTIAL
+  FAILED
+
+  @@map("sync_run_status")
+}
+
+/// Log de execução da sincronização acadêmica (Fase 8). Uma linha por
+/// execução, com os contadores que respondem "a integração está viva e o que
+/// ela mexeu?" sem precisar de acesso ao servidor.
+model SyncRun {
+  id       String        @id @default(cuid())
+  /// Nome do provider ativo na execução ("seed", "utfpr").
+  provider String
+  status   SyncRunStatus
+
+  startedAt  DateTime  @default(now()) @map("started_at")
+  finishedAt DateTime? @map("finished_at")
+
+  studentsProcessed  Int @default(0) @map("students_processed")
+  studentsSkipped    Int @default(0) @map("students_skipped")
+  studentsFailed     Int @default(0) @map("students_failed")
+  enrollmentsCreated Int @default(0) @map("enrollments_created")
+  enrollmentsUpdated Int @default(0) @map("enrollments_updated")
+  standingsUpdated   Int @default(0) @map("standings_updated")
+
+  /// "cli" (npm run sync:academic / cron) ou "admin" (botão na tela).
+  triggeredBy       String  @map("triggered_by")
+  /// Quem clicou, quando veio do admin. Sem FK: o log sobrevive à remoção
+  /// do usuário — é registro histórico.
+  triggeredByUserId String? @map("triggered_by_user_id")
+  /// Avisos e erros resumidos da execução (nulo quando correu limpo).
+  message           String?
+
+  @@index([startedAt])
+  @@map("sync_runs")
 }

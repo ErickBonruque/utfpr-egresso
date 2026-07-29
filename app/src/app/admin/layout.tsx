@@ -25,6 +25,7 @@ export default async function AdminLayout({
     ...(isSuperAdmin(actor) ? [{ href: "/admin/campi", label: "Campi" }] : []),
     { href: "/admin/cursos", label: "Cursos" },
     { href: "/admin/alunos", label: "Alunos" },
+    { href: "/admin/sincronizacao", label: "Sincronização" },
     // COURSE_ADMIN cannot grant roles (Fase 3 matrix) — hide the section.
     ...(actor.grants.some((g) => g.role !== "COURSE_ADMIN")
       ? [{ href: "/admin/administradores", label: "Administradores" }]
