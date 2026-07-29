@@ -477,6 +477,8 @@ async function seedUsers() {
         mentorshipAreas: ["Carreira em desenvolvimento", "Primeiro estágio"],
         showInShowcase: true,
         contactEmail: "mariana.souza@example.com",
+        linkedinUrl: "https://www.linkedin.com/in/exemplo-mariana-souza",
+        githubUrl: "https://github.com/exemplo-mariana",
       },
     });
   }
@@ -535,8 +537,25 @@ async function seedEnrollments() {
       })),
       skipDuplicates: true,
     });
+    // CR espelhado: média das notas efetivamente lançadas, na escala 0–1 da
+    // UTFPR (o engine multiplica por 10). Derivado das mesmas matrículas mock
+    // para que o desbloqueio das conquistas `min_gpa` seja determinístico —
+    // sem isto o CR fica nulo e essas conquistas nunca saem de 0%.
+    const graded = await prisma.enrollment.aggregate({
+      where: { studentProfileId: profile.id, grade: { not: null } },
+      _avg: { grade: true },
+    });
+    const avgGrade = graded._avg.grade;
+    if (avgGrade !== null) {
+      await prisma.academicStanding.update({
+        where: { studentProfileId: profile.id },
+        data: { gpa: Number(avgGrade) / 10 },
+      });
+    }
+
     console.log(
-      `  ${s.ra}: ${plan.length} matrículas planejadas (${created.count} novas)`,
+      `  ${s.ra}: ${plan.length} matrículas planejadas (${created.count} novas)` +
+        (avgGrade === null ? "" : ` · CR ${Number(avgGrade).toFixed(2)}`),
     );
   }
 }
