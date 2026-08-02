@@ -21,6 +21,19 @@ const PLACEHOLDER_SECRETS = new Set(["change-me", "secret", "changeme", ""]);
 
 const MIN_SECRET_LENGTH = 32;
 
+/// `npm run build && npm start` na máquina do dev roda com NODE_ENV=production
+/// contra http://localhost — é o smoke test do build de produção, e exigir
+/// https ali impediria justamente a conferência que a fase pede. Endereço de
+/// loopback nunca é um deploy de verdade, então a exceção é segura.
+function isLoopback(url: string): boolean {
+  try {
+    const { hostname } = new URL(url);
+    return hostname === "localhost" || hostname === "127.0.0.1";
+  } catch {
+    return false;
+  }
+}
+
 export function checkEnvironment(
   env: EnvLike,
   isProduction: boolean,
@@ -57,7 +70,11 @@ export function checkEnvironment(
   const baseUrl = env.BETTER_AUTH_URL;
   if (!baseUrl) {
     fatal("BETTER_AUTH_URL", "Ausente — os callbacks de sessão precisam dela.");
-  } else if (isProduction && !baseUrl.startsWith("https://")) {
+  } else if (
+    isProduction &&
+    !baseUrl.startsWith("https://") &&
+    !isLoopback(baseUrl)
+  ) {
     fatal(
       "BETTER_AUTH_URL",
       "Em produção precisa ser https (o cookie de sessão é Secure).",

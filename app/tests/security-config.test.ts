@@ -58,6 +58,17 @@ describe("checkEnvironment", () => {
     ]);
   });
 
+  it("libera http em loopback — é o smoke test do build de produção", () => {
+    for (const url of ["http://localhost:3000", "http://127.0.0.1:3000"]) {
+      expect(
+        fatalIssues(
+          checkEnvironment({ ...PRODUCTION_ENV, BETTER_AUTH_URL: url }, true),
+        ),
+        url,
+      ).toEqual([]);
+    }
+  });
+
   it("exige a conexão da UTFPR quando o provider real está escolhido", () => {
     const issues = checkEnvironment(
       { ...PRODUCTION_ENV, ACADEMIC_PROVIDER: "utfpr" },

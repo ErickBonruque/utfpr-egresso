@@ -29,3 +29,6 @@ npm-debug.log*
 /test-results
 /blob-report
 /.playwright
+
+# backups do Postgres (scripts/backup.sh) — nunca versionar dado real
+/backups
