@@ -12,6 +12,7 @@ import {
 import { ROLE_LABEL } from "@/lib/labels";
 import { acceptInvite, getValidInvite } from "@/server/admin-invites";
 import { prisma } from "@/server/db";
+import { actionCatch } from "@/server/logger";
 import { AcceptInviteForm } from "./accept-form";
 
 export const dynamic = "force-dynamic";
@@ -24,10 +25,11 @@ async function acceptAction(
   try {
     await acceptInvite(token, String(formData.get("password") ?? ""));
   } catch (e) {
-    return {
-      error:
-        e instanceof Error ? e.message : "Não foi possível aceitar o convite.",
-    };
+    return actionCatch(
+      "action.accept_invite",
+      e,
+      "Não foi possível aceitar o convite.",
+    );
   }
   redirect("/login");
 }

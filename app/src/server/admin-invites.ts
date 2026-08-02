@@ -3,6 +3,7 @@
 // E-mail delivery is a placeholder (src/server/mailer.ts) — the panel shows
 // the link for manual delivery. Future direction (Erick, 2026-07-09): the
 // UTFPR integration may auto-grant admin to staff ("servidor") logins.
+
 import { randomBytes } from "node:crypto";
 import { hashPassword } from "better-auth/crypto";
 import {
@@ -13,6 +14,7 @@ import {
   type GrantTarget,
   isSuperAdmin,
 } from "@/lib/authz";
+import { DomainError } from "@/lib/errors";
 import {
   inviteExpiry,
   invitePath,
@@ -33,7 +35,7 @@ async function resolveTargetCourse(
       where: { id: target.courseId },
       select: { id: true, campusId: true },
     });
-    if (!course) throw new Error("Curso do convite não encontrado.");
+    if (!course) throw new DomainError("Curso do convite não encontrado.");
     return course;
   }
   if (target.campusId) {
@@ -41,7 +43,7 @@ async function resolveTargetCourse(
       where: { id: target.campusId },
       select: { id: true },
     });
-    if (!campus) throw new Error("Campus do convite não encontrado.");
+    if (!campus) throw new DomainError("Campus do convite não encontrado.");
   }
   return null;
 }
@@ -49,7 +51,7 @@ async function resolveTargetCourse(
 async function assertCanGrant(actor: Actor, target: GrantTarget) {
   const targetCourse = await resolveTargetCourse(target);
   if (!canGrantAdmin(actor, target, targetCourse)) {
-    throw new Error("Sem permissão para conceder este papel.");
+    throw new DomainError("Sem permissão para conceder este papel.");
   }
 }
 
@@ -73,7 +75,7 @@ export async function createAdminInvite(
 ): Promise<CreateInviteResult> {
   const email = validateInviteEmail(input.email);
   const name = input.name.trim();
-  if (!name) throw new Error("Informe o nome do administrador.");
+  if (!name) throw new DomainError("Informe o nome do administrador.");
 
   const target: GrantTarget = {
     role: input.role,
@@ -95,7 +97,7 @@ export async function createAdminInvite(
         courseId: target.courseId,
       },
     });
-    if (already) throw new Error("Este usuário já possui esse papel.");
+    if (already) throw new DomainError("Este usuário já possui esse papel.");
     await prisma.adminAssignment.create({
       data: {
         userId: existingUser.id,
@@ -111,7 +113,7 @@ export async function createAdminInvite(
     where: { email, acceptedAt: null, expiresAt: { gt: new Date() } },
   });
   if (pending) {
-    throw new Error(
+    throw new DomainError(
       "Já existe um convite pendente para este e-mail — cancele-o antes de criar outro.",
     );
   }
@@ -158,14 +160,15 @@ export async function acceptInvite(token: string, password: string) {
   validateInvitePassword(password);
 
   const invite = await getValidInvite(token);
-  if (!invite) throw new Error("Convite inválido, expirado ou já utilizado.");
+  if (!invite)
+    throw new DomainError("Convite inválido, expirado ou já utilizado.");
 
   const taken = await prisma.user.findUnique({
     where: { email: invite.email },
     select: { id: true },
   });
   if (taken) {
-    throw new Error(
+    throw new DomainError(
       "Já existe uma conta com este e-mail — faça login normalmente.",
     );
   }
@@ -203,7 +206,7 @@ export async function cancelInvite(actor: Actor, inviteId: string) {
     where: { id: inviteId },
     select: { role: true, campusId: true, courseId: true },
   });
-  if (!invite) throw new Error("Convite não encontrado.");
+  if (!invite) throw new DomainError("Convite não encontrado.");
   await assertCanGrant(actor, invite);
   await prisma.adminInvite.delete({ where: { id: inviteId } });
 }
@@ -224,21 +227,21 @@ export async function revokeAdminAssignment(
       courseId: true,
     },
   });
-  if (!assignment) throw new Error("Atribuição não encontrada.");
+  if (!assignment) throw new DomainError("Atribuição não encontrada.");
   if (assignment.userId === actor.userId) {
-    throw new Error("Você não pode revogar o próprio papel.");
+    throw new DomainError("Você não pode revogar o próprio papel.");
   }
   await assertCanGrant(actor, assignment);
 
   if (assignment.role === "SUPER_ADMIN") {
     if (!isSuperAdmin(actor)) {
-      throw new Error("Sem permissão para revogar este papel.");
+      throw new DomainError("Sem permissão para revogar este papel.");
     }
     const supers = await prisma.adminAssignment.count({
       where: { role: "SUPER_ADMIN" },
     });
     if (supers <= 1) {
-      throw new Error("Não é possível remover o último SUPER_ADMIN.");
+      throw new DomainError("Não é possível remover o último SUPER_ADMIN.");
     }
   }
 

@@ -11,6 +11,7 @@
 import { deriveGpa, planEnrollmentWrites } from "@/lib/academic-sync";
 import type { PrismaClient } from "../../../generated/prisma/client";
 import { applyAcademicStanding } from "../academic-standing";
+import { logger } from "../logger";
 import { type AcademicDataProvider, AcademicSourceError } from "./provider";
 
 export type SyncOptions = {
@@ -210,6 +211,10 @@ export async function runAcademicSync(
             : String(error);
       warnings.push(`${student.ra}: ${detail}`);
       log(`  ✗ ${student.ra}: ${detail}`);
+      logger.error("sync.student_failed", error, {
+        ra: student.ra,
+        provider: provider.name,
+      });
     }
   }
 

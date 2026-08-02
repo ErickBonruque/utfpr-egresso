@@ -7,6 +7,8 @@
 // API with Brazil coverage, no Python in the deploy. Research record:
 // .planning/research/fase6_1_fontes_vagas.md
 
+import { logger } from "./logger";
+
 const ADZUNA_BASE = "https://api.adzuna.com/v1/api/jobs/br/search";
 
 export type JobResult = {
@@ -134,7 +136,8 @@ export const adzunaProvider: JobsProvider = {
         // repeated identical searches during a session (Fase 6.1 requirement).
         next: { revalidate: 300 },
       });
-    } catch {
+    } catch (error) {
+      logger.error("jobs.fetch_failed", error, { provider: "adzuna" });
       return { ok: false, error: "Falha de conexão com a fonte de vagas." };
     }
 

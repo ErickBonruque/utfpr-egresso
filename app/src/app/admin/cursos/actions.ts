@@ -5,6 +5,7 @@ import type { FormActionResult } from "@/components/admin/form-dialog";
 import { canManageCampus } from "@/lib/authz";
 import { assertCanManageCourse, requireAdmin } from "@/server/actor";
 import { prisma } from "@/server/db";
+import { actionCatch } from "@/server/logger";
 
 const DEGREES = ["BACHELORS", "LICENTIATE", "TECHNOLOGY"] as const;
 type DegreeValue = (typeof DEGREES)[number];
@@ -36,8 +37,13 @@ export async function createCourse(
 
   try {
     await prisma.course.create({ data: { campusId, name, degree } });
-  } catch {
-    return { error: `Já existe um curso "${name}" neste campus.` };
+  } catch (e) {
+    return actionCatch(
+      "action.create_course",
+      e,
+      `Já existe um curso "${name}" neste campus.`,
+      { campusId },
+    );
   }
   revalidatePath("/admin/cursos");
   revalidatePath("/admin");
@@ -60,10 +66,12 @@ export async function updateCourse(
       data: { name, degree },
     });
   } catch (e) {
-    return {
-      error:
-        e instanceof Error ? e.message : "Não foi possível salvar o curso.",
-    };
+    return actionCatch(
+      "action.update_course",
+      e,
+      "Não foi possível salvar o curso.",
+      { courseId },
+    );
   }
   revalidatePath("/admin/cursos");
   revalidatePath("/admin");
@@ -97,10 +105,12 @@ export async function deleteCourse(
     // Content (subjects, achievements, tracks, careers) cascades by schema.
     await prisma.course.delete({ where: { id: courseId } });
   } catch (e) {
-    return {
-      error:
-        e instanceof Error ? e.message : "Não foi possível excluir o curso.",
-    };
+    return actionCatch(
+      "action.delete_course",
+      e,
+      "Não foi possível excluir o curso.",
+      { courseId },
+    );
   }
   revalidatePath("/admin/cursos");
   revalidatePath("/admin");

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Jost } from "next/font/google";
+import { headers } from "next/headers";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -27,11 +28,16 @@ export const metadata: Metadata = {
     "Plataforma de acompanhamento de egressos e gamificação acadêmica da UTFPR",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Nonce da resposta, emitido pelo proxy (src/proxy.ts). O Next assina
+  // sozinho os scripts que ele injeta; o do next-themes é nosso e precisa
+  // recebê-lo à mão. (Fase 9)
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     // suppressHydrationWarning: next-themes stamps the `.dark` class on
     // <html> before hydration.
@@ -41,7 +47,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
-        <ThemeProvider>
+        <ThemeProvider nonce={nonce}>
           {children}
           <Toaster />
         </ThemeProvider>

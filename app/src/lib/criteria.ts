@@ -8,6 +8,8 @@
 // Fase 6.2 (2026-07-24) added grade/GPA/period/workload criteria. The engine
 // consumes the same contract; new types only extend the union — no refactor.
 
+import { DomainError } from "@/lib/errors";
+
 export type Criteria =
   | { type: "subjects_approved"; subjectCodes: string[]; min: number }
   | { type: "subjects_approved_count"; min: number }
@@ -58,7 +60,9 @@ export const CRITERIA_TYPES: {
   },
 ];
 
-export class CriteriaError extends Error {}
+/// Erro de critério é regra de negócio: a mensagem é escrita para o admin que
+/// está montando a conquista, então herda de DomainError e pode ir para a tela.
+export class CriteriaError extends DomainError {}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);

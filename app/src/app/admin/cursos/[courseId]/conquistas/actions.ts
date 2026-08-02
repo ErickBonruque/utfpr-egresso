@@ -5,6 +5,7 @@ import type { FormActionResult } from "@/components/admin/form-dialog";
 import { CriteriaError, parseCriteriaInput } from "@/lib/criteria";
 import { assertCanManageCourse, requireAdmin } from "@/server/actor";
 import { prisma } from "@/server/db";
+import { actionCatch } from "@/server/logger";
 import { Prisma } from "../../../../../../generated/prisma/client";
 
 function revalidate(courseId: string) {
@@ -105,10 +106,12 @@ export async function createAchievement(
     });
     revalidate(courseId);
   } catch (e) {
-    return {
-      error:
-        e instanceof Error ? e.message : "Não foi possível criar a conquista.",
-    };
+    return actionCatch(
+      "action.create_achievement",
+      e,
+      "Não foi possível criar a conquista.",
+      { courseId },
+    );
   }
 }
 
@@ -135,10 +138,12 @@ export async function updateAchievement(
     });
     revalidate(achievement.courseId);
   } catch (e) {
-    return {
-      error:
-        e instanceof Error ? e.message : "Não foi possível salvar a conquista.",
-    };
+    return actionCatch(
+      "action.update_achievement",
+      e,
+      "Não foi possível salvar a conquista.",
+      { achievementId },
+    );
   }
 }
 
@@ -159,12 +164,12 @@ export async function toggleAchievementActive(
     });
     revalidate(achievement.courseId);
   } catch (e) {
-    return {
-      error:
-        e instanceof Error
-          ? e.message
-          : "Não foi possível alterar a conquista.",
-    };
+    return actionCatch(
+      "action.toggle_achievement",
+      e,
+      "Não foi possível alterar a conquista.",
+      { achievementId },
+    );
   }
 }
 
@@ -183,11 +188,11 @@ export async function deleteAchievement(
     await prisma.achievement.delete({ where: { id: achievementId } });
     revalidate(achievement.courseId);
   } catch (e) {
-    return {
-      error:
-        e instanceof Error
-          ? e.message
-          : "Não foi possível excluir a conquista.",
-    };
+    return actionCatch(
+      "action.delete_achievement",
+      e,
+      "Não foi possível excluir a conquista.",
+      { achievementId },
+    );
   }
 }

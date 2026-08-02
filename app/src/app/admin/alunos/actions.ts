@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import type { FormActionResult } from "@/components/admin/form-dialog";
 import { requireAdmin } from "@/server/actor";
 import { forceGraduation } from "@/server/graduation";
+import { actionCatch } from "@/server/logger";
 
 /// Admin fallback for the aluno → egresso transition while there is no UTFPR
 /// integration. Scope is enforced inside forceGraduation.
@@ -14,7 +15,9 @@ export async function graduateStudent(
   try {
     await forceGraduation(actor, studentProfileId);
   } catch (e) {
-    return { error: e instanceof Error ? e.message : "Erro ao formar aluno." };
+    return actionCatch("action.graduate_student", e, "Erro ao formar aluno.", {
+      studentProfileId,
+    });
   }
   revalidatePath("/admin/alunos");
 }

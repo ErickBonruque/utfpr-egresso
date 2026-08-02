@@ -14,6 +14,7 @@ import {
 } from "@/lib/engine";
 import { requireStudent } from "@/server/actor";
 import { prisma } from "@/server/db";
+import { logger } from "./logger";
 
 export type AchievementView = {
   id: string;
@@ -272,8 +273,14 @@ export const getStudentProgress = cache(async (): Promise<StudentProgress> => {
     if (achievement.criteria !== null) {
       try {
         criteria = validateCriteria(achievement.criteria);
-      } catch {
-        criteria = null; // corrupt/legacy criteria behaves as manual
+      } catch (error) {
+        // Critério corrompido/legado se comporta como manual — mas é dado
+        // ruim no banco, então precisa aparecer no log para alguém corrigir.
+        criteria = null;
+        logger.warn("achievement.invalid_criteria", {
+          achievementId: achievement.id,
+          reason: error instanceof Error ? error.message : String(error),
+        });
       }
     }
 

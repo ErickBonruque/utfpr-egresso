@@ -1,6 +1,7 @@
 // Pure rules of the admin invite flow (Fase 4) — no I/O, unit-testable.
 // The persistence side lives in src/server/admin-invites.ts.
 
+import { DomainError } from "@/lib/errors";
 export const INVITE_TTL_DAYS = 7;
 export const MIN_PASSWORD_LENGTH = 8;
 
@@ -27,14 +28,14 @@ export function invitePath(token: string): string {
 export function validateInviteEmail(email: string): string {
   const normalized = email.trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalized)) {
-    throw new Error("E-mail inválido.");
+    throw new DomainError("E-mail inválido.");
   }
   return normalized;
 }
 
 export function validateInvitePassword(password: string): void {
   if (password.length < MIN_PASSWORD_LENGTH) {
-    throw new Error(
+    throw new DomainError(
       `A senha deve ter pelo menos ${MIN_PASSWORD_LENGTH} caracteres.`,
     );
   }

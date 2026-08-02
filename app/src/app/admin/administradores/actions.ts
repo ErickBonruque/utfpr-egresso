@@ -9,6 +9,7 @@ import {
   createAdminInvite,
   revokeAdminAssignment,
 } from "@/server/admin-invites";
+import { actionCatch } from "@/server/logger";
 
 const ROLES: AdminRole[] = ["SUPER_ADMIN", "CAMPUS_ADMIN", "COURSE_ADMIN"];
 
@@ -41,9 +42,9 @@ export async function inviteAdmin(
       courseId: courseId || null,
     });
   } catch (e) {
-    return {
-      error: e instanceof Error ? e.message : "Não foi possível convidar.",
-    };
+    return actionCatch("action.invite_admin", e, "Não foi possível convidar.", {
+      role,
+    });
   }
   revalidatePath("/admin/administradores");
 }
@@ -55,10 +56,12 @@ export async function cancelInviteAction(
   try {
     await cancelInvite(actor, inviteId);
   } catch (e) {
-    return {
-      error:
-        e instanceof Error ? e.message : "Não foi possível cancelar o convite.",
-    };
+    return actionCatch(
+      "action.cancel_invite",
+      e,
+      "Não foi possível cancelar o convite.",
+      { inviteId },
+    );
   }
   revalidatePath("/admin/administradores");
 }
@@ -70,10 +73,12 @@ export async function revokeAssignmentAction(
   try {
     await revokeAdminAssignment(actor, assignmentId);
   } catch (e) {
-    return {
-      error:
-        e instanceof Error ? e.message : "Não foi possível revogar o papel.",
-    };
+    return actionCatch(
+      "action.revoke_assignment",
+      e,
+      "Não foi possível revogar o papel.",
+      { assignmentId },
+    );
   }
   revalidatePath("/admin/administradores");
 }

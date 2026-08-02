@@ -2,12 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import type { FormActionResult } from "@/components/admin/form-dialog";
+import { DomainError } from "@/lib/errors";
 import { assertCanManageCourse, requireAdmin } from "@/server/actor";
 import { prisma } from "@/server/db";
-
-function fail(e: unknown, fallback: string): { error: string } {
-  return { error: e instanceof Error ? e.message : fallback };
-}
+import { actionCatch } from "@/server/logger";
 
 function revalidate(courseId: string) {
   revalidatePath(`/admin/cursos/${courseId}/niveis`);
@@ -46,12 +44,12 @@ async function assertMonotonic(
   });
   for (const other of others) {
     if (other.level < level && other.minXp >= minXp) {
-      throw new Error(
+      throw new DomainError(
         `XP mínimo deve ser maior que o do nível ${other.level} (${other.minXp} XP).`,
       );
     }
     if (other.level > level && other.minXp <= minXp) {
-      throw new Error(
+      throw new DomainError(
         `XP mínimo deve ser menor que o do nível ${other.level} (${other.minXp} XP).`,
       );
     }
@@ -74,7 +72,11 @@ export async function createLevel(
     });
     revalidate(courseId);
   } catch (e) {
-    return fail(e, `Já existe o nível ${parsed.data.level} neste curso.`);
+    return actionCatch(
+      "action.create_level",
+      e,
+      `Já existe o nível ${parsed.data.level} neste curso.`,
+    );
   }
 }
 
@@ -105,7 +107,11 @@ export async function updateLevel(
     });
     revalidate(existing.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível salvar o nível.");
+    return actionCatch(
+      "action.update_level",
+      e,
+      "Não foi possível salvar o nível.",
+    );
   }
 }
 
@@ -121,6 +127,10 @@ export async function deleteLevel(levelId: string): Promise<FormActionResult> {
     await prisma.levelDefinition.delete({ where: { id: levelId } });
     revalidate(existing.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível excluir o nível.");
+    return actionCatch(
+      "action.delete_level",
+      e,
+      "Não foi possível excluir o nível.",
+    );
   }
 }

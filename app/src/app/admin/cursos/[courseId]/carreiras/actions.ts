@@ -2,12 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import type { FormActionResult } from "@/components/admin/form-dialog";
+import { DomainError } from "@/lib/errors";
 import { assertCanManageCourse, requireAdmin } from "@/server/actor";
 import { prisma } from "@/server/db";
-
-function fail(e: unknown, fallback: string): { error: string } {
-  return { error: e instanceof Error ? e.message : fallback };
-}
+import { actionCatch } from "@/server/logger";
 
 function revalidate(courseId: string) {
   revalidatePath(`/admin/cursos/${courseId}/carreiras`);
@@ -16,7 +14,7 @@ function revalidate(courseId: string) {
 async function requireCareer(careerId: string) {
   const actor = await requireAdmin();
   const career = await prisma.career.findUnique({ where: { id: careerId } });
-  if (!career) throw new Error("Carreira não encontrada.");
+  if (!career) throw new DomainError("Carreira não encontrada.");
   await assertCanManageCourse(actor, career.courseId);
   return career;
 }
@@ -41,7 +39,7 @@ async function assertNodesInCourse(courseId: string, nodeIds: string[]) {
     where: { id: { in: nodeIds }, track: { courseId } },
   });
   if (count !== nodeIds.length) {
-    throw new Error("Há nós de trilha fora deste curso na seleção.");
+    throw new DomainError("Há nós de trilha fora deste curso na seleção.");
   }
 }
 
@@ -65,7 +63,11 @@ export async function createCareer(
     });
     revalidate(courseId);
   } catch (e) {
-    return fail(e, `Já existe uma carreira "${parsed.data.name}" neste curso.`);
+    return actionCatch(
+      "action.create_career",
+      e,
+      `Já existe uma carreira "${parsed.data.name}" neste curso.`,
+    );
   }
 }
 
@@ -88,7 +90,11 @@ export async function updateCareer(
     ]);
     revalidate(career.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível salvar a carreira.");
+    return actionCatch(
+      "action.update_career",
+      e,
+      "Não foi possível salvar a carreira.",
+    );
   }
 }
 
@@ -100,6 +106,10 @@ export async function deleteCareer(
     await prisma.career.delete({ where: { id: careerId } });
     revalidate(career.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível excluir a carreira.");
+    return actionCatch(
+      "action.delete_career",
+      e,
+      "Não foi possível excluir a carreira.",
+    );
   }
 }

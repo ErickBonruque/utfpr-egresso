@@ -6,6 +6,7 @@ import {
   canManageCourse,
   isAdmin,
 } from "@/lib/authz";
+import { DomainError } from "@/lib/errors";
 import { auth } from "./auth";
 import { prisma } from "./db";
 
@@ -77,7 +78,7 @@ export async function assertCanManageCourse(
     select: { id: true, campusId: true },
   });
   if (!course || !canManageCourse(actor, course)) {
-    throw new Error("Sem permissão para gerenciar este curso.");
+    throw new DomainError("Sem permissão para gerenciar este curso.");
   }
   return course;
 }

@@ -3,13 +3,15 @@
 import { revalidatePath } from "next/cache";
 import type { FormActionResult } from "@/components/admin/form-dialog";
 import { isSuperAdmin } from "@/lib/authz";
+import { DomainError } from "@/lib/errors";
 import { requireAdmin } from "@/server/actor";
 import { prisma } from "@/server/db";
+import { actionCatch } from "@/server/logger";
 
 async function requireSuperAdmin() {
   const actor = await requireAdmin();
   if (!isSuperAdmin(actor)) {
-    throw new Error("Apenas a administração geral gerencia campi.");
+    throw new DomainError("Apenas a administração geral gerencia campi.");
   }
   return actor;
 }
@@ -49,8 +51,12 @@ export async function createCampus(
 
   try {
     await prisma.campus.create({ data: parsed.data });
-  } catch {
-    return { error: `Já existe um campus com a sigla ${parsed.data.code}.` };
+  } catch (e) {
+    return actionCatch(
+      "action.create_campus",
+      e,
+      `Já existe um campus com a sigla ${parsed.data.code}.`,
+    );
   }
   revalidatePath("/admin/campi");
 }
@@ -65,8 +71,13 @@ export async function updateCampus(
 
   try {
     await prisma.campus.update({ where: { id: campusId }, data: parsed.data });
-  } catch {
-    return { error: "Não foi possível salvar — verifique se a sigla é única." };
+  } catch (e) {
+    return actionCatch(
+      "action.update_campus",
+      e,
+      "Não foi possível salvar — verifique se a sigla é única.",
+      { campusId },
+    );
   }
   revalidatePath("/admin/campi");
 }

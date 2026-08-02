@@ -8,6 +8,8 @@
 // Se um SMTP da UTFPR for disponibilizado no futuro, implemente o transporte
 // aqui (os chamadores já montam a mensagem completa) e nada mais muda.
 
+import { logger } from "./logger";
+
 export type MailMessage = {
   to: string;
   subject: string;
@@ -17,8 +19,10 @@ export type MailMessage = {
 export async function sendMail(
   message: MailMessage,
 ): Promise<{ delivered: boolean }> {
-  console.info(
-    `[mailer] entrega desativada (sem SMTP) — para=${message.to} assunto="${message.subject}"`,
-  );
+  logger.info("mail.skipped", {
+    reason: "sem SMTP configurado",
+    to: message.to,
+    subject: message.subject,
+  });
   return { delivered: false };
 }

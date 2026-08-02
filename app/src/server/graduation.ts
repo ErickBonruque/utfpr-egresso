@@ -1,4 +1,5 @@
 import type { Actor } from "@/lib/authz";
+import { DomainError } from "@/lib/errors";
 import type { Prisma } from "../../generated/prisma/client";
 import { applyAcademicStanding } from "./academic-standing";
 import { assertCanManageCourse } from "./actor";
@@ -19,7 +20,7 @@ export async function forceGraduation(
       academicStanding: { select: { gpa: true, currentPeriod: true } },
     },
   });
-  if (!profile) throw new Error("Aluno não encontrado.");
+  if (!profile) throw new DomainError("Aluno não encontrado.");
 
   await assertCanManageCourse(actor, profile.courseId);
 

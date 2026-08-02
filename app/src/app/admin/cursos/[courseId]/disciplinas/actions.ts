@@ -3,12 +3,10 @@
 import { revalidatePath } from "next/cache";
 import type { FormActionResult } from "@/components/admin/form-dialog";
 import { parseCurriculumImport } from "@/lib/curriculum-import";
+import { DomainError } from "@/lib/errors";
 import { assertCanManageCourse, requireAdmin } from "@/server/actor";
 import { prisma } from "@/server/db";
-
-function fail(e: unknown, fallback: string): { error: string } {
-  return { error: e instanceof Error ? e.message : fallback };
-}
+import { actionCatch } from "@/server/logger";
 
 function revalidate(courseId: string) {
   revalidatePath(`/admin/cursos/${courseId}/disciplinas`);
@@ -21,7 +19,7 @@ async function requireEntry(entryId: string) {
     where: { id: entryId },
     include: { curriculum: { select: { courseId: true } } },
   });
-  if (!entry) throw new Error("Disciplina não encontrada na matriz.");
+  if (!entry) throw new DomainError("Disciplina não encontrada na matriz.");
   await assertCanManageCourse(actor, entry.curriculum.courseId);
   return entry;
 }
@@ -81,7 +79,11 @@ export async function createCurriculum(
     await assertCanManageCourse(actor, courseId);
     await prisma.curriculum.create({ data: { courseId, version } });
   } catch (e) {
-    return fail(e, `Já existe a matriz ${version} neste curso.`);
+    return actionCatch(
+      "action.create_curriculum",
+      e,
+      `Já existe a matriz ${version} neste curso.`,
+    );
   }
   revalidate(courseId);
 }
@@ -102,7 +104,11 @@ export async function toggleCurriculumActive(
     });
     revalidate(curriculum.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível alterar a matriz.");
+    return actionCatch(
+      "action.toggle_curriculum_active",
+      e,
+      "Não foi possível alterar a matriz.",
+    );
   }
 }
 
@@ -119,7 +125,11 @@ export async function deleteCurriculum(
     await prisma.curriculum.delete({ where: { id: curriculumId } });
     revalidate(curriculum.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível excluir a matriz.");
+    return actionCatch(
+      "action.delete_curriculum",
+      e,
+      "Não foi possível excluir a matriz.",
+    );
   }
 }
 
@@ -158,7 +168,11 @@ export async function createSubjectInCurriculum(
       });
     });
   } catch (e) {
-    return fail(e, "Não foi possível salvar a disciplina.");
+    return actionCatch(
+      "action.create_subject_in_curriculum",
+      e,
+      "Não foi possível salvar a disciplina.",
+    );
   }
   revalidate(courseId);
 }
@@ -186,7 +200,11 @@ export async function updateEntry(
     ]);
     revalidate(entry.curriculum.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível salvar a disciplina.");
+    return actionCatch(
+      "action.update_entry",
+      e,
+      "Não foi possível salvar a disciplina.",
+    );
   }
 }
 
@@ -198,7 +216,11 @@ export async function removeEntry(entryId: string): Promise<FormActionResult> {
     await prisma.curriculumEntry.delete({ where: { id: entryId } });
     revalidate(entry.curriculum.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível remover a disciplina da matriz.");
+    return actionCatch(
+      "action.remove_entry",
+      e,
+      "Não foi possível remover a disciplina da matriz.",
+    );
   }
 }
 
@@ -220,11 +242,13 @@ export async function deleteSubject(
     }
     await prisma.subject.delete({ where: { id: subjectId } });
     revalidate(subject.courseId);
-  } catch {
-    return {
-      error:
-        "Não foi possível excluir — a disciplina tem matrículas registradas.",
-    };
+  } catch (e) {
+    return actionCatch(
+      "action.delete_subject",
+      e,
+      "Não foi possível excluir — a disciplina tem matrículas registradas.",
+      { subjectId },
+    );
   }
 }
 
@@ -288,7 +312,11 @@ export async function importCurriculumEntries(
       }
     });
   } catch (e) {
-    return fail(e, "Não foi possível importar as disciplinas.");
+    return actionCatch(
+      "action.import_curriculum_entries",
+      e,
+      "Não foi possível importar as disciplinas.",
+    );
   }
   revalidate(courseId);
 }

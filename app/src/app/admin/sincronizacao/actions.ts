@@ -7,6 +7,7 @@ import { getAcademicProvider } from "@/server/academic";
 import { runAcademicSync } from "@/server/academic/sync";
 import { requireAdmin } from "@/server/actor";
 import { prisma } from "@/server/db";
+import { actionCatch } from "@/server/logger";
 
 /// Dispara a sincronização acadêmica pela tela do admin (Fase 8). Mesma
 /// rotina da CLI — aqui só muda quem dispara, o que fica registrado no log.
@@ -32,8 +33,10 @@ export async function triggerAcademicSync(): Promise<FormActionResult> {
       };
     }
   } catch (e) {
-    return {
-      error: e instanceof Error ? e.message : "Erro ao sincronizar.",
-    };
+    return actionCatch(
+      "action.trigger_academic_sync",
+      e,
+      "Erro ao sincronizar.",
+    );
   }
 }

@@ -551,3 +551,19 @@ model SyncRun {
   @@index([startedAt])
   @@map("sync_runs")
 }
+
+/// Contadores de rate limit do Better Auth (Fase 9).
+///
+/// `storage: "database"` em vez do padrão em memória: em serverless cada
+/// instância teria o próprio contador, e o limite de tentativas de login
+/// (a defesa contra força bruta no `/sign-in`) viraria "N tentativas por
+/// instância". O schema é ditado pelo Better Auth — `lastRequest` é epoch em
+/// milissegundos, por isso BigInt e não Int (estoura o int32 em 1970+24 dias).
+model RateLimit {
+  id          String @id @default(cuid())
+  key         String @unique
+  count       Int
+  lastRequest BigInt @map("last_request")
+
+  @@map("rate_limits")
+}

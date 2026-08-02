@@ -2,13 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import type { FormActionResult } from "@/components/admin/form-dialog";
+import { DomainError } from "@/lib/errors";
 import { wouldCreateCycle } from "@/lib/track-tree";
 import { assertCanManageCourse, requireAdmin } from "@/server/actor";
 import { prisma } from "@/server/db";
-
-function fail(e: unknown, fallback: string): { error: string } {
-  return { error: e instanceof Error ? e.message : fallback };
-}
+import { actionCatch } from "@/server/logger";
 
 function revalidate(courseId: string) {
   revalidatePath(`/admin/cursos/${courseId}/trilhas`);
@@ -17,7 +15,7 @@ function revalidate(courseId: string) {
 async function requireTrack(trackId: string) {
   const actor = await requireAdmin();
   const track = await prisma.track.findUnique({ where: { id: trackId } });
-  if (!track) throw new Error("Trilha não encontrada.");
+  if (!track) throw new DomainError("Trilha não encontrada.");
   await assertCanManageCourse(actor, track.courseId);
   return track;
 }
@@ -28,7 +26,7 @@ async function requireNode(nodeId: string) {
     where: { id: nodeId },
     include: { track: { select: { id: true, courseId: true } } },
   });
-  if (!node) throw new Error("Nó não encontrado.");
+  if (!node) throw new DomainError("Nó não encontrado.");
   await assertCanManageCourse(actor, node.track.courseId);
   return node;
 }
@@ -47,7 +45,11 @@ export async function createTrack(
     await prisma.track.create({ data: { courseId, name, description } });
     revalidate(courseId);
   } catch (e) {
-    return fail(e, `Já existe uma trilha "${name}" neste curso.`);
+    return actionCatch(
+      "action.create_track",
+      e,
+      `Já existe uma trilha "${name}" neste curso.`,
+    );
   }
 }
 
@@ -67,7 +69,11 @@ export async function updateTrack(
     });
     revalidate(track.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível salvar a trilha.");
+    return actionCatch(
+      "action.update_track",
+      e,
+      "Não foi possível salvar a trilha.",
+    );
   }
 }
 
@@ -77,7 +83,11 @@ export async function deleteTrack(trackId: string): Promise<FormActionResult> {
     await prisma.track.delete({ where: { id: trackId } });
     revalidate(track.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível excluir a trilha.");
+    return actionCatch(
+      "action.delete_track",
+      e,
+      "Não foi possível excluir a trilha.",
+    );
   }
 }
 
@@ -135,7 +145,7 @@ async function resolveRequirementIds(courseId: string, codes: string[]) {
   const found = new Set(subjects.map((s) => s.code));
   const missing = codes.filter((c) => !found.has(c));
   if (missing.length > 0) {
-    throw new Error(`Disciplinas fora do curso: ${missing.join(", ")}.`);
+    throw new DomainError(`Disciplinas fora do curso: ${missing.join(", ")}.`);
   }
   return subjects.map((s) => s.id);
 }
@@ -173,7 +183,7 @@ export async function createNode(
     });
     revalidate(track.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível criar o nó.");
+    return actionCatch("action.create_node", e, "Não foi possível criar o nó.");
   }
 }
 
@@ -218,7 +228,11 @@ export async function updateNode(
     ]);
     revalidate(node.track.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível salvar o nó.");
+    return actionCatch(
+      "action.update_node",
+      e,
+      "Não foi possível salvar o nó.",
+    );
   }
 }
 
@@ -229,7 +243,11 @@ export async function deleteNode(nodeId: string): Promise<FormActionResult> {
     await prisma.trackNode.delete({ where: { id: nodeId } });
     revalidate(node.track.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível excluir o nó.");
+    return actionCatch(
+      "action.delete_node",
+      e,
+      "Não foi possível excluir o nó.",
+    );
   }
 }
 
@@ -271,7 +289,11 @@ export async function setNodeParent(
     });
     revalidate(node.track.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível reconectar o nó.");
+    return actionCatch(
+      "action.set_node_parent",
+      e,
+      "Não foi possível reconectar o nó.",
+    );
   }
 }
 
@@ -292,7 +314,11 @@ export async function reorderSiblings(
     });
     revalidate(node.track.courseId);
   } catch (e) {
-    return fail(e, "Não foi possível reordenar o nó.");
+    return actionCatch(
+      "action.reorder_siblings",
+      e,
+      "Não foi possível reordenar o nó.",
+    );
   }
 }
 
@@ -326,6 +352,10 @@ export async function createNodeAt(
     revalidate(track.courseId);
     return { id: created.id };
   } catch (e) {
-    return fail(e, "Não foi possível criar o nó.");
+    return actionCatch(
+      "action.create_node_at",
+      e,
+      "Não foi possível criar o nó.",
+    );
   }
 }
