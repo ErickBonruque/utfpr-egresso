@@ -23,3 +23,9 @@ node_modules
 next-env.d.ts
 npm-debug.log*
 .vercel
+
+# playwright (Fase 9): relatórios e artefatos de execução
+/playwright-report
+/test-results
+/blob-report
+/.playwright
