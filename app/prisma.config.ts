@@ -3,6 +3,11 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
+// Fase 10: em Postgres gerenciado (Neon) a aplicação conecta pelo endpoint
+// *com pool* e as migrations pelo endpoint *direto* — o pooler em modo
+// transaction não suporta os comandos de DDL/advisory lock que o
+// `prisma migrate` usa. Local, onde não há pooler, DIRECT_URL não existe e
+// tudo cai na DATABASE_URL de sempre.
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
@@ -10,7 +15,7 @@ export default defineConfig({
     seed: "tsx prisma/seed.ts",
   },
   datasource: {
-    url: process.env.DATABASE_URL,
+    url: process.env.DIRECT_URL ?? process.env.DATABASE_URL,
     // Only used by `prisma migrate diff` against the migrations dir; harmless
     // otherwise. Points at a throwaway DB created on demand for diffing.
     shadowDatabaseUrl: process.env.SHADOW_DATABASE_URL,

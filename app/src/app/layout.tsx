@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Jost } from "next/font/google";
 import { headers } from "next/headers";
+import { EnvironmentBanner } from "@/components/environment-banner";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
@@ -48,6 +49,7 @@ export default async function RootLayout({
     >
       <body className="flex min-h-full flex-col">
         <ThemeProvider nonce={nonce}>
+          <EnvironmentBanner />
           {children}
           <Toaster />
         </ThemeProvider>

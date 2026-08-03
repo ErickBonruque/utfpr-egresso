@@ -85,6 +85,12 @@ No boot, `src/lib/env-check.ts` confere essas variáveis. **Em produção**, sec
 
 `BETTER_AUTH_URL` precisa bater **exatamente** com a origem servida (protocolo, host e porta). Divergiu, o Better Auth recusa o login com `Invalid origin` e a tela só fica girando.
 
+## Deploy
+
+Guia completo em [DEPLOY.md](DEPLOY.md) — Vercel (Root Directory = `app`) + Neon. O build roda `prisma migrate deploy` antes do `next build`; o seed é rodado **à mão**, uma vez, para não sobrescrever dado real quando este ambiente virar produção.
+
+O deploy atual é de **demonstração** (`CEA_ENVIRONMENT=demo`): sobe com os dados do seed, os logins de teste acima continuam valendo e uma faixa no topo avisa que não é o sistema oficial. `GET /api/health` responde 200 só quando a aplicação **e** o banco estão de pé.
+
 ## Backup e restore
 
 ```bash
