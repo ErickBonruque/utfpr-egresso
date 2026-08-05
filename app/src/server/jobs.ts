@@ -255,6 +255,11 @@ export const adzunaProvider: JobsProvider = {
 //                     ponto é justamente diagnosticar a integração.
 //   "demo"          — só dados sintéticos. Sem chamada externa.
 
+/// Texto mostrado ao usuário quando a fonte real cai. Escrito para o aluno:
+/// diz o que ele está vendo e por quê, sem jargão de configuração.
+export const DEMO_FALLBACK_NOTICE =
+  "A fonte externa de vagas está indisponível no momento. As vagas abaixo são de demonstração e não correspondem a oportunidades reais.";
+
 export type JobsProviderMode = "auto" | "adzuna" | "demo";
 
 export function jobsProviderMode(): JobsProviderMode {
@@ -273,14 +278,12 @@ export const resolvedProvider: JobsProvider = {
     const real = await adzunaProvider.search(query);
     if (real.ok) return real;
 
+    // O motivo técnico vai para o log, não para a tela: o erro do provider cita
+    // nome de variável de ambiente e número de fase, vocabulário nosso, que não
+    // ajuda o aluno e ainda expõe detalhe de configuração a quem só quer vaga.
     logger.warn("jobs.fallback_to_demo", { reason: real.error });
     const demo = await demoProvider.search(query);
-    return demo.ok
-      ? {
-          ...demo,
-          notice: `Fonte externa indisponível (${real.error}) — exibindo vagas de demonstração.`,
-        }
-      : demo;
+    return demo.ok ? { ...demo, notice: DEMO_FALLBACK_NOTICE } : demo;
   },
 };
 

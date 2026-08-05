@@ -9,6 +9,7 @@ import {
   adzunaLocationLabel,
   buildAdzunaParams,
   clearJobsCache,
+  DEMO_FALLBACK_NOTICE,
   dedupeJobs,
   isRelevantToTerm,
   jobsProviderMode,
@@ -334,7 +335,9 @@ describe("searchJobs", () => {
     expect(result.ok).toBe(true);
     if (result.ok) {
       expect(result.source).toBe(DEMO_SOURCE);
-      expect(result.notice).toMatch(/demonstração/i);
+      expect(result.notice).toBe(DEMO_FALLBACK_NOTICE);
+      // O motivo técnico (nome de env var, número de fase) fica no log.
+      expect(result.notice).not.toMatch(/ADZUNA|Fase|process\.env/i);
       expect(result.jobs.length).toBeGreaterThan(0);
     }
   });
