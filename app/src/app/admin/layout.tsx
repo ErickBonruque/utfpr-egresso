@@ -1,6 +1,7 @@
 import { AdminNav, type AdminNavItem } from "@/components/admin/admin-nav";
 import { SignOutButton } from "@/components/sign-out-button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { UtfprLogo } from "@/components/utfpr-logo";
 import { isSuperAdmin, primaryRole } from "@/lib/authz";
 import { ROLE_LABEL } from "@/lib/labels";
 import { requireAdmin } from "@/server/actor";
@@ -35,12 +36,16 @@ export default async function AdminLayout({
   return (
     <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-6 py-10">
       <header className="flex items-start justify-between gap-4">
-        <div className="flex flex-col">
-          <p className="font-semibold text-lg">Sistema CEA · Administração</p>
-          <p className="text-muted-foreground text-sm">
-            {user?.name}
-            {role ? ` · ${ROLE_LABEL[role] ?? role}` : ""}
-          </p>
+        <div className="flex items-center gap-3">
+          <UtfprLogo className="h-7" />
+          <span className="h-9 w-px bg-border" aria-hidden />
+          <div className="flex flex-col">
+            <p className="font-semibold text-lg">Sistema CEA · Administração</p>
+            <p className="text-muted-foreground text-sm">
+              {user?.name}
+              {role ? ` · ${ROLE_LABEL[role] ?? role}` : ""}
+            </p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <ThemeToggle />

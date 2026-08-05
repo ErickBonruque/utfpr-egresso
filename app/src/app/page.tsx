@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
+import { UtfprLogo } from "@/components/utfpr-logo";
 import { isAdmin } from "@/lib/authz";
 import { getActor } from "@/server/actor";
 
@@ -43,11 +44,18 @@ export default async function Home() {
     <>
       <header className="border-b">
         <div className="mx-auto flex w-full max-w-5xl items-center gap-4 px-6 py-3">
-          <span className="rounded-md bg-brand px-2 py-0.5 font-heading font-semibold text-brand-foreground">
-            CEA
-          </span>
+          {/* Instituição primeiro, produto depois, separados por um filete: a
+              UTFPR é a titular do sistema, o CEA é o que ela oferece. */}
+          <div className="flex items-center gap-3">
+            <UtfprLogo className="h-6 sm:h-7" />
+            <span className="h-6 w-px bg-border" aria-hidden />
+            <span className="rounded-md bg-brand px-2 py-0.5 font-heading font-semibold text-brand-foreground">
+              CEA
+            </span>
+          </div>
+          {/* "· UTFPR" saiu daqui: a logo ao lado já diz, e repetir empobrece. */}
           <span className="hidden text-muted-foreground text-sm sm:inline">
-            Conexão Egresso-Aluno · UTFPR
+            Conexão Egresso-Aluno
           </span>
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
@@ -95,11 +103,16 @@ export default async function Home() {
         </section>
       </main>
 
+      {/* Assinatura institucional: é o ponto da página com espaço para a marca
+          por extenso, e o lugar onde ela é convenção. O nome da universidade
+          saiu do texto porque a arte ao lado passou a dizê-lo. */}
       <footer className="border-t">
-        <div className="mx-auto w-full max-w-5xl px-6 py-6 text-muted-foreground text-sm">
-          Universidade Tecnológica Federal do Paraná — Campus Santa Helena. Não
-          há cadastro público: as contas vêm dos registros acadêmicos da
-          instituição.
+        <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 px-6 py-8 sm:flex-row sm:items-center sm:gap-8">
+          <UtfprLogo variant="assinatura" className="h-12 shrink-0" />
+          <p className="text-muted-foreground text-sm">
+            Campus Santa Helena. Não há cadastro público: as contas vêm dos
+            registros acadêmicos da instituição.
+          </p>
         </div>
       </footer>
     </>

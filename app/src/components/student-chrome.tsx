@@ -12,6 +12,7 @@ import { SignOutButton } from "@/components/sign-out-button";
 import { StudentNavLinks } from "@/components/student-nav-links";
 import { TabBar } from "@/components/tab-bar";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { UtfprLogo } from "@/components/utfpr-logo";
 
 /// Navegação do portal do aluno/egresso. Fonte única: o layout do grupo
 /// `(aluno)` e a vitrine `/egressos` (que vive fora do grupo) consomem daqui,
@@ -40,12 +41,18 @@ export function StudentChrome({
     <div className="flex min-h-full flex-1 flex-col">
       <header className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur">
         <div className="mx-auto flex w-full max-w-5xl items-center gap-4 px-6 py-3">
-          <Link
-            href="/painel"
-            className="rounded-md bg-brand px-2 py-0.5 font-heading font-semibold text-brand-foreground"
-          >
-            CEA
-          </Link>
+          {/* A logo fica fora do <Link>: ela identifica a instituição, não é
+              atalho para o nosso painel. Clicável continua sendo só o CEA. */}
+          <div className="flex items-center gap-2.5">
+            <UtfprLogo className="h-6" />
+            <span className="h-5 w-px bg-border" aria-hidden />
+            <Link
+              href="/painel"
+              className="rounded-md bg-brand px-2 py-0.5 font-heading font-semibold text-brand-foreground"
+            >
+              CEA
+            </Link>
+          </div>
           <StudentNavLinks
             items={STUDENT_NAV_ITEMS.map(({ href, label }) => ({
               href,
