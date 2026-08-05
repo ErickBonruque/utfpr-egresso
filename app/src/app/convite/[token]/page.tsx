@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { UtfprLogo } from "@/components/utfpr-logo";
 import { ROLE_LABEL } from "@/lib/labels";
 import { acceptInvite, getValidInvite } from "@/server/admin-invites";
 import { prisma } from "@/server/db";
@@ -44,7 +45,8 @@ export default async function InvitePage({
 
   if (!invite) {
     return (
-      <main className="flex flex-1 items-center justify-center px-6 py-16">
+      <main className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-16">
+        <UtfprLogo variant="assinatura" className="h-12" />
         <Card className="w-full max-w-md">
           <CardHeader>
             <CardTitle>Convite inválido</CardTitle>
@@ -79,8 +81,11 @@ export default async function InvitePage({
         )?.name
       : "Todos os campi e cursos";
 
+  // Mesmo tratamento do login: quem chega aqui vai criar uma conta
+  // administrativa e precisa ver de quem é o sistema antes disso.
   return (
-    <main className="flex flex-1 items-center justify-center px-6 py-16">
+    <main className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-16">
+      <UtfprLogo variant="assinatura" className="h-12" />
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle>Convite — Sistema CEA</CardTitle>
