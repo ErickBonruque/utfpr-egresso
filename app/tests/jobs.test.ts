@@ -6,11 +6,16 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   type AdzunaRawHit,
   adzunaCredentialsMissing,
+  adzunaLocationLabel,
   buildAdzunaParams,
   clearJobsCache,
+  dedupeJobs,
+  isRelevantToTerm,
+  jobsProviderMode,
   mapAdzunaHit,
   searchJobs,
 } from "../src/server/jobs";
+import { DEMO_SOURCE, searchDemoJobs } from "../src/server/jobs-demo";
 
 const baseHit: AdzunaRawHit = {
   id: "123",
@@ -30,6 +35,7 @@ afterEach(() => {
   clearJobsCache();
   delete process.env.ADZUNA_APP_ID;
   delete process.env.ADZUNA_APP_KEY;
+  delete process.env.JOBS_PROVIDER;
 });
 
 describe("mapAdzunaHit", () => {
@@ -49,12 +55,24 @@ describe("mapAdzunaHit", () => {
     expect(job.salary).toEqual({ min: 3000, max: 5000, currency: "BRL" });
   });
 
-  it("junta display_name + area na localização", () => {
+  it("usa só display_name — area é a hierarquia inteira e duplicaria", () => {
     const job = mapAdzunaHit({
       ...baseHit,
-      location: { display_name: "Curitiba", area: ["Curitiba", "PR"] },
+      location: {
+        display_name: "Toledo, Paraná",
+        area: ["Brasil", "Sul", "Paraná", "Toledo"],
+      },
     });
-    expect(job.location).toBe("Curitiba, Curitiba, PR");
+    expect(job.location).toBe("Toledo, Paraná");
+  });
+
+  it("sem display_name, monta a partir de area (específico → geral, sem repetir)", () => {
+    expect(
+      adzunaLocationLabel({ area: ["Brasil", "Sul", "Paraná", "Toledo"] }),
+    ).toBe("Toledo, Paraná, Sul, Brasil");
+    expect(adzunaLocationLabel({ area: ["Paraná", "Paraná"] })).toBe("Paraná");
+    expect(adzunaLocationLabel({ display_name: "   ", area: [] })).toBeNull();
+    expect(adzunaLocationLabel(null)).toBeNull();
   });
 
   it("detecta vaga remota pelo texto (sem flag direta no Adzuna)", () => {
@@ -170,12 +188,181 @@ describe("adzunaCredentialsMissing", () => {
   });
 });
 
+describe("isRelevantToTerm", () => {
+  const job = (over: Partial<ReturnType<typeof mapAdzunaHit>>) => ({
+    ...mapAdzunaHit(baseHit),
+    ...over,
+  });
+
+  it("mantém a vaga cujo título casa", () => {
+    expect(
+      isRelevantToTerm(
+        job({ title: "Cientista de Dados" }),
+        "cientista de dados",
+      ),
+    ).toBe(true);
+  });
+
+  it("mantém a vaga cujo casamento está só na descrição", () => {
+    expect(
+      isRelevantToTerm(
+        job({ title: "Técnico Ambiental", description: "Análise de dados." }),
+        "cientista de dados",
+      ),
+    ).toBe(true);
+  });
+
+  it("descarta o preenchimento sem relação que a Adzuna manda no fim", () => {
+    for (const t of [
+      "Estagiário de Direito",
+      "Negociador de Cobrança",
+      "Auxiliar de Manutenção",
+    ]) {
+      expect(
+        isRelevantToTerm(
+          job({ title: t, description: "Atuar na área.", company: "Empresa" }),
+          "cientista de dados",
+        ),
+      ).toBe(false);
+    }
+  });
+
+  it("ignora acento e caixa nos dois lados", () => {
+    expect(isRelevantToTerm(job({ title: "AGRÔNOMO" }), "agronomo")).toBe(true);
+  });
+
+  it("termo sem palavra significativa não filtra nada", () => {
+    expect(isRelevantToTerm(job({ title: "Qualquer" }), "de")).toBe(true);
+  });
+});
+
+describe("dedupeJobs", () => {
+  it("remove republicação idêntica com id diferente", () => {
+    const a = { ...mapAdzunaHit(baseHit), id: "1" };
+    const b = { ...mapAdzunaHit(baseHit), id: "2" };
+    expect(dedupeJobs([a, b])).toHaveLength(1);
+  });
+
+  it("preserva vagas iguais em cidades diferentes", () => {
+    const a = { ...mapAdzunaHit(baseHit), id: "1", location: "Toledo" };
+    const b = { ...mapAdzunaHit(baseHit), id: "2", location: "Curitiba" };
+    expect(dedupeJobs([a, b])).toHaveLength(2);
+  });
+
+  it("mantém a ordem original", () => {
+    const a = { ...mapAdzunaHit(baseHit), id: "1", title: "A" };
+    const b = { ...mapAdzunaHit(baseHit), id: "2", title: "B" };
+    expect(dedupeJobs([a, b, a]).map((j) => j.title)).toEqual(["A", "B"]);
+  });
+});
+
+describe("jobsProviderMode", () => {
+  it('sem JOBS_PROVIDER o modo é "auto"', () => {
+    expect(jobsProviderMode()).toBe("auto");
+  });
+
+  it("aceita adzuna e demo, ignorando caixa e espaços", () => {
+    process.env.JOBS_PROVIDER = " ADZUNA ";
+    expect(jobsProviderMode()).toBe("adzuna");
+    process.env.JOBS_PROVIDER = "Demo";
+    expect(jobsProviderMode()).toBe("demo");
+  });
+
+  it('valor desconhecido cai em "auto" em vez de quebrar', () => {
+    process.env.JOBS_PROVIDER = "jobspy";
+    expect(jobsProviderMode()).toBe("auto");
+  });
+});
+
+describe("searchDemoJobs", () => {
+  it("casa termo sem acento com vaga acentuada", () => {
+    const jobs = searchDemoJobs({ searchTerm: "agronomo" });
+    expect(jobs.length).toBeGreaterThan(0);
+    expect(jobs.some((j) => /Agrônomo/i.test(j.title))).toBe(true);
+  });
+
+  it("toda vaga sai marcada como demonstração e sem link real", () => {
+    const jobs = searchDemoJobs({ searchTerm: "desenvolvedor" });
+    expect(jobs.length).toBeGreaterThan(0);
+    for (const job of jobs) {
+      expect(job.source).toBe(DEMO_SOURCE);
+      expect(job.url).toBe("#");
+    }
+  });
+
+  it("filtra por remoto, contrato e antiguidade", () => {
+    expect(
+      searchDemoJobs({ searchTerm: "desenvolvedor", remoteOnly: true }).every(
+        (j) => j.isRemote,
+      ),
+    ).toBe(true);
+    expect(
+      searchDemoJobs({
+        searchTerm: "professor",
+        contractType: "contract",
+      }).every((j) => j.contractType === "contract"),
+    ).toBe(true);
+    const recentes = searchDemoJobs({ searchTerm: "biologia", maxDaysOld: 4 });
+    for (const job of recentes) {
+      const days = (Date.now() - (job.postedAt?.getTime() ?? 0)) / 86_400_000;
+      expect(days).toBeLessThanOrEqual(4.1);
+    }
+  });
+
+  it("respeita resultsPerPage", () => {
+    expect(
+      searchDemoJobs({ searchTerm: "analista", resultsPerPage: 2 }),
+    ).toHaveLength(2);
+  });
+
+  it("termo curto ainda casa (busca por sigla não volta vazia)", () => {
+    expect(searchDemoJobs({ searchTerm: "ti" }).length).toBeGreaterThan(0);
+    expect(searchDemoJobs({ searchTerm: "pcr" }).length).toBeGreaterThan(0);
+  });
+
+  it("postedAt é relativo ao agora (nunca envelhece)", () => {
+    const [job] = searchDemoJobs({ searchTerm: "iniciação", maxDaysOld: 2 });
+    expect(job).toBeDefined();
+    const days = (Date.now() - (job.postedAt as Date).getTime()) / 86_400_000;
+    expect(days).toBeLessThan(2.1);
+  });
+});
+
 describe("searchJobs", () => {
-  it("retorna erro amigável quando credenciais faltam (não quebra)", async () => {
+  it("sem credenciais, cai na demonstração com aviso em vez de erro", async () => {
+    const result = await searchJobs({ searchTerm: "agronomo" });
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.source).toBe(DEMO_SOURCE);
+      expect(result.notice).toMatch(/demonstração/i);
+      expect(result.jobs.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('JOBS_PROVIDER="adzuna" mantém o erro visível (sem fallback)', async () => {
+    process.env.JOBS_PROVIDER = "adzuna";
     const result = await searchJobs({ searchTerm: "agronomo" });
     expect(result.ok).toBe(false);
-    if (!result.ok) {
-      expect(result.error).toMatch(/configurada/i);
+    if (!result.ok) expect(result.error).toMatch(/configurada/i);
+  });
+
+  it('JOBS_PROVIDER="demo" não avisa degradação (é a fonte escolhida)', async () => {
+    process.env.JOBS_PROVIDER = "demo";
+    const result = await searchJobs({ searchTerm: "professor" });
+    expect(result.ok).toBe(true);
+    if (result.ok) {
+      expect(result.source).toBe(DEMO_SOURCE);
+      expect(result.notice).toBeUndefined();
     }
+  });
+
+  it("o modo entra na chave do cache (trocar de fonte não serve o anterior)", async () => {
+    process.env.JOBS_PROVIDER = "adzuna";
+    const real = await searchJobs({ searchTerm: "professor" });
+    expect(real.ok).toBe(false);
+
+    process.env.JOBS_PROVIDER = "demo";
+    const demo = await searchJobs({ searchTerm: "professor" });
+    expect(demo.ok).toBe(true);
   });
 });

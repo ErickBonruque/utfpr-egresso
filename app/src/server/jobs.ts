@@ -7,6 +7,8 @@
 // API with Brazil coverage, no Python in the deploy. Research record:
 // .planning/research/fase6_1_fontes_vagas.md
 
+import { foldText, significantWords } from "@/lib/text";
+import { demoProvider } from "./jobs-demo";
 import { logger } from "./logger";
 
 const ADZUNA_BASE = "https://api.adzuna.com/v1/api/jobs/br/search";
@@ -37,7 +39,16 @@ export type JobsQuery = {
 };
 
 export type JobsResult =
-  | { ok: true; jobs: JobResult[]; count: number }
+  | {
+      ok: true;
+      jobs: JobResult[];
+      count: number;
+      /// Qual provider respondeu. A UI avisa o usuário quando não é a fonte
+      /// real — ver `DEMO_SOURCE` em jobs-demo.ts.
+      source?: string;
+      /// Explicação a mostrar quando houve degradação (ex.: Adzuna fora do ar).
+      notice?: string;
+    }
   | { ok: false; error: string };
 
 export interface JobsProvider {
@@ -83,11 +94,36 @@ export function buildAdzunaParams(query: JobsQuery): Record<string, string> {
   return params;
 }
 
+/// A Adzuna manda `display_name` ("Toledo, Paraná") E `area`, que é a
+/// hierarquia inteira ["Brasil","Sul","Paraná","Toledo"]. Concatenar os dois
+/// produzia "Toledo, Paraná, Brasil, Sul, Paraná, Toledo" em todo card.
+/// `display_name` já é a forma legível; `area` só entra quando ele falta, e
+/// aí do mais específico para o mais geral, sem repetir termo.
+export function adzunaLocationLabel(
+  location: AdzunaRawHit["location"],
+): string | null {
+  const displayName = location?.display_name?.trim();
+  if (displayName) return displayName;
+
+  const area = (location?.area ?? []).map((a) => a.trim()).filter(Boolean);
+  if (area.length === 0) return null;
+
+  const seen = new Set<string>();
+  return (
+    [...area]
+      .reverse()
+      .filter((a) => {
+        const key = a.toLowerCase();
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .join(", ") || null
+  );
+}
+
 export function mapAdzunaHit(hit: AdzunaRawHit): JobResult {
-  const area = hit.location?.area ?? [];
-  const locationLabel = [hit.location?.display_name, ...area]
-    .filter(Boolean)
-    .join(", ");
+  const locationLabel = adzunaLocationLabel(hit.location);
   return {
     id: String(
       hit.id ??
@@ -96,7 +132,7 @@ export function mapAdzunaHit(hit: AdzunaRawHit): JobResult {
     ),
     title: hit.title ?? "Vaga sem título",
     company: hit.company?.display_name ?? null,
-    location: locationLabel || null,
+    location: locationLabel,
     description: hit.description ?? null,
     url: hit.redirect_url ?? "#",
     postedAt: hit.created ? new Date(hit.created) : null,
@@ -114,6 +150,40 @@ export function mapAdzunaHit(hit: AdzunaRawHit): JobResult {
         : null,
     source: "Adzuna",
   };
+}
+
+/// A Adzuna completa a página com vagas sem relação nenhuma depois de esgotar
+/// as que realmente casam: buscar "cientista de dados" devolvia "Estagiário de
+/// Direito" e "Negociador de Cobrança" nas últimas posições. Nem `what_and`
+/// nem `what_phrase` mudam isso (medido em 2026-08-05 — os três parâmetros
+/// retornam a mesma lista). Então a relevância é conferida aqui.
+///
+/// O critério é deliberadamente frouxo: basta UMA palavra significativa da
+/// busca aparecer no título, na descrição ou na empresa. Isso corta o ruído
+/// evidente sem descartar a vaga cujo título não repete o termo procurado
+/// (buscar "python" e achar "Desenvolvedor Back-end" continua funcionando).
+export function isRelevantToTerm(job: JobResult, searchTerm: string): boolean {
+  const words = significantWords(searchTerm);
+  if (words.length === 0) return true; // termo curto demais: não filtra nada
+
+  const haystack = foldText(
+    [job.title, job.description, job.company].filter(Boolean).join(" "),
+  );
+  return words.some((word) => haystack.includes(word));
+}
+
+/// A mesma vaga reaparece na lista quando a empresa republica o anúncio — ids
+/// diferentes, conteúdo idêntico. Numa tela de demonstração isso lê como bug.
+export function dedupeJobs(jobs: JobResult[]): JobResult[] {
+  const seen = new Set<string>();
+  return jobs.filter((job) => {
+    const key = foldText(
+      [job.title, job.company ?? "", job.location ?? ""].join("|"),
+    );
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 export const adzunaProvider: JobsProvider = {
@@ -159,24 +229,78 @@ export const adzunaProvider: JobsProvider = {
       count?: number;
     };
     const hits = data.results ?? [];
+    const jobs = dedupeJobs(
+      hits
+        .map(mapAdzunaHit)
+        .filter((job) => isRelevantToTerm(job, query.searchTerm)),
+    );
     return {
       ok: true,
-      jobs: hits.map(mapAdzunaHit),
-      count: data.count ?? hits.length,
+      jobs,
+      // `count` é o que está na tela, não o total bruto da Adzuna: dizer
+      // "31 vagas" e listar 12 (das quais 5 eram ruído) confunde o aluno.
+      count: jobs.length,
+      source: "Adzuna",
     };
   },
 };
 
-// ── Active provider + in-memory cache (per-request dedup + short TTL) ──────
+// ── Seleção do provider ────────────────────────────────────────────────────
+//
+// JOBS_PROVIDER controla a fonte (Erick, 2026-08-05):
+//   "auto" (padrão) — Adzuna; se ela falhar por qualquer motivo (sem chave,
+//                     rede, cota, HTTP 5xx), cai no provider de demonstração
+//                     em vez de mostrar tela de erro.
+//   "adzuna"        — só a fonte real; erros aparecem como erro. Use quando o
+//                     ponto é justamente diagnosticar a integração.
+//   "demo"          — só dados sintéticos. Sem chamada externa.
 
-const provider: JobsProvider = adzunaProvider;
+export type JobsProviderMode = "auto" | "adzuna" | "demo";
+
+export function jobsProviderMode(): JobsProviderMode {
+  const raw = process.env.JOBS_PROVIDER?.trim().toLowerCase();
+  return raw === "adzuna" || raw === "demo" ? raw : "auto";
+}
+
+/// Provider composto: aplica a política do modo acima. Resolve o modo a cada
+/// chamada (e não no import) para que mudar o ambiente não exija rebuild.
+export const resolvedProvider: JobsProvider = {
+  async search(query: JobsQuery): Promise<JobsResult> {
+    const mode = jobsProviderMode();
+    if (mode === "demo") return demoProvider.search(query);
+    if (mode === "adzuna") return adzunaProvider.search(query);
+
+    const real = await adzunaProvider.search(query);
+    if (real.ok) return real;
+
+    logger.warn("jobs.fallback_to_demo", { reason: real.error });
+    const demo = await demoProvider.search(query);
+    return demo.ok
+      ? {
+          ...demo,
+          notice: `Fonte externa indisponível (${real.error}) — exibindo vagas de demonstração.`,
+        }
+      : demo;
+  },
+};
+
+// ── Cache em memória (dedup por consulta + TTL curto) ──────────────────────
+
+const provider: JobsProvider = resolvedProvider;
 
 type CacheEntry = { value: JobsResult; expiresAt: number };
 const cache = new Map<string, CacheEntry>();
 const TTL_MS = 5 * 60 * 1000; // 5 minutes
+/// Resposta degradada vale menos tempo: se a Adzuna voltar, não faz sentido
+/// insistir na demonstração por cinco minutos. Mas também não pode ser zero,
+/// senão cada busca vira uma tentativa nova contra uma API que está fora.
+const DEGRADED_TTL_MS = 60 * 1000;
 
 function cacheKey(query: JobsQuery): string {
   return JSON.stringify({
+    // O modo entra na chave: trocar JOBS_PROVIDER não pode servir o resultado
+    // cacheado do provider anterior.
+    p: jobsProviderMode(),
     s: query.searchTerm.trim().toLowerCase(),
     l: query.location?.trim().toLowerCase(),
     r: query.remoteOnly,
@@ -195,7 +319,11 @@ export async function searchJobs(query: JobsQuery): Promise<JobsResult> {
   if (cached && cached.expiresAt > now) return cached.value;
 
   const result = await provider.search(query);
-  cache.set(key, { value: result, expiresAt: now + TTL_MS });
+  const degraded = !result.ok || Boolean(result.notice);
+  cache.set(key, {
+    value: result,
+    expiresAt: now + (degraded ? DEGRADED_TTL_MS : TTL_MS),
+  });
   return result;
 }
 

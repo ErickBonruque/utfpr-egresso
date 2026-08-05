@@ -90,13 +90,23 @@ export function checkEnvironment(
     );
   }
 
-  // Fase 6.1: sem chave a tela de vagas mostra ErrorState. Degrada, não quebra.
+  // Fase 6.1: sem chave, a busca cai no provider de demonstração (avisando o
+  // usuário na tela). Degrada, não quebra — a não ser que alguém tenha pedido
+  // explicitamente a fonte real, aí a ausência da chave é erro de configuração.
   if (!env.ADZUNA_APP_ID || !env.ADZUNA_APP_KEY) {
-    issues.push({
-      severity: "warning",
-      variable: "ADZUNA_APP_ID/ADZUNA_APP_KEY",
-      message: "Sem credenciais: a busca de vagas fica indisponível.",
-    });
+    const requiresReal = env.JOBS_PROVIDER?.trim().toLowerCase() === "adzuna";
+    if (requiresReal) {
+      fatal(
+        "ADZUNA_APP_ID/ADZUNA_APP_KEY",
+        'JOBS_PROVIDER="adzuna" exige as credenciais da API.',
+      );
+    } else {
+      issues.push({
+        severity: "warning",
+        variable: "ADZUNA_APP_ID/ADZUNA_APP_KEY",
+        message: "Sem credenciais: a busca de vagas usa dados de demonstração.",
+      });
+    }
   }
 
   return issues;

@@ -1,6 +1,6 @@
 "use client";
 
-import { Briefcase, ExternalLink, MapPin, Search } from "lucide-react";
+import { Briefcase, ExternalLink, Info, MapPin, Search } from "lucide-react";
 import { useState } from "react";
 import { EmptyState } from "@/components/empty-state";
 import { ErrorState } from "@/components/error-state";
@@ -36,8 +36,17 @@ type Job = {
 };
 
 type Result =
-  | { ok: true; jobs: Job[]; count: number }
+  | {
+      ok: true;
+      jobs: Job[];
+      count: number;
+      source?: string;
+      notice?: string;
+    }
   | { ok: false; error: string };
+
+/// Precisa bater com DEMO_SOURCE em src/server/jobs-demo.ts.
+const DEMO_SOURCE = "Demonstração";
 
 const CONTRACT_LABELS: Record<string, string> = {
   full_time: "Integral",
@@ -207,6 +216,14 @@ export function JobsSearch() {
 
       {!loading && result?.ok && result.jobs.length > 0 && (
         <div className="flex flex-col gap-2">
+          {/* Degradação para a fonte de demonstração precisa ficar explícita:
+              ninguém pode achar que está vendo oportunidade real. */}
+          {result.notice && (
+            <div className="flex items-start gap-2 rounded-lg border border-brand/40 bg-brand/10 px-3 py-2 text-sm">
+              <Info className="mt-0.5 size-4 shrink-0 text-brand" aria-hidden />
+              <p>{result.notice}</p>
+            </div>
+          )}
           <p className="text-muted-foreground text-sm">
             {result.count} vaga(s) encontrada(s)
           </p>
@@ -224,29 +241,38 @@ export function JobsSearch() {
 function JobCard({ job }: { job: Job }) {
   const salary = job.salary ? salaryLabel(job.salary) : null;
   const when = relativeTime(job.postedAt);
+  // Vaga sintética não tem anúncio para abrir: o título vira texto e o botão
+  // "Ver" some. Link morto seria pior que a ausência dele.
+  const isDemo = job.source === DEMO_SOURCE || job.url === "#";
   return (
     <Card>
       <CardContent className="flex flex-col gap-2">
         <div className="flex items-start justify-between gap-3">
           <div className="flex flex-col gap-0.5">
-            <a
-              href={job.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-semibold text-foreground hover:underline"
-            >
-              {job.title}
-            </a>
+            {isDemo ? (
+              <span className="font-semibold text-foreground">{job.title}</span>
+            ) : (
+              <a
+                href={job.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-foreground hover:underline"
+              >
+                {job.title}
+              </a>
+            )}
             <p className="text-muted-foreground text-sm">
               {[job.company, job.location].filter(Boolean).join(" · ") ||
                 "Empresa/local não informados"}
             </p>
           </div>
-          <Button asChild variant="outline" size="sm">
-            <a href={job.url} target="_blank" rel="noopener noreferrer">
-              Ver <ExternalLink className="size-3" aria-hidden />
-            </a>
-          </Button>
+          {!isDemo && (
+            <Button asChild variant="outline" size="sm">
+              <a href={job.url} target="_blank" rel="noopener noreferrer">
+                Ver <ExternalLink className="size-3" aria-hidden />
+              </a>
+            </Button>
+          )}
         </div>
 
         {job.description && (
@@ -256,6 +282,7 @@ function JobCard({ job }: { job: Job }) {
         )}
 
         <div className="flex flex-wrap items-center gap-1.5">
+          {isDemo && <Badge variant="outline">Demonstração</Badge>}
           {job.isRemote && <Badge variant="secondary">Remoto</Badge>}
           {job.contractType && (
             <Badge variant="outline">
