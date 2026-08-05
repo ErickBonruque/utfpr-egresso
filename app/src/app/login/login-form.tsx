@@ -9,6 +9,25 @@ import { authClient } from "@/lib/auth-client";
 
 type Mode = "student" | "admin";
 
+/// Traduz a falha de login para o usuário.
+///
+/// Existe porque a versão anterior devolvia "RA ou senha incorretos" para
+/// QUALQUER erro — inclusive o 429 do freio de força bruta (30 tentativas por
+/// minuto, ver src/server/auth.ts). O efeito é cruel: passado o limite, quem
+/// digita a senha CERTA continua sendo informado de que ela está errada, e a
+/// pessoa conclui que a conta quebrou. Aconteceu de verdade em 05/08/2026.
+///
+/// O 401 continua genérico de propósito: dizer "este RA não existe" entregaria
+/// a um atacante quais RAs são válidos (e RA é público).
+export function loginErrorMessage(status: number, mode: Mode): string {
+  if (status === 429) {
+    return "Muitas tentativas seguidas. Aguarde um minuto e tente de novo — a senha pode estar certa.";
+  }
+  return mode === "student"
+    ? "RA ou senha incorretos."
+    : "E-mail ou senha incorretos.";
+}
+
 export function LoginForm() {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("student");
@@ -34,11 +53,7 @@ export function LoginForm() {
           });
 
     if (result.error) {
-      setError(
-        mode === "student"
-          ? "RA ou senha incorretos."
-          : "E-mail ou senha incorretos.",
-      );
+      setError(loginErrorMessage(result.error.status, mode));
       setSubmitting(false);
       return;
     }
