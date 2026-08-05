@@ -298,47 +298,58 @@ export function TrackTreeEditor({
           fundo cria nó raiz.
         </span>
       </div>
-      <div className="h-[32rem] rounded-lg border bg-card">
-        <ReactFlow
-          nodes={flowNodes}
-          edges={flowEdges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
-          onNodeDragStop={onNodeDragStop}
-          nodeTypes={nodeTypes}
-          colorMode={mounted && resolvedTheme === "dark" ? "dark" : "light"}
-          fitView
-          nodesDraggable
-          nodesConnectable
-          elementsSelectable
-          onNodeClick={(_e, n) => {
-            const data = (n.data ?? {}) as TrackEditNodeData;
-            if (data.node) openNode(data.node);
-          }}
-          onDoubleClick={(e) => {
-            // Só dispara no fundo do canvas (classe do pane do React Flow),
-            // não quando o duplo-clique acerta um nó.
-            const target = e.target as HTMLElement;
-            if (target.closest(".react-flow__node")) return;
-            onPaneDoubleClick();
-          }}
-          minZoom={0.3}
-          maxZoom={1.5}
-        >
-          <Background gap={24} />
-          <Controls showInteractive={false} />
-          <MiniMap
-            pannable
-            zoomable
-            className="hidden! md:block!"
-            nodeColor={() => "var(--muted-foreground)"}
-            nodeStrokeColor="var(--border)"
-            bgColor="var(--card)"
-            maskColor="color-mix(in oklab, var(--muted) 55%, transparent)"
-          />
-        </ReactFlow>
-      </div>
+      {/* Mesmo motivo de career-tree.tsx: o MiniMap do React Flow deriva o
+          viewBox de dimensões medidas, que o servidor não tem, e o SSR quebra
+          a hidratação. Só o canvas espera montar; a barra acima já aparece. */}
+      {!mounted ? (
+        <output
+          className="block h-[32rem] rounded-lg border bg-card"
+          aria-busy="true"
+          aria-label="Carregando o editor da trilha"
+        />
+      ) : (
+        <div className="h-[32rem] rounded-lg border bg-card">
+          <ReactFlow
+            nodes={flowNodes}
+            edges={flowEdges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onNodeDragStop={onNodeDragStop}
+            nodeTypes={nodeTypes}
+            colorMode={resolvedTheme === "dark" ? "dark" : "light"}
+            fitView
+            nodesDraggable
+            nodesConnectable
+            elementsSelectable
+            onNodeClick={(_e, n) => {
+              const data = (n.data ?? {}) as TrackEditNodeData;
+              if (data.node) openNode(data.node);
+            }}
+            onDoubleClick={(e) => {
+              // Só dispara no fundo do canvas (classe do pane do React Flow),
+              // não quando o duplo-clique acerta um nó.
+              const target = e.target as HTMLElement;
+              if (target.closest(".react-flow__node")) return;
+              onPaneDoubleClick();
+            }}
+            minZoom={0.3}
+            maxZoom={1.5}
+          >
+            <Background gap={24} />
+            <Controls showInteractive={false} />
+            <MiniMap
+              pannable
+              zoomable
+              className="hidden! md:block!"
+              nodeColor={() => "var(--muted-foreground)"}
+              nodeStrokeColor="var(--border)"
+              bgColor="var(--card)"
+              maskColor="color-mix(in oklab, var(--muted) 55%, transparent)"
+            />
+          </ReactFlow>
+        </div>
+      )}
 
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
         <SheetContent side="right" className="overflow-y-auto sm:max-w-md">

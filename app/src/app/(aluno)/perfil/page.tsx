@@ -169,8 +169,9 @@ export default async function PerfilPage() {
             ))
           )}
           <p className="text-muted-foreground text-xs">
-            Dados acadêmicos são espelho da UTFPR (mock determinístico até a
-            integração da Fase 8) — não são editáveis aqui.
+            Dados acadêmicos são espelho dos registros da UTFPR (dados de
+            demonstração enquanto a integração institucional não está ligada) —
+            não são editáveis aqui.
           </p>
         </TabsContent>
 

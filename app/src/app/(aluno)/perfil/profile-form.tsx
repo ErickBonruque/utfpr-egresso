@@ -46,7 +46,7 @@ export function ProfileForm({
           defaultValue={defaults.bio ?? ""}
         />
         <p className="text-muted-foreground text-xs">
-          Máx. 500 caracteres. Aparecerá no seu perfil de egresso (Fase 7).
+          Máx. 500 caracteres. Aparecerá no seu perfil de egresso.
         </p>
       </div>
       <div className="flex flex-col gap-1.5">

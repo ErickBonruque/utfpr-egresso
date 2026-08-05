@@ -91,8 +91,12 @@ export function CareerTree({
   className?: string;
 }) {
   const { resolvedTheme } = useTheme();
-  // O tema só é conhecido no cliente; no SSR renderiza "light" e ajusta
-  // após montar — evita hydration mismatch (next-themes).
+  // O React Flow não sobrevive a SSR: o MiniMap calcula o `viewBox` do SVG a
+  // partir das dimensões medidas do canvas, que no servidor não existem, e o
+  // React acusa hydration mismatch em toda visita à árvore. O tema (next-themes)
+  // tem o mesmo problema. Como isto é widget interativo atrás de login, sem
+  // valor de SSR, só montamos no cliente — e o placeholder tem a MESMA altura
+  // do canvas para não haver salto de layout.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
@@ -118,13 +122,23 @@ export function CareerTree({
     };
   }, [nodes]);
 
+  if (!mounted) {
+    return (
+      <output
+        className={cn("block h-[28rem] rounded-lg border bg-card", className)}
+        aria-busy="true"
+        aria-label="Carregando a árvore de carreira"
+      />
+    );
+  }
+
   return (
     <div className={cn("h-[28rem] rounded-lg border bg-card", className)}>
       <ReactFlow
         nodes={flowNodes}
         edges={flowEdges}
         nodeTypes={nodeTypes}
-        colorMode={mounted && resolvedTheme === "dark" ? "dark" : "light"}
+        colorMode={resolvedTheme === "dark" ? "dark" : "light"}
         fitView
         nodesDraggable={false}
         nodesConnectable={false}

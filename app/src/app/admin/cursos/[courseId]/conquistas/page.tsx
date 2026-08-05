@@ -141,8 +141,7 @@ export default async function CourseAchievementsPage({
       <div className="flex items-start justify-between gap-4">
         <p className="text-muted-foreground text-sm">
           {achievements.length} conquista(s). O critério de desbloqueio é
-          avaliado pelo motor de gamificação (Fase 6) sobre as matrículas dos
-          alunos.
+          avaliado pelo motor de gamificação sobre as matrículas dos alunos.
         </p>
         <FormDialog
           wide

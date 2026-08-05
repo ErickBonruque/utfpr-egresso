@@ -79,9 +79,8 @@ export default async function CourseLevelsPage({
     <div className="flex flex-col gap-4">
       <div className="flex items-start justify-between gap-4">
         <p className="text-muted-foreground text-sm">
-          O motor de gamificação (Fase 6) resolve o nível do aluno pelo maior
-          “XP mínimo” menor ou igual ao XP total. Os limiares devem crescer com
-          o nível.
+          O motor de gamificação resolve o nível do aluno pelo maior “XP mínimo”
+          menor ou igual ao XP total. Os limiares devem crescer com o nível.
         </p>
         <FormDialog
           title="Novo nível"

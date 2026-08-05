@@ -70,8 +70,8 @@ export default async function AdminDashboardPage() {
       <div>
         <h1 className="font-semibold text-2xl">Dashboard</h1>
         <p className="text-muted-foreground text-sm">
-          Visão geral do seu escopo. Progresso médio dos alunos chega com o
-          motor de gamificação (Fase 6).
+          Visão geral do seu escopo: alunos, egressos, cursos e conquistas
+          configuradas.
         </p>
       </div>
 
