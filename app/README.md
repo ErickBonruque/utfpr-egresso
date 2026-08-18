@@ -2,6 +2,12 @@
 
 Plataforma de acompanhamento de egressos e gamificação acadêmica da UTFPR (multi-campus, multi-curso). Este diretório contém o sistema novo; a POC Django na raiz do repositório está congelada e será aposentada na transição final.
 
+> **Projeto de pesquisa — não é software livre.** O código é público para
+> transparência científica e avaliação por pares. Leitura e citação acadêmica
+> são permitidas; uso, execução, cópia, modificação e redistribuição não são,
+> e nenhuma licença de patente é concedida. Ver [LICENSE](../LICENSE).
+> Regras de commit e autoria para a equipe: [CONTRIBUTING.md](../CONTRIBUTING.md).
+
 ## Stack
 
 Next.js 16 (App Router) · TypeScript strict · Prisma 7 · PostgreSQL 17 (Docker) · Tailwind CSS 4 · Biome · Vitest · Playwright
@@ -113,3 +119,16 @@ GitHub Actions (`.github/workflows/ci.yml` na raiz do repo), a cada push que toq
 
 - **check** — schema Prisma, Biome, `tsc --noEmit` e Vitest.
 - **e2e** — sobe um Postgres 17, aplica migrations + seed e roda a suíte Playwright; o relatório vira artefato quando falha.
+
+## Dados
+
+Tudo que o seed cria — alunos, egressos, matrículas, notas — é **sintético**.
+Os logins da tabela acima existem só para demonstração e estão publicados de
+propósito: o ambiente de demo não guarda dado de pessoa real. Quando a
+integração com a base da UTFPR (Fase 8) entrar em produção, os dados reais
+ficam no banco e nunca no repositório.
+
+## Licença
+
+Proprietária — todos os direitos reservados. Copyright (c) 2026 Erick Bonruque
+e UTFPR. Texto completo em [LICENSE](../LICENSE).

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Sistema CEA — Conexão Egresso-Aluno (UTFPR)",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

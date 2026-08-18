@@ -1,0 +1,132 @@
+LICENÇA PROPRIETÁRIA — TODOS OS DIREITOS RESERVADOS
+CEA — Conexão Egresso-Aluno
+
+Copyright (c) 2026 Erick Bonruque e Universidade Tecnológica Federal do
+Paraná (UTFPR) — Campus Santa Helena. Todos os direitos reservados.
+
+--------------------------------------------------------------------------
+1. TITULARIDADE
+--------------------------------------------------------------------------
+
+Este software e toda a documentação que o acompanha ("o Software") foram
+desenvolvidos no âmbito de projeto de pesquisa vinculado à UTFPR. A
+titularidade dos direitos patrimoniais e da propriedade industrial dele
+decorrentes observa a Lei nº 9.610/1998 (direitos autorais), a Lei nº
+9.279/1996 (propriedade industrial), a Lei nº 10.973/2004 (Lei de Inovação)
+e a política de inovação da UTFPR.
+
+Nenhuma disposição desta licença transfere, renuncia ou onera qualquer
+direito dos titulares.
+
+--------------------------------------------------------------------------
+2. O QUE É PERMITIDO
+--------------------------------------------------------------------------
+
+A publicação deste repositório tem finalidade exclusivamente científica.
+Fica permitido, sem necessidade de autorização prévia:
+
+  a) ler e examinar o código-fonte;
+  b) avaliar o Software para fins de revisão por pares, arbitragem
+     editorial e verificação de reprodutibilidade de pesquisa;
+  c) citar o repositório e trechos do código em trabalhos acadêmicos,
+     desde que com atribuição adequada à obra e aos seus autores.
+
+--------------------------------------------------------------------------
+3. O QUE NÃO É PERMITIDO
+--------------------------------------------------------------------------
+
+Ressalvado o disposto na Cláusula 2 e as limitações e exceções previstas em
+lei, NÃO é concedida licença ou autorização, expressa ou implícita, para:
+
+  a) usar, executar ou implantar o Software, no todo ou em parte, em
+     qualquer ambiente de produção ou serviço, comercial ou não;
+  b) copiar, reproduzir, modificar, adaptar, traduzir ou criar obras
+     derivadas do Software;
+  c) publicar, distribuir, sublicenciar, alugar, vender ou de qualquer
+     forma transferir o Software a terceiros;
+  d) remover ou alterar avisos de titularidade, autoria ou licença;
+  e) utilizar o Software, no todo ou em parte, como dado de treinamento,
+     ajuste fino ou insumo para sistemas de inteligência artificial ou
+     aprendizado de máquina.
+
+--------------------------------------------------------------------------
+4. PATENTES
+--------------------------------------------------------------------------
+
+NENHUMA LICENÇA DE PATENTE É CONCEDIDA, expressa ou implicitamente, por
+esta licença, pela publicação deste repositório ou por qualquer conduta
+dos titulares.
+
+Os titulares reservam integralmente o direito de depositar e explorar
+pedidos de patente, registros de programa de computador e quaisquer outros
+direitos de propriedade industrial relativos ao Software, à sua
+arquitetura e aos métodos nele implementados. A divulgação pública aqui
+realizada não constitui renúncia a esses direitos, e invoca-se, no que
+couber, o período de graça do art. 12 da Lei nº 9.279/1996.
+
+--------------------------------------------------------------------------
+5. PLATAFORMA DE HOSPEDAGEM
+--------------------------------------------------------------------------
+
+O acesso e a bifurcação ("fork") deste repositório por meio das funções
+nativas do GitHub decorrem exclusivamente dos Termos de Serviço daquela
+plataforma e não ampliam, por si sós, as permissões da Cláusula 2 nem
+autorizam qualquer conduta vedada pela Cláusula 3.
+
+--------------------------------------------------------------------------
+6. DADOS
+--------------------------------------------------------------------------
+
+Os dados de alunos e egressos presentes neste repositório — em migrações,
+seeds, testes ou fixtures — são SINTÉTICOS e gerados para demonstração. Não
+representam pessoas reais.
+
+Isso inclui a conta de demonstração: nome, data de nascimento e notas são
+fictícios. Nenhum dado pessoal — do autor ou de terceiros — é versionado.
+
+--------------------------------------------------------------------------
+7. AUSÊNCIA DE GARANTIA
+--------------------------------------------------------------------------
+
+O SOFTWARE É FORNECIDO "NO ESTADO EM QUE SE ENCONTRA", SEM GARANTIA DE
+QUALQUER NATUREZA, EXPRESSA OU IMPLÍCITA, INCLUINDO, SEM LIMITAÇÃO,
+GARANTIAS DE COMERCIABILIDADE, ADEQUAÇÃO A UMA FINALIDADE ESPECÍFICA E NÃO
+VIOLAÇÃO. EM NENHUMA HIPÓTESE OS TITULARES RESPONDERÃO POR QUALQUER
+REIVINDICAÇÃO, DANO OU OUTRA RESPONSABILIDADE DECORRENTE DO SOFTWARE OU DE
+SEU USO.
+
+--------------------------------------------------------------------------
+8. LICENCIAMENTO E CONTATO
+--------------------------------------------------------------------------
+
+Autorizações não previstas na Cláusula 2 — incluindo uso institucional,
+implantação, parceria ou licenciamento comercial — dependem de acordo
+escrito e devem ser tratadas com os autores e com a Agência de Inovação da
+UTFPR.
+
+Foro da comarca de Santa Helena, Paraná, Brasil, com aplicação da
+legislação brasileira.
+
+
+==========================================================================
+ENGLISH SUMMARY (non-binding translation; the Portuguese text prevails)
+==========================================================================
+
+Copyright (c) 2026 Erick Bonruque and Universidade Tecnológica Federal do
+Paraná (UTFPR). All rights reserved.
+
+This source code is published for scientific transparency only. You MAY
+read it, review it for peer review and research-reproducibility purposes,
+and cite it with proper attribution. You MAY NOT use, run, deploy, copy,
+modify, redistribute, sublicense or sell it, nor use it as training data
+for AI/ML systems.
+
+NO PATENT LICENSE IS GRANTED, expressly or by implication. The authors and
+UTFPR fully reserve the right to file and exploit patents covering this
+work. Viewing or forking via GitHub's native features grants no rights
+beyond those stated above.
+
+All student and alumni data in this repository is SYNTHETIC.
+
+For any other use, written permission from the authors and UTFPR's
+innovation agency is required.

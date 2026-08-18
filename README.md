@@ -1,5 +1,14 @@
 # Sistema CEA - Conexão Egresso-Aluno
 
+> **Projeto de pesquisa da UTFPR — Campus Santa Helena.**
+> Código publicado para transparência científica e avaliação por pares.
+> **Não é software livre**: leitura e citação acadêmica são permitidas;
+> uso, cópia, modificação e redistribuição não são. Ver [LICENSE](LICENSE).
+
+> **Onde está o sistema atual:** este README documenta a POC em Django, hoje
+> **congelada**. O sistema em desenvolvimento é o da pasta [`app/`](app/)
+> (Next.js 16 + Prisma + PostgreSQL) — comece por [`app/README.md`](app/README.md).
+
 ## Descrição
 
 Sistema para acompanhamento de egressos e pontuação de alunos da UTFPR - Campus Santa Helena. O sistema features uma "Árvore de Carreiras" onde os alunos podem acompanhar seu progresso acadêmico, ver conquistas, conectar-se com egressos e explorar oportunidades de carreira.
@@ -248,12 +257,26 @@ python manage.py base_fixa_vercel
 
 ## Contribuição
 
-1. Fork do repositório
-2. Criar branch para feature: `git checkout -b feature/nova-feature`
-3. Commit: `git commit -m 'Add nova feature'`
-4. Push: `git push origin feature/nova-feature`
-5. Pull Request
+O repositório é público para leitura e avaliação, mas **não aceita
+contribuições externas** — a titularidade do trabalho está vinculada à UTFPR
+e há pedido de propriedade industrial em curso. Ver [LICENSE](LICENSE).
+
+Encontrou um problema de segurança ou um erro factual? Abra uma issue
+descrevendo o achado, sem enviar código.
+
+Para a equipe do projeto, as regras de commit, autoria e versionamento estão
+em [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Licença
 
-MIT License - Ver arquivo LICENSE para detalhes
+**Proprietária — todos os direitos reservados.** Copyright (c) 2026 Erick
+Bonruque e UTFPR. Leitura, avaliação acadêmica e citação com atribuição são
+permitidas; uso, execução, cópia, modificação e redistribuição não são, e
+nenhuma licença de patente é concedida. Texto completo em [LICENSE](LICENSE).
+
+## Dados
+
+Os dados de alunos e egressos deste repositório são **sintéticos**, gerados
+por `popular_banco`. A única exceção é o histórico escolar verídico do autor
+em `seed_erick_e_egressos`, publicado pelo próprio titular. Nenhum dado
+pessoal de terceiros é versionado.

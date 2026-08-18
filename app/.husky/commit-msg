@@ -1,0 +1,12 @@
+# Barra assinaturas de ferramentas de IA na mensagem de commit.
+# Motivo e regra completa: CONTRIBUTING.md, seção "Autoria".
+
+if grep -qiE 'co-authored-by:.*(claude|anthropic|copilot|chatgpt|openai|gemini|cursor|codex|devin)|generated with \[?(claude|cursor|copilot)|🤖|assisted-by:|ai-generated' "$1"; then
+  echo ""
+  echo "commit recusado: a mensagem contém assinatura de ferramenta de IA."
+  echo ""
+  grep -inE 'co-authored-by:.*(claude|anthropic|copilot|chatgpt|openai|gemini|cursor|codex|devin)|generated with \[?(claude|cursor|copilot)|🤖|assisted-by:|ai-generated' "$1"
+  echo ""
+  echo "Remova a(s) linha(s) acima. Ver CONTRIBUTING.md, seção \"Autoria\"."
+  exit 1
+fi
