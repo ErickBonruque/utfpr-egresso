@@ -8,8 +8,8 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Verificar se já existe
-        if Aluno.objects.filter(nome__icontains='Erick').exists():
-            self.stdout.write('Erick já existe no banco de dados')
+        if Aluno.objects.filter(registro='2023012345').exists():
+            self.stdout.write('Aluno de demonstração já existe no banco de dados')
             return
 
         # Criar Erick

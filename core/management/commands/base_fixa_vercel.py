@@ -46,9 +46,9 @@ class Command(BaseCommand):
         self.stdout.write(f'Disciplinas: {disciplinas}')
         self.stdout.write(f'Matrículas: {matriculas}')
         
-        # Verificar se Erick está na base
-        erick = Aluno.objects.filter(nome__icontains='Erick').first()
-        if erick:
-            self.stdout.write(self.style.SUCCESS(f'Alex Silva Demo encontrado (ID: {erick.pk})'))
+        # Verificar se a conta de demonstração está na base
+        demo = Aluno.objects.filter(registro='2587246').first()
+        if demo:
+            self.stdout.write(self.style.SUCCESS(f'Conta de demonstração encontrada (ID: {demo.pk})'))
         else:
-            self.stdout.write(self.style.WARNING('Erick não encontrado na base'))
+            self.stdout.write(self.style.WARNING('Conta de demonstração não encontrada na base'))
