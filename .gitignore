@@ -88,3 +88,25 @@ yarn-error.log*
 
 # ZCode CLI (ferramenta de desenvolvimento) - não versionado
 .zcode/
+
+# Artigos, submissões e material de publicação — não versionado
+artigo/
+artigos/
+artigo-*/
+paper/
+papers/
+submissao/
+submissoes/
+*.docx
+*.doc
+
+# Contexto de ferramentas de IA — não versionado (ver CONTRIBUTING.md)
+CLAUDE.md
+AGENTS.md
+GEMINI.md
+.claude/
+.cursor/
+.cursorrules
+.windsurfrules
+.aider*
+.github/copilot-instructions.md
