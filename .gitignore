@@ -110,3 +110,8 @@ GEMINI.md
 .windsurfrules
 .aider*
 .github/copilot-instructions.md
+
+# Documentos pessoais / históricos escolares — NUNCA versionar
+*.pdf
+Portal do Aluno*
+historico_escolar*

@@ -260,5 +260,5 @@ SECURITY_HEADERS = {
 ## Contato
 
 Para dúvidas sobre o deploy:
-- Alex Silva Demo: alex.demo@alunos.utfpr.edu.br
+- Erick Bonruque: https://github.com/ErickBonruque
 - Repository: https://github.com/ErickBonruque/utfpr-egresso
