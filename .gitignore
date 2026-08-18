@@ -111,7 +111,6 @@ GEMINI.md
 .aider*
 .github/copilot-instructions.md
 
-# Documentos pessoais / históricos escolares — NUNCA versionar
+# Documentos pessoais e digitalizações — NUNCA versionar
 *.pdf
-Portal do Aluno*
-historico_escolar*
+*.jpeg
