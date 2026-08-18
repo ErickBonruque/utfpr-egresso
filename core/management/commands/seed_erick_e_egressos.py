@@ -4,20 +4,23 @@ e 10 egressos extras ao banco de dados.
 
 Uso:
     python manage.py seed_erick_e_egressos
-    python manage.py seed_erick_e_egressos --senha MinhaSenh@123
+    DJANGO_SEED_PASSWORD='...' python manage.py seed_erick_e_egressos
+    python manage.py seed_erick_e_egressos --senha '...'
 """
 
+import os
 import random
 from datetime import date
 
 from django.contrib.auth.models import User
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from core.models import Aluno, Disciplina, Matricula
 
-# Senha padrão para o superusuário (pode ser sobrescrita via --senha)
-DEFAULT_PASSWORD = 'Utfpr@2024!'
+# Senha do superusuário: vem de DJANGO_SEED_PASSWORD ou de --senha.
+# Sem valor padrão de propósito — senha em código-fonte é senha vazada.
+DEFAULT_PASSWORD = os.environ.get('DJANGO_SEED_PASSWORD')
 
 # ── Dados fictícios de demonstração de Alex Silva Demo ────────────────────────
 # (codigo: (nota, frequencia, data_conclusao))
@@ -339,11 +342,17 @@ class Command(BaseCommand):
             '--senha',
             type=str,
             default=DEFAULT_PASSWORD,
-            help=f'Senha do superusuário Django (default: {DEFAULT_PASSWORD})',
+            help='Senha do superusuário Django '
+                 '(padrão: variável de ambiente DJANGO_SEED_PASSWORD)',
         )
 
     def handle(self, *args, **options):
         senha = options['senha']
+        if not senha:
+            raise CommandError(
+                'Defina a senha do superusuário: exporte DJANGO_SEED_PASSWORD '
+                'ou passe --senha. Não há valor padrão.'
+            )
         rng = random.Random(999)
 
         mandatory_discs = list(Disciplina.objects.filter(tipo='obrigatoria'))
@@ -410,7 +419,7 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(
                 f'  Superusuário criado.\n'
                 f'  Username : erick.bonruque\n'
-                f'  Senha    : {senha}\n'
+                f'  Senha    : a que você informou\n'
                 f'  Acesse   : /admin/'
             ))
 
