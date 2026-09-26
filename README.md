@@ -9,6 +9,22 @@
 > **congelada**. O sistema em desenvolvimento é o da pasta [`app/`](app/)
 > (Next.js 16 + Prisma + PostgreSQL) — comece por [`app/README.md`](app/README.md).
 
+## O sistema atual
+
+Demonstração pública em **<https://utfpr-egresso.vercel.app>**, com dados
+fictícios; os logins de teste estão em [`app/README.md`](app/README.md).
+As telas abaixo são da versão da pasta `app/`, povoada pelo seed sintético.
+
+| Página inicial | Árvore de carreiras |
+|---|---|
+| ![Página inicial do CEA](docs/capturas/01-inicio.png) | ![Árvore de carreiras navegável, com o percentual atingido em cada etapa](docs/capturas/02-arvore-de-carreiras.png) |
+| **Painel do estudante (visão de egressa)** | **Conquistas** |
+| ![Painel com progresso no curso, nível, conquistas e mapa curricular](docs/capturas/03-painel.png) | ![Catálogo de conquistas do curso com critérios em português](docs/capturas/04-conquistas.png) |
+| **Busca de vagas** | **Vitrine de egressos** |
+| ![Busca de vagas contextualizada pelo curso](docs/capturas/05-vagas.png) | ![Vitrine de egressos com busca e filtros por câmpus, curso e mentoria](docs/capturas/06-vitrine-de-egressos.png) |
+| **Painel administrativo** | **Sincronização acadêmica** |
+| ![Dashboard administrativo com totais de alunos e egressos por curso](docs/capturas/07-admin-dashboard.png) | ![Histórico auditável das sincronizações com a fonte de dados acadêmicos](docs/capturas/08-admin-sincronizacao.png) |
+
 ## Descrição
 
 Sistema para acompanhamento de egressos e pontuação de alunos da UTFPR - Campus Santa Helena. O sistema features uma "Árvore de Carreiras" onde os alunos podem acompanhar seu progresso acadêmico, ver conquistas, conectar-se com egressos e explorar oportunidades de carreira.
@@ -277,6 +293,6 @@ nenhuma licença de patente é concedida. Texto completo em [LICENSE](LICENSE).
 ## Dados
 
 Os dados de alunos e egressos deste repositório são **sintéticos**, gerados
-por `popular_banco`. A única exceção é o histórico escolar verídico do autor
-em `seed_erick_e_egressos`, publicado pelo próprio titular. Nenhum dado
-pessoal de terceiros é versionado.
+por `popular_banco` (POC) e pelo seed de `app/`. A conta de demonstração
+(Alex Silva Demo), criada por `seed_erick_e_egressos`, também tem nome, notas
+e frequências fictícios. Nenhum dado pessoal de terceiros é versionado.
