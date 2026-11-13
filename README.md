@@ -1,6 +1,8 @@
 # Sistema CEA - Conexão Egresso-Aluno
 
-> **Projeto de pesquisa da UTFPR — Campus Santa Helena.**
+[English](README.en.md) · **Português**
+
+> **Projeto de pesquisa da UTFPR — Campus Santa Helena.** Programa de computador registrado no INPI.
 > Código publicado para transparência científica e avaliação por pares.
 > **Não é software livre**: leitura e citação acadêmica são permitidas;
 > uso, cópia, modificação e redistribuição não são. Ver [LICENSE](LICENSE).
