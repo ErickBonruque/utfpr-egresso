@@ -277,7 +277,7 @@ python manage.py base_fixa_vercel
 
 O repositório é público para leitura e avaliação, mas **não aceita
 contribuições externas** — a titularidade do trabalho está vinculada à UTFPR
-e há pedido de propriedade industrial em curso. Ver [LICENSE](LICENSE).
+e o programa de computador é registrado no INPI. Ver [LICENSE](LICENSE).
 
 Encontrou um problema de segurança ou um erro factual? Abra uma issue
 descrevendo o achado, sem enviar código.

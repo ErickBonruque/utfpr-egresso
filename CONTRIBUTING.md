@@ -21,8 +21,8 @@ Concretamente, não commite:
 Nomeie branches pelo que elas fazem: `fix/login-bloqueio-temporario`,
 `feat/vitrine-egressos`.
 
-**Por quê.** O trabalho é submetido a periódico científico e é objeto de
-pedido de propriedade industrial. A autoria declarada no artigo precisa bater
+**Por quê.** O trabalho é submetido a periódico científico e tem
+registro de programa de computador no INPI. A autoria declarada no artigo precisa bater
 com a autoria registrada no histórico do repositório: um trailer de
 coautoria nomeando uma ferramenta cria uma discrepância que a revista pode
 tratar como problema de autoria, e ruído desnecessário na análise de
